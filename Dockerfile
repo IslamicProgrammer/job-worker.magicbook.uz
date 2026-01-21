@@ -1,15 +1,17 @@
-# Build stage
-FROM node:20-alpine AS builder
-
-WORKDIR /app
+# Use Debian-based Node (glibc, not musl) for sharp compatibility
+FROM node:20-slim
 
 # Install dependencies for sharp
-RUN apk add --no-cache python3 make g++ vips-dev
+RUN apt-get update && apt-get install -y \
+    libvips42 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies (need devDeps for build)
 RUN npm ci
 
 # Copy source code
@@ -18,20 +20,8 @@ COPY . .
 # Build TypeScript
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
-# Install runtime dependencies for sharp
-RUN apk add --no-cache vips
-
-# Copy package files and install production dependencies
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy built files
-COPY --from=builder /app/dist ./dist
+# Remove dev dependencies
+RUN npm prune --production
 
 # Set environment
 ENV NODE_ENV=production
@@ -41,7 +31,7 @@ EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+  CMD node -e "fetch('http://localhost:3001/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
 # Run the application
 CMD ["node", "dist/index.js"]
