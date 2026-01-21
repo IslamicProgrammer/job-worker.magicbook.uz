@@ -1,10 +1,18 @@
-# Use Debian-based Node (not Alpine) for sharp compatibility
-FROM node:20-slim
+# Use Debian Bullseye for sharp compatibility
+FROM node:20-bullseye-slim
 
-# Install libvips runtime for sharp
+# Install system dependencies for sharp
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends libvips42 && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+    libvips-dev \
+    build-essential \
+    python3 \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Force sharp to use its own prebuilt binaries
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
 WORKDIR /app
 
