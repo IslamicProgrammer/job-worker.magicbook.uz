@@ -183,7 +183,7 @@ The character MUST be INSTANTLY recognizable as the child in the photo.`;
         console.log(`[Character Reference] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
         response = await callGeminiDirectly({
-          model: "gemini-2.0-flash-exp-image-generation",
+          model: "gemini-2.5-flash-image",
           contents: [
             { text: prompt },
             {
@@ -359,7 +359,7 @@ REQUIREMENTS:
         console.log(`[Illustration] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
         response = await callGeminiDirectly({
-          model: "gemini-2.0-flash-exp-image-generation",
+          model: "gemini-2.5-flash-image",
           contents: contents,
         });
         break;
