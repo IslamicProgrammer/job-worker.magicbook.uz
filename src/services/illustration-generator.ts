@@ -48,6 +48,26 @@ function cleanJsonString(str: string): string {
 }
 
 /**
+ * Extract base64 image data from response using regex (fallback for malformed JSON)
+ */
+function extractImageFromResponse(rawText: string): string | null {
+  // Try to extract base64 data directly using regex
+  // Look for pattern: "data": "base64data..."
+  const dataMatch = rawText.match(/"data"\s*:\s*"([A-Za-z0-9+/=]+)"/);
+  if (dataMatch && dataMatch[1] && dataMatch[1].length > 1000) {
+    return dataMatch[1];
+  }
+
+  // Alternative: look for inline_data pattern
+  const inlineMatch = rawText.match(/"inline_data"\s*:\s*\{\s*"mime_type"\s*:\s*"[^"]+"\s*,\s*"data"\s*:\s*"([A-Za-z0-9+/=]+)"/);
+  if (inlineMatch && inlineMatch[1] && inlineMatch[1].length > 1000) {
+    return inlineMatch[1];
+  }
+
+  return null;
+}
+
+/**
  * Call Gemini API directly with manual JSON sanitization
  */
 async function callGeminiDirectly(params: {
@@ -101,6 +121,31 @@ async function callGeminiDirectly(params: {
       return JSON.parse(cleanedText);
     } catch (secondError) {
       console.error('[Gemini Direct] Second parse attempt also failed:', secondError);
+
+      // Third attempt: try to extract image data directly using regex
+      console.log('[Gemini Direct] Attempting regex extraction fallback...');
+      const extractedData = extractImageFromResponse(rawText);
+
+      if (extractedData) {
+        console.log(`[Gemini Direct] Regex extraction succeeded (${extractedData.length} chars)`);
+        // Return a minimal valid response structure
+        return {
+          candidates: [{
+            content: {
+              parts: [{
+                inline_data: {
+                  mime_type: 'image/png',
+                  data: extractedData,
+                },
+              }],
+            },
+          }],
+        };
+      }
+
+      console.error('[Gemini Direct] All parse attempts failed');
+      console.error('[Gemini Direct] Response length:', rawText.length);
+      console.error('[Gemini Direct] Response sample:', rawText.substring(0, 500));
       throw new Error(`Failed to parse Gemini response: ${secondError instanceof Error ? secondError.message : String(secondError)}`);
     }
   }
