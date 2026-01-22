@@ -107,6 +107,101 @@ async function callGeminiDirectly(params: {
 }
 
 /**
+ * Get title style instructions based on story theme/subject
+ */
+function getTitleStyleInstructions(sceneDescription: string, storyText: string): string {
+  const desc = sceneDescription.toLowerCase();
+
+  // Jungle/Forest themes
+  if (desc.includes('jungle') || desc.includes('forest') || desc.includes('tree')) {
+    return `- Use GREEN, EARTHY title colors (jungle green, leaf green, brown)
+- Font style: Natural, organic, leafy appearance
+- Add vine-like decorations or leaf motifs around letters
+- Nature-inspired typography that feels wild and adventurous`;
+  }
+
+  // Space/Cosmic themes
+  if (desc.includes('space') || desc.includes('mars') || desc.includes('planet') || desc.includes('cosmic') || desc.includes('galaxy')) {
+    return `- Use COSMIC title colors (deep blue, purple, silver, starlight white)
+- Font style: Futuristic, sci-fi lettering
+- Add stars, planets, or sparkle effects around text
+- Space-inspired typography with a sense of wonder`;
+  }
+
+  // Ocean/Water themes
+  if (desc.includes('ocean') || desc.includes('sea') || desc.includes('water') || desc.includes('underwater')) {
+    return `- Use OCEAN title colors (deep blue, aqua, turquoise, coral)
+- Font style: Flowing, wave-like letters
+- Add water droplets, bubbles, or wave motifs
+- Aquatic-inspired typography that feels fluid`;
+  }
+
+  // Desert/Sand themes
+  if (desc.includes('desert') || desc.includes('sand') || desc.includes('kyzylkum')) {
+    return `- Use DESERT title colors (sandy gold, warm orange, sunset colors)
+- Font style: Warm, sun-baked appearance
+- Add sand texture or sun motifs
+- Desert-inspired typography with warmth`;
+  }
+
+  // Ice/Snow/Arctic themes
+  if (desc.includes('ice') || desc.includes('snow') || desc.includes('arctic') || desc.includes('north pole') || desc.includes('frozen')) {
+    return `- Use ICY title colors (ice blue, white, silver, frost)
+- Font style: Crystalline, frozen appearance
+- Add snowflakes or ice crystals around letters
+- Winter-inspired typography that feels cool and crisp`;
+  }
+
+  // Medieval/Castle/Kingdom themes
+  if (desc.includes('castle') || desc.includes('kingdom') || desc.includes('medieval') || desc.includes('knight') || desc.includes('middle ages')) {
+    return `- Use ROYAL title colors (gold, deep purple, royal blue)
+- Font style: Gothic, medieval, ornate lettering
+- Add crown or shield decorations
+- Fantasy kingdom typography with majestic feel`;
+  }
+
+  // Candy/Sweet themes
+  if (desc.includes('candy') || desc.includes('sweet') || desc.includes('cake') || desc.includes('dessert')) {
+    return `- Use SWEET title colors (pink, pastel rainbow, candy colors)
+- Font style: Playful, bubbly, sweet lettering
+- Add candy, lollipop, or sprinkle decorations
+- Delicious-looking typography that feels fun`;
+  }
+
+  // Historical/Ancient themes
+  if (desc.includes('egypt') || desc.includes('pyramid') || desc.includes('pharaoh') ||
+      desc.includes('rome') || desc.includes('greece') || desc.includes('ancient')) {
+    return `- Use ANCIENT title colors (gold, sandstone, aged bronze)
+- Font style: Classical, hieroglyphic-inspired, or ancient script
+- Add historical motifs (columns, hieroglyphs, ancient patterns)
+- Historical typography with timeless elegance`;
+  }
+
+  // Uzbek cultural themes
+  if (desc.includes('samarkand') || desc.includes('bukhara') || desc.includes('khiva') ||
+      desc.includes('silk road') || desc.includes('uzbek') || desc.includes('navruz')) {
+    return `- Use UZBEK CULTURAL colors (turquoise, gold, rich blue, ornate patterns)
+- Font style: Elegant with traditional Uzbek ornamental motifs
+- Add Islamic geometric patterns or traditional decorations
+- Cultural typography honoring Uzbek heritage`;
+  }
+
+  // Magic/Fairy themes
+  if (desc.includes('magic') || desc.includes('fairy') || desc.includes('wizard') || desc.includes('enchant')) {
+    return `- Use MAGICAL title colors (purple, sparkle gold, mystical pink)
+- Font style: Whimsical, enchanted, magical lettering
+- Add sparkles, stars, or magic wand effects
+- Fairy tale typography with wonder and magic`;
+  }
+
+  // Default: Colorful children's book style
+  return `- Use VIBRANT, COLORFUL title colors appropriate for the story theme
+- Font style: Bold, friendly, child-appropriate lettering
+- Make title playful and engaging
+- Professional children's book typography`;
+}
+
+/**
  * Get art style instructions based on illustration style
  */
 function getArtStyleInstructions(illustrationStyle?: string | null): string {
@@ -123,19 +218,74 @@ function getArtStyleInstructions(illustrationStyle?: string | null): string {
 - Professional 3D rendered children's book character
 - High-quality CGI animation style like Toy Story, Finding Nemo
 - Warm, pleasant colors with good contrast
-- Clean, polished 3D rendering with realistic lighting`,
+- Clean, polished 3D rendering with realistic lighting
+- Expressive characters with detailed textures`,
     WATERCOLOR: `SOFT WATERCOLOR illustration style
 - Gentle, flowing watercolor painting technique
 - Soft edges and artistic brushstrokes
-- Delicate colors with transparency effects`,
+- Delicate colors with transparency effects
+- Traditional watercolor paper texture
+- Dreamy, artistic children's book aesthetic`,
     PICTURE_BOOK: `CLASSIC PICTURE BOOK illustration style
 - Traditional children's book illustration
 - Hand-drawn aesthetic with professional quality
-- Rich colors and clear linework`,
+- Rich colors and clear linework
+- Timeless storybook feel
+- Similar to classic published children's books`,
+    GOUACHE: `GOUACHE PAINTING style
+- Thick, opaque paint texture
+- Rich, vibrant colors with matte finish
+- Bold brushstrokes and artistic layering
+- Traditional children's book illustration technique
+- Professional gouache painting aesthetic`,
     KAWAII: `KAWAII CUTE style
 - Adorable, chibi-style characters
 - Large eyes and small features
-- Pastel colors and soft palette`,
+- Pastel colors and soft palette
+- Super cute and charming aesthetic
+- Japanese kawaii illustration style`,
+    COMIC_BOOK: `COMIC BOOK illustration style
+- Bold, clean linework with dynamic composition
+- Vibrant colors and strong contrast
+- Action-focused illustrations
+- Comic book panel aesthetic
+- Professional comic art style`,
+    SOFT_ANIME: `SOFT ANIME/MANGA style
+- Anime-inspired illustration with gentle aesthetics
+- Large expressive eyes and clean features
+- Soft shading and delicate linework
+- Pastel or vibrant colors depending on mood
+- Professional manga/anime art style`,
+    CLAY_ANIMATION: `CLAY ANIMATION style
+- Plasticine/clay texture and appearance
+- Stop-motion animation aesthetic
+- Handcrafted, tactile look
+- Similar to Wallace & Gromit or Shaun the Sheep
+- Charming claymation character design`,
+    GEOMETRIC: `GEOMETRIC ART style
+- Simple geometric shapes and forms
+- Modern, minimalist aesthetic
+- Clean lines and bold colors
+- Abstract, stylized character design
+- Contemporary children's book illustration`,
+    BLOCK_WORLD: `BLOCK WORLD style (like Minecraft)
+- Cubic, pixelated block aesthetic
+- Voxel-based character and environment design
+- Blocky, low-poly geometric style
+- Minecraft-inspired illustration
+- Playful blocky construction look`,
+    COLLAGE: `PAPER COLLAGE style
+- Cut paper texture and layered artwork
+- Mixed media collage aesthetic
+- Visible paper edges and textures
+- Artistic, handcrafted appearance
+- Eric Carle-inspired children's book style`,
+    STICKER_ART: `STICKER ART style
+- Flat, bold colors with clean outlines
+- Sticker-like appearance with slight borders
+- Playful, modern illustration style
+- Crisp edges and simple shapes
+- Fun, contemporary children's aesthetic`,
   };
 
   return styles[illustrationStyle] || styles.ANIMATION_3D!;
@@ -157,14 +307,48 @@ export async function generateCharacterReference(
 
 CHARACTER TO CREATE: ${childName}${genderNote}
 
-CRITICAL REQUIREMENTS:
-- Match the reference photo with 100% accuracy
-- Face shape, hair color, hair style must be EXACTLY like the photo
+★★★ ABSOLUTELY CRITICAL - PHOTO MATCHING RULES ★★★
+YOU MUST MATCH THE REFERENCE PHOTO WITH 100% ACCURACY. THIS IS NON-NEGOTIABLE.
+
+★★★ FACE SHAPE - MOST CRITICAL ★★★
+STEP 1: Look at the photo and identify the EXACT face shape:
+- Is it ROUND, OVAL, SQUARE, HEART-SHAPED, LONG, or TRIANGULAR?
+
+STEP 2: Match EVERY facial proportion:
+- Face width vs height ratio (EXACTLY)
+- Chin shape: pointed, rounded, square, or soft? (CRITICAL!)
+- Jawline: sharp, soft, wide, narrow? (MUST MATCH!)
+- Cheekbone position: high, low, prominent, subtle?
+- Forehead size: wide, narrow, high, low?
+
+★★★ HAIR - ABSOLUTELY CRITICAL ★★★
+STEP 1: Identify EXACT hair color from photo:
+- Black, dark brown, medium brown, light brown, blonde, red?
+- DO NOT guess - LOOK AT THE PHOTO CAREFULLY!
+
+STEP 2: Identify EXACT hair style and texture:
+- STRAIGHT, WAVY, CURLY, or COILY?
+- Texture: fine, thick, medium?
+
+STEP 3: Match hair LENGTH precisely:
+- Where does it fall? (ears, shoulders, mid-back, waist?)
+
+STEP 4: Match hair STYLE:
+- How is it parted? Any bangs? How does it frame face?
+
+EYES, NOSE, MOUTH, SKIN TONE:
+- Match EXACTLY from photo
+- DO NOT use generic features - match THIS child's specific features
+
+ART STYLE:
 - 3D CGI cartoon style (Pixar/Disney quality)
+- Professional children's book character
 - Full body character view, standing in neutral pose
 - White or very light background
 
-The character MUST be INSTANTLY recognizable as the child in the photo.`;
+★★★ FINAL REQUIREMENT ★★★
+The character MUST be INSTANTLY recognizable as the child in the photo.
+Parents MUST immediately say "That's my child!"`;
 
   console.log(`[Character Reference] Generating character for ${childName}`);
 
@@ -185,7 +369,16 @@ The character MUST be INSTANTLY recognizable as the child in the photo.`;
         response = await callGeminiDirectly({
           model: "gemini-2.5-flash-image",
           contents: [
-            { text: prompt },
+            {
+              text: `★★★ REFERENCE PHOTO PROVIDED BELOW ★★★
+Study this child's face with EXTREME CARE. You MUST match EVERY detail.
+
+${prompt}
+
+★★★ ABSOLUTE REQUIREMENT ★★★
+This character MUST be INSTANTLY recognizable as the child in the photo.
+Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, skin tone.`
+            },
             {
               inlineData: {
                 mimeType: photoMimeType,
@@ -270,58 +463,148 @@ export async function generateIllustration(
 
   const genderNote = childGender ? ` (${childGender === "boy" ? "boy" : "girl"})` : "";
 
-  // Build prompt based on page type
-  let promptText: string;
+  // Build text instruction based on page type
+  let textInstruction: string;
 
   if (pageType === "cover") {
-    promptText = `Create a professional children's book COVER illustration.
+    textInstruction = `PROFESSIONAL BOOK COVER LAYOUT:
+★ This is the COVER of a professional children's book ★
 
-SCENE: ${sceneDescription}
-TITLE: "${storyText}"
-CHARACTER: ${childName}${genderNote}
+TITLE TEXT (MOST IMPORTANT):
+- TITLE: "${storyText}"
+- Render title text at the TOP in LARGE, BOLD lettering
+- Title styling that matches the story theme:
+${getTitleStyleInstructions(sceneDescription, storyText)}
+- Make title VERY prominent and easily readable
 
-REQUIREMENTS:
-- Professional book cover design
-- Title text at TOP in large, bold, colorful lettering
-- Character prominently featured in center/lower area
-- Vibrant, engaging background matching the story theme
-- 3D CGI cartoon style (Pixar/Disney quality)
-- Dimensions: 2400×3000 pixels (portrait)`;
+CHARACTER COMPOSITION:
+- Main character positioned prominently in center/lower area
+- Character looking happy, excited, and welcoming
+- Full body or 3/4 view of character
+
+BACKGROUND:
+- Vibrant, engaging background that hints at the story theme
+- Professional published book quality`;
   } else if (pageType === "story-background") {
-    promptText = `Create a BACKGROUND PAGE for a children's book (no character).
+    textInstruction = `BACKGROUND/ENVIRONMENT PAGE LAYOUT (RIGHT SIDE OF OPEN BOOK):
+★★★ CRITICAL - SPATIAL CONTINUATION TO THE RIGHT ★★★
 
-SCENE: ${sceneDescription}
+WHAT YOU'RE CREATING:
+- Imagine standing in the scene and looking to the RIGHT →
+- Left page (character page): What you see looking STRAIGHT ahead
+- Right page (THIS PAGE): What you see when you turn your head RIGHT →
+- When book is open: ONE WIDE PANORAMIC VIEW spanning both pages
 
-REQUIREMENTS:
-- Same environment as the character page but WITHOUT any character
-- Leave clear space in center for text overlay
-- Continuation of the scene, showing more of the environment
-- ABSOLUTELY NO text, words, or characters
-- 3D CGI style matching the character pages
-- Dimensions: 2400×3000 pixels (portrait)`;
+CRITICAL RULES:
+1. SAME EXACT environment - just the RIGHT-SIDE VIEW
+2. SAME sky, horizon line, ground level (must align horizontally)
+3. SAME lighting, colors, weather, time of day
+4. NO character, NO people - just the environment extending rightward →
+5. LARGE CLEAR SPACE in center for text overlay
+6. ABSOLUTELY NO text, words, letters, or writing`;
   } else {
-    promptText = `Create a CHARACTER PAGE illustration for a children's book.
-
-SCENE: ${sceneDescription}
-CHARACTER: ${childName}${genderNote}
-
-REQUIREMENTS:
-- Character should fill 60-70% of the frame (close-up)
-- Character's face clearly visible and expressive
+    textInstruction = `CHARACTER PAGE LAYOUT:
+★★★ CLOSE-UP CHARACTER FOCUS ★★★
+- Character should be LARGE and RECOGNIZABLE in the frame
+- CLOSE framing - character should fill 60-70% of the image
+- Character's FACE should be clearly visible and expressive
 - Character actively participating in the scene
-- ABSOLUTELY NO text or words in the illustration
-- ${getArtStyleInstructions(style)}
-- Dimensions: 2400×3000 pixels (portrait)`;
+- ABSOLUTELY NO text, words, letters, or writing
+- Background visible but character is the MAIN focus`;
   }
+
+  // Build character instructions based on available references
+  let characterInstructions: string;
+
+  if (pageType === "story-background" && previousPageUrl) {
+    characterInstructions = `★★★ CRITICAL - PANORAMIC CONTINUATION (DO NOT COPY CHARACTER) ★★★
+
+You have been provided with the CHARACTER PAGE image (LEFT side of open book).
+YOUR TASK: Create the RIGHT side that CONTINUES this scene panoramically.
+
+STEP-BY-STEP:
+1. Study the CHARACTER PAGE: What environment? What lighting? What colors?
+2. Create CONTINUATION: Show MORE of that EXACT SAME environment extending to the right
+3. REMOVE the character: Show ONLY scenery/background, NO people
+4. Leave space for text: Clear center area
+
+NOT ALLOWED:
+❌ DO NOT duplicate/copy Image 1
+❌ DO NOT just "remove the character" from Image 1
+❌ DO NOT create a different/new scene
+❌ DO NOT add the character anywhere
+
+WHAT TO DO:
+✅ Show what's PHYSICALLY TO THE RIGHT → of the character page's scene
+✅ SAME environment extending rightward
+✅ Horizon/sky/ground MUST align perfectly
+✅ NO characters, NO people - just scenery`;
+  } else if (previousPageUrl) {
+    characterInstructions = `CRITICAL - USE PREVIOUS PAGE AS REFERENCE FOR CHARACTER:
+You have been provided with the PREVIOUS PAGE image showing the EXACT character to use.
+- Study the character from the previous page carefully
+- Match EVERY detail: face, hair, body, proportions, features
+- The character MUST look IDENTICAL to how they appeared on the previous page
+- Only change: pose, expression, position in the new scene`;
+  } else if (characterReferenceUrl) {
+    characterInstructions = `★★★ CRITICAL - USE CHARACTER REFERENCE IMAGE ★★★
+You have been provided with a CHARACTER REFERENCE image showing the EXACT character to use.
+
+ABSOLUTE MATCHING REQUIREMENTS:
+- This is the MASTER CHARACTER REFERENCE - use this character EXACTLY as shown
+- Match EVERY SINGLE detail from the reference: face, hair, body, proportions
+- DO NOT modify, change, interpret, or "improve" the character in ANY way
+- The character MUST look 100% IDENTICAL in this scene
+
+★★★ FACE SHAPE MATCHING - CRITICAL ★★★
+STUDY the reference's face shape and match EXACTLY
+
+★★★ HAIR MATCHING - CRITICAL ★★★
+- EXACT hair color (Don't guess - LOOK!)
+- EXACT hair texture (Straight, wavy, curly, coily?)
+- EXACT hair length and style
+- COPY EVERY HAIR DETAIL EXACTLY!`;
+  } else {
+    characterInstructions = `★★★ CRITICAL - CHARACTER PHOTO MATCHING ★★★
+Main character: ${childName}${genderNote}
+
+YOU MUST MATCH THE REFERENCE PHOTO WITH 100% ACCURACY.
+
+★★★ FACE SHAPE - #1 PRIORITY ★★★
+Match face shape, chin, jawline, cheekbones EXACTLY from photo
+
+★★★ HAIR - #2 PRIORITY ★★★
+Match EXACT color, texture, length, style from photo
+
+FACIAL FEATURES: Match eyes, nose, mouth, skin tone EXACTLY from photo`;
+  }
+
+  const enhancedPrompt = `Professional children's book ${pageType === "cover" ? "cover" : "page"} illustration. ${sceneDescription}
+
+${characterInstructions}
+
+PROFESSIONAL BOOK QUALITY - KEEP IT SIMPLE:
+- Focus ONLY on the main character and essential scene elements
+- NO random animals unless they are part of the story scene
+- Clean, simple, uncluttered composition
+- Professional like real published children's books
+
+ART STYLE - MUST BE CONSISTENT ON EVERY PAGE:
+${getArtStyleInstructions(style)}
+
+${textInstruction}
+
+IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px).`;
 
   console.log(`[Illustration] Generating ${pageType} for page ${pageNumber}`);
 
   try {
     const contents: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [];
-    contents.push({ text: promptText });
+    contents.push({ text: enhancedPrompt });
 
     // Add reference images
     if (previousPageUrl) {
+      console.log(`[Illustration] Using previous page as reference`);
       const prevResponse = await fetch(previousPageUrl);
       const prevBuffer = await prevResponse.arrayBuffer();
       contents.push({
@@ -331,6 +614,7 @@ REQUIREMENTS:
         },
       });
     } else if (characterReferenceUrl) {
+      console.log(`[Illustration] Using character reference`);
       const charResponse = await fetch(characterReferenceUrl);
       const charBuffer = await charResponse.arrayBuffer();
       contents.push({
