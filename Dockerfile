@@ -21,7 +21,7 @@ COPY package*.json ./
 
 # Install ALL dependencies including optional (sharp needs this)
 RUN npm install --include=optional
-RUN npm rebuild sharp --arch=x64 --platform=linux --verbose
+RUN npm install --os=linux --cpu=x64 sharp
 # Copy source code (node_modules excluded via .dockerignore)
 COPY . .
 
