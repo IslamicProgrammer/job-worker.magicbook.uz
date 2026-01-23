@@ -304,10 +304,11 @@ async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
     });
 
     // Generate PDF
-    const pdfBuffer = await generateSimplePDF(input.pages, {
-      title: input.title,
-      author: `${input.childName} - MagicBook.uz`,
-    });
+    const pdfBuffer = await generateSimplePDF(
+      input.pages,
+      input.title,
+      input.childName
+    );
 
     console.log(`[PDF ${input.jobId}] Generated ${pdfBuffer.length} bytes`);
 
