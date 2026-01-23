@@ -76,3 +76,31 @@ export async function uploadBackgroundImage(
 
   return { url, key };
 }
+
+/**
+ * Upload PDF to R2
+ */
+export async function uploadPDF(
+  pdfBuffer: Buffer,
+  bookId: string,
+  format: string = "RGB"
+): Promise<{ url: string; key: string }> {
+  const timestamp = Date.now();
+  const key = `books/${bookId}/print-ready-${format.toLowerCase()}-${timestamp}.pdf`;
+
+  console.log(`[R2 Upload] Uploading PDF ${key} (${pdfBuffer.length} bytes)`);
+
+  await r2Client.send(
+    new PutObjectCommand({
+      Bucket: env.R2_BUCKET_NAME,
+      Key: key,
+      Body: pdfBuffer,
+      ContentType: "application/pdf",
+    })
+  );
+
+  const url = `${env.R2_PUBLIC_URL}/${key}`;
+  console.log(`[R2 Upload] Uploaded PDF: ${url}`);
+
+  return { url, key };
+}

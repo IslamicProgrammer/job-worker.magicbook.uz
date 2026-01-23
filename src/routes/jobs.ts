@@ -7,6 +7,8 @@ import {
   type IllustrationInput,
   type CharacterReferenceInput,
 } from "../services/illustration-generator.js";
+import { generateSimplePDF } from "../services/pdf/simple-pdf-generator.js";
+import { uploadPDF } from "../lib/r2-upload.js";
 
 const router = Router();
 
@@ -61,6 +63,21 @@ const batchJobSchema = z.object({
     sceneDescription: z.string(),
     storyText: z.string(),
     pageType: z.enum(["cover", "story-character", "story-background"]),
+  })),
+  callbackUrl: z.string().url(),
+});
+
+// Schema for PDF generation job
+const pdfGenerationSchema = z.object({
+  bookId: z.string(),
+  jobId: z.string(),
+  title: z.string(),
+  childName: z.string(),
+  pdfFormat: z.enum(["RGB", "CMYK"]).default("RGB"),
+  pages: z.array(z.object({
+    pageNumber: z.number(),
+    text: z.string(),
+    imageUrl: z.string().url(),
   })),
   callbackUrl: z.string().url(),
 });
@@ -238,6 +255,100 @@ router.post("/batch", async (req: Request, res: Response) => {
     });
   }
 });
+
+/**
+ * POST /jobs/pdf
+ * Generate PDF from page images
+ */
+router.post("/pdf", async (req: Request, res: Response) => {
+  try {
+    const input = pdfGenerationSchema.parse(req.body);
+
+    console.log(`[Job] Starting PDF generation for book ${input.bookId} (${input.pages.length} pages)`);
+
+    // Immediately return acknowledgment
+    res.json({
+      jobId: input.jobId,
+      status: "processing",
+      message: `PDF generation started for ${input.pages.length} pages`,
+    });
+
+    // Process PDF in background
+    processPdfJob(input).catch(error => {
+      console.error(`[Job] PDF job failed:`, error);
+    });
+  } catch (error) {
+    console.error("[Job] Invalid PDF request:", error);
+    res.status(400).json({
+      error: "Invalid request",
+      details: error instanceof z.ZodError ? error.errors : String(error),
+    });
+  }
+});
+
+/**
+ * Process PDF generation job
+ */
+async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
+  try {
+    console.log(`[PDF ${input.jobId}] Generating PDF with ${input.pages.length} pages...`);
+
+    // Send progress update
+    await sendCallback(input.callbackUrl, {
+      jobId: input.jobId,
+      bookId: input.bookId,
+      type: "pdf-progress",
+      status: "processing",
+      progress: 10,
+      message: "Starting PDF generation...",
+    });
+
+    // Generate PDF
+    const pdfBuffer = await generateSimplePDF(input.pages, {
+      title: input.title,
+      author: `${input.childName} - MagicBook.uz`,
+    });
+
+    console.log(`[PDF ${input.jobId}] Generated ${pdfBuffer.length} bytes`);
+
+    // Send progress update
+    await sendCallback(input.callbackUrl, {
+      jobId: input.jobId,
+      bookId: input.bookId,
+      type: "pdf-progress",
+      status: "processing",
+      progress: 80,
+      message: "Uploading PDF...",
+    });
+
+    // Upload to R2
+    const { url } = await uploadPDF(pdfBuffer, input.bookId, input.pdfFormat);
+
+    console.log(`[PDF ${input.jobId}] Uploaded to ${url}`);
+
+    // Send completion callback
+    await sendCallback(input.callbackUrl, {
+      jobId: input.jobId,
+      bookId: input.bookId,
+      type: "pdf-complete",
+      status: "completed",
+      pdfUrl: url,
+      pdfFormat: input.pdfFormat,
+    });
+
+    console.log(`[PDF ${input.jobId}] Completed successfully`);
+  } catch (error) {
+    console.error(`[PDF ${input.jobId}] Failed:`, error);
+
+    await sendCallback(input.callbackUrl, {
+      jobId: input.jobId,
+      bookId: input.bookId,
+      type: "pdf-complete",
+      status: "failed",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 
 /**
  * Process batch job (all pages sequentially)

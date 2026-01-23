@@ -32,12 +32,13 @@ app.get("/health", (req, res) => {
 app.get("/", (req, res) => {
   res.json({
     service: "MagicBook Job Worker",
-    version: "1.0.0",
+    version: "1.1.0",
     endpoints: {
       health: "GET /health",
       characterReference: "POST /jobs/character-reference",
       illustration: "POST /jobs/illustration",
       batch: "POST /jobs/batch",
+      pdf: "POST /jobs/pdf",
     },
   });
 });
