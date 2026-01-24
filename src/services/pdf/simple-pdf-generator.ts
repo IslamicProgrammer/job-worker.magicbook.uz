@@ -62,14 +62,30 @@ async function embedImage(pdfDoc: PDFDocument, imageBuffer: Buffer) {
 }
 
 /**
+ * Sanitize text for PDF rendering - remove/replace characters that can't be encoded
+ */
+function sanitizeText(text: string): string {
+  return text
+    .replace(/\r\n/g, ' ')  // Windows newlines
+    .replace(/\n/g, ' ')     // Unix newlines
+    .replace(/\r/g, ' ')     // Old Mac newlines
+    .replace(/\t/g, ' ')     // Tabs
+    .replace(/\s+/g, ' ')    // Multiple spaces to single
+    .trim();
+}
+
+/**
  * Word wrap text to fit within maxWidth
  */
 function wrapText(text: string, font: any, fontSize: number, maxWidth: number): string[] {
-  const words = text.split(' ');
+  // Sanitize text first to remove newlines and special characters
+  const cleanText = sanitizeText(text);
+  const words = cleanText.split(' ');
   const lines: string[] = [];
   let currentLine = '';
 
   for (const word of words) {
+    if (!word) continue; // Skip empty words
     const testLine = currentLine ? `${currentLine} ${word}` : word;
     const testWidth = font.widthOfTextAtSize(testLine, fontSize);
 
@@ -143,7 +159,8 @@ export async function generateSimplePDF(
 
       // Title text at bottom with background
       const titleFontSize = 28;
-      const titleWidth = helveticaBold.widthOfTextAtSize(title, titleFontSize);
+      const cleanTitle = sanitizeText(title);
+      const titleWidth = helveticaBold.widthOfTextAtSize(cleanTitle, titleFontSize);
 
       // Semi-transparent background for title
       cover.drawRectangle({
@@ -155,7 +172,7 @@ export async function generateSimplePDF(
         opacity: 0.85,
       });
 
-      cover.drawText(title, {
+      cover.drawText(cleanTitle, {
         x: (PAGE_WIDTH - titleWidth) / 2,
         y: 35,
         size: titleFontSize,
