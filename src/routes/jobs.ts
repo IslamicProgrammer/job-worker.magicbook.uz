@@ -58,12 +58,14 @@ const batchJobSchema = z.object({
   childName: z.string(),
   childGender: z.string().nullable().optional(),
   style: z.string().optional(),
-  pages: z.array(z.object({
-    pageNumber: z.number(),
-    sceneDescription: z.string(),
-    storyText: z.string(),
-    pageType: z.enum(["cover", "story-character", "story-background"]),
-  })),
+  pages: z.array(
+    z.object({
+      pageNumber: z.number(),
+      sceneDescription: z.string(),
+      storyText: z.string(),
+      pageType: z.enum(["cover", "story-character", "story-background"]),
+    }),
+  ),
   callbackUrl: z.string().url(),
 });
 
@@ -75,11 +77,13 @@ const pdfGenerationSchema = z.object({
   childName: z.string(),
   childPhotoUrl: z.string().url().optional(),
   pdfFormat: z.enum(["RGB", "CMYK"]).default("RGB"),
-  pages: z.array(z.object({
-    pageNumber: z.number(),
-    text: z.string(),
-    imageUrl: z.string().url(),
-  })),
+  pages: z.array(
+    z.object({
+      pageNumber: z.number(),
+      text: z.string(),
+      imageUrl: z.string().url(),
+    }),
+  ),
   callbackUrl: z.string().url(),
 });
 
@@ -111,7 +115,7 @@ router.post("/character-reference", async (req: Request, res: Response) => {
           childName: input.childName,
           childGender: input.childGender,
         },
-        input.bookId
+        input.bookId,
       );
 
       // Send callback to main app
@@ -158,7 +162,9 @@ router.post("/illustration", async (req: Request, res: Response) => {
   try {
     const input = illustrationSchema.parse(req.body);
 
-    console.log(`[Job] Starting illustration for book ${input.bookId} page ${input.pageNumber}`);
+    console.log(
+      `[Job] Starting illustration for book ${input.bookId} page ${input.pageNumber}`,
+    );
 
     const jobId = `illust-${input.bookId}-${input.pageNumber}-${Date.now()}`;
 
@@ -184,7 +190,7 @@ router.post("/illustration", async (req: Request, res: Response) => {
           pageType: input.pageType,
         },
         input.bookId,
-        input.pageNumber
+        input.pageNumber,
       );
 
       if (input.callbackUrl) {
@@ -232,7 +238,9 @@ router.post("/batch", async (req: Request, res: Response) => {
   try {
     const input = batchJobSchema.parse(req.body);
 
-    console.log(`[Job] Starting batch generation for book ${input.bookId} (${input.pages.length} pages)`);
+    console.log(
+      `[Job] Starting batch generation for book ${input.bookId} (${input.pages.length} pages)`,
+    );
 
     const jobId = `batch-${input.bookId}-${Date.now()}`;
 
@@ -245,7 +253,7 @@ router.post("/batch", async (req: Request, res: Response) => {
     });
 
     // Process in background
-    processBatchJob(jobId, input).catch(error => {
+    processBatchJob(jobId, input).catch((error) => {
       console.error(`[Job] Batch job failed:`, error);
     });
   } catch (error) {
@@ -265,7 +273,9 @@ router.post("/pdf", async (req: Request, res: Response) => {
   try {
     const input = pdfGenerationSchema.parse(req.body);
 
-    console.log(`[Job] Starting PDF generation for book ${input.bookId} (${input.pages.length} pages)`);
+    console.log(
+      `[Job] Starting PDF generation for book ${input.bookId} (${input.pages.length} pages)`,
+    );
 
     // Immediately return acknowledgment
     res.json({
@@ -275,7 +285,7 @@ router.post("/pdf", async (req: Request, res: Response) => {
     });
 
     // Process PDF in background
-    processPdfJob(input).catch(error => {
+    processPdfJob(input).catch((error) => {
       console.error(`[Job] PDF job failed:`, error);
     });
   } catch (error) {
@@ -292,7 +302,9 @@ router.post("/pdf", async (req: Request, res: Response) => {
  */
 async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
   try {
-    console.log(`[PDF ${input.jobId}] Generating PDF with ${input.pages.length} pages...`);
+    console.log(
+      `[PDF ${input.jobId}] Generating PDF with ${input.pages.length} pages...`,
+    );
 
     // Send progress update
     await sendCallback(input.callbackUrl, {
@@ -309,7 +321,7 @@ async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
       input.pages,
       input.title,
       input.childName,
-      input.childPhotoUrl
+      input.childPhotoUrl,
     );
 
     console.log(`[PDF ${input.jobId}] Generated ${pdfBuffer.length} bytes`);
@@ -356,7 +368,10 @@ async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
 /**
  * Process batch job (all pages sequentially)
  */
-async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSchema>) {
+async function processBatchJob(
+  jobId: string,
+  input: z.infer<typeof batchJobSchema>,
+) {
   const results: Array<{
     pageNumber: number;
     imageUrl?: string;
@@ -387,7 +402,7 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
         childName: input.childName,
         childGender: input.childGender,
       },
-      input.bookId
+      input.bookId,
     );
 
     characterReferenceUrl = charRefResult.imageUrl;
@@ -405,7 +420,9 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
       const page = input.pages[i]!;
       const progress = Math.round(((i + 1) / input.pages.length) * 100);
 
-      console.log(`[Batch ${jobId}] Step ${i + 2}: Generating page ${page.pageNumber} (${page.pageType})...`);
+      console.log(
+        `[Batch ${jobId}] Step ${i + 2}: Generating page ${page.pageNumber} (${page.pageType})...`,
+      );
 
       await sendCallback(input.callbackUrl, {
         jobId,
@@ -432,7 +449,7 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
             pageType: page.pageType,
           },
           input.bookId,
-          page.pageNumber
+          page.pageNumber,
         );
 
         // Update previous page URL for next iteration (only for character pages)
@@ -442,8 +459,10 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
 
         results.push({
           pageNumber: page.pageNumber,
-          imageUrl: page.pageType === "story-background" ? undefined : result.imageUrl,
-          backgroundUrl: page.pageType === "story-background" ? result.imageUrl : undefined,
+          imageUrl:
+            page.pageType === "story-background" ? undefined : result.imageUrl,
+          backgroundUrl:
+            page.pageType === "story-background" ? result.imageUrl : undefined,
         });
 
         // Send individual page callback
@@ -459,7 +478,10 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
           },
         });
       } catch (error) {
-        console.error(`[Batch ${jobId}] Page ${page.pageNumber} failed:`, error);
+        console.error(
+          `[Batch ${jobId}] Page ${page.pageNumber} failed:`,
+          error,
+        );
         results.push({
           pageNumber: page.pageNumber,
           error: error instanceof Error ? error.message : "Unknown error",
@@ -468,7 +490,7 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
     }
 
     // Step 3: Send final completion callback
-    const failedPages = results.filter(r => r.error);
+    const failedPages = results.filter((r) => r.error);
 
     await sendCallback(input.callbackUrl, {
       jobId,
@@ -482,7 +504,9 @@ async function processBatchJob(jobId: string, input: z.infer<typeof batchJobSche
       failedPages: failedPages.length,
     });
 
-    console.log(`[Batch ${jobId}] Completed: ${results.length - failedPages.length}/${input.pages.length} pages`);
+    console.log(
+      `[Batch ${jobId}] Completed: ${results.length - failedPages.length}/${input.pages.length} pages`,
+    );
   } catch (error) {
     console.error(`[Batch ${jobId}] Fatal error:`, error);
 
@@ -506,7 +530,7 @@ async function sendCallback(callbackUrl: string, data: Record<string, any>) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${env.MAIN_APP_SECRET}`,
+        Authorization: `Bearer ${env.MAIN_APP_SECRET}`,
       },
       body: JSON.stringify(data),
     });
