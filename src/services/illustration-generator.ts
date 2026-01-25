@@ -31,6 +31,7 @@ export interface CharacterReferenceInput {
   childPhotoUrl: string;
   childName: string;
   childGender?: string | null; // "boy" or "girl"
+  style?: string; // Illustration style (ANIMATION_3D, FANTASY_STORYBOOK, SEMI_REALISTIC, etc.)
 }
 
 /**
@@ -280,6 +281,30 @@ function getArtStyleInstructions(illustrationStyle?: string | null): string {
 - Clean, polished 3D rendering with realistic lighting
 - Expressive characters with detailed textures`;
 
+    case "FANTASY_STORYBOOK":
+      return `HAND-DRAWN FANTASY STORYBOOK illustration style
+- Whimsical, magical hand-drawn illustration with enchanting details
+- Soft, warm colors with gentle gradients and dreamy atmosphere
+- Delicate linework with artistic brushstrokes
+- Classic fairy tale book aesthetic - like illustrations in beloved storybooks
+- Child's face should be accurately drawn and recognizable
+- Gentle, friendly expressions that feel warm and inviting
+- Magical elements: soft glows, sparkles, enchanted details
+- Rich textures and intricate backgrounds
+- Traditional illustrated book quality - NOT CGI, NOT photorealistic`;
+
+    case "SEMI_REALISTIC":
+      return `SEMI-REALISTIC CARTOON illustration style
+- Child's face should closely match the reference photo with high accuracy
+- Natural, realistic facial proportions with soft, gentle stylization
+- Slightly stylized for storybook charm but recognizably the same child
+- Warm, friendly colors with natural lighting
+- Soft facial features with realistic skin tones
+- Professional quality illustration that parents would recognize their child in
+- Cozy storybook scene aesthetic - inviting and warm
+- NOT fully photorealistic, but clearly resembles the child
+- Bright, cheerful atmosphere with natural expressions`;
+
     case "WATERCOLOR":
       return `SOFT WATERCOLOR illustration style
 - Gentle, flowing watercolor painting technique
@@ -387,13 +412,16 @@ export async function generateCharacterReference(
   input: CharacterReferenceInput,
   bookId: string,
 ): Promise<IllustrationResult> {
-  const { childPhotoUrl, childName, childGender } = input;
+  const { childPhotoUrl, childName, childGender, style } = input;
 
   const genderNote = childGender
     ? ` (${childGender === "boy" ? "boy" : childGender === "girl" ? "girl" : "child"})`
     : "";
 
-  const prompt = `Create a professional 3D CGI character reference for a children's book.
+  // Get style-specific art instructions
+  const artStyleInstructions = getArtStyleInstructions(style);
+
+  const prompt = `Create a professional character reference for a children's book.
 
 CHARACTER TO CREATE: ${childName}${genderNote}
 
@@ -492,10 +520,8 @@ OVERALL APPEARANCE:
 - DO NOT create a "generic cute child" - create THIS SPECIFIC CHILD
 
 ART STYLE:
-- 3D CGI cartoon style (Pixar/Disney quality)
-- Professional children's book character
-- High-quality rendered look
-- Maintain photo accuracy while using 3D CGI style
+${artStyleInstructions}
+- Maintain photo accuracy while applying the art style
 
 CHARACTER POSE:
 - Full body character view

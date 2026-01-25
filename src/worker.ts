@@ -181,6 +181,7 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
       childPhotoUrl: childInput.photoUrl,
       childName: childInput.name,
       childGender: childInput.gender,
+      style: book.illustrationStyle ?? "ANIMATION_3D",
     },
     book.id
   );
