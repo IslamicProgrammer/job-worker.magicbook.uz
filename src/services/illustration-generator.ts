@@ -6,36 +6,40 @@ import { uploadPageImage, uploadBackgroundImage } from "../lib/r2-upload.js";
 // Single page = 8" wide × 10" tall at 300 DPI for print quality
 const IMAGE_WIDTH = 2400;  // 8 inches × 300 DPI
 const IMAGE_HEIGHT = 3000; // 10 inches × 300 DPI
+// Aspect ratio: 4:5 (0.8:1) - standard portrait book page
 
 export interface IllustrationInput {
   sceneDescription: string;
-  storyText: string;
+  storyText: string; // Cover: title text rendered by AI; Story pages: used for PDF overlay only
   childPhotoUrl: string;
   childName: string;
-  childGender?: string | null;
-  characterReferenceUrl?: string;
-  previousPageUrl?: string;
+  childGender?: string | null; // "boy" or "girl"
+  characterReferenceUrl?: string; // Character reference image (generated first, ensures consistency)
+  previousPageUrl?: string; // Previous page URL for sequential consistency
   style?: string;
-  pageType?: "cover" | "story-character" | "story-background";
-  seed?: number;
+  pageType?: "cover" | "story-character" | "story-background"; // cover: single cover page, story-character: odd pages with character, story-background: even pages background only
+  seed?: number; // Fixed seed for style consistency across all pages
+  coverImageUrl?: string; // DEPRECATED: use characterReferenceUrl instead
 }
 
 export interface IllustrationResult {
-  imageUrl: string;
+  imageUrl: string; // R2 URL of uploaded image
   status: "succeeded" | "failed";
 }
 
 export interface CharacterReferenceInput {
   childPhotoUrl: string;
   childName: string;
-  childGender?: string | null;
+  childGender?: string | null; // "boy" or "girl"
 }
 
 /**
  * Clean JSON string by removing/escaping control characters
+ * Control characters (0x00-0x1F) can break JSON parsing
  */
 function cleanJsonString(str: string): string {
   return str.replace(/[\x00-\x1F\x7F]/g, (char) => {
+    // Map common control characters to escaped versions
     const escapeMap: Record<string, string> = {
       '\n': '\\n',
       '\r': '\\r',
@@ -43,7 +47,7 @@ function cleanJsonString(str: string): string {
       '\b': '\\b',
       '\f': '\\f',
     };
-    return escapeMap[char] ?? '';
+    return escapeMap[char] ?? ''; // Remove other control chars
   });
 }
 
@@ -69,6 +73,7 @@ function extractImageFromResponse(rawText: string): string | null {
 
 /**
  * Call Gemini API directly with manual JSON sanitization
+ * Bypasses SDK's JSON parser to handle control character issues
  */
 async function callGeminiDirectly(params: {
   model: string;
@@ -79,6 +84,7 @@ async function callGeminiDirectly(params: {
 }): Promise<any> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${params.model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
+  // Build request body
   const requestBody = {
     contents: [
       {
@@ -109,12 +115,17 @@ async function callGeminiDirectly(params: {
     throw new Error(`Gemini API error (${response.status}): ${errorText}`);
   }
 
+  // Get raw response text
   const rawText = await response.text();
 
+  // Try to parse JSON
   try {
+    // First try: parse raw response directly (don't clean the outer JSON structure)
     return JSON.parse(rawText);
   } catch (firstError) {
     console.error('[Gemini Direct] First parse attempt failed:', firstError);
+
+    // Second try: clean control characters and parse again
     const cleanedText = cleanJsonString(rawText);
 
     try {
@@ -146,6 +157,7 @@ async function callGeminiDirectly(params: {
       console.error('[Gemini Direct] All parse attempts failed');
       console.error('[Gemini Direct] Response length:', rawText.length);
       console.error('[Gemini Direct] Response sample:', rawText.substring(0, 500));
+
       throw new Error(`Failed to parse Gemini response: ${secondError instanceof Error ? secondError.message : String(secondError)}`);
     }
   }
@@ -156,6 +168,7 @@ async function callGeminiDirectly(params: {
  */
 function getTitleStyleInstructions(sceneDescription: string, storyText: string): string {
   const desc = sceneDescription.toLowerCase();
+  const title = storyText.toLowerCase();
 
   // Jungle/Forest themes
   if (desc.includes('jungle') || desc.includes('forest') || desc.includes('tree')) {
@@ -213,7 +226,7 @@ function getTitleStyleInstructions(sceneDescription: string, storyText: string):
 - Delicious-looking typography that feels fun`;
   }
 
-  // Historical/Ancient themes
+  // Historical/Ancient themes (Egypt, Rome, Greece)
   if (desc.includes('egypt') || desc.includes('pyramid') || desc.includes('pharaoh') ||
       desc.includes('rome') || desc.includes('greece') || desc.includes('ancient')) {
     return `- Use ANCIENT title colors (gold, sandstone, aged bronze)
@@ -258,92 +271,124 @@ function getArtStyleInstructions(illustrationStyle?: string | null): string {
 - Clean, polished 3D rendering`;
   }
 
-  const styles: Record<string, string> = {
-    ANIMATION_3D: `3D CGI CARTOON style (Pixar/Disney quality)
+  switch (illustrationStyle) {
+    case "ANIMATION_3D":
+      return `3D CGI CARTOON style (Pixar/Disney quality)
 - Professional 3D rendered children's book character
 - High-quality CGI animation style like Toy Story, Finding Nemo
 - Warm, pleasant colors with good contrast
 - Clean, polished 3D rendering with realistic lighting
-- Expressive characters with detailed textures`,
-    WATERCOLOR: `SOFT WATERCOLOR illustration style
+- Expressive characters with detailed textures`;
+
+    case "WATERCOLOR":
+      return `SOFT WATERCOLOR illustration style
 - Gentle, flowing watercolor painting technique
 - Soft edges and artistic brushstrokes
 - Delicate colors with transparency effects
 - Traditional watercolor paper texture
-- Dreamy, artistic children's book aesthetic`,
-    PICTURE_BOOK: `CLASSIC PICTURE BOOK illustration style
+- Dreamy, artistic children's book aesthetic`;
+
+    case "PICTURE_BOOK":
+      return `CLASSIC PICTURE BOOK illustration style
 - Traditional children's book illustration
 - Hand-drawn aesthetic with professional quality
 - Rich colors and clear linework
 - Timeless storybook feel
-- Similar to classic published children's books`,
-    GOUACHE: `GOUACHE PAINTING style
+- Similar to classic published children's books`;
+
+    case "GOUACHE":
+      return `GOUACHE PAINTING style
 - Thick, opaque paint texture
 - Rich, vibrant colors with matte finish
 - Bold brushstrokes and artistic layering
 - Traditional children's book illustration technique
-- Professional gouache painting aesthetic`,
-    KAWAII: `KAWAII CUTE style
+- Professional gouache painting aesthetic`;
+
+    case "KAWAII":
+      return `KAWAII CUTE style
 - Adorable, chibi-style characters
 - Large eyes and small features
 - Pastel colors and soft palette
 - Super cute and charming aesthetic
-- Japanese kawaii illustration style`,
-    COMIC_BOOK: `COMIC BOOK illustration style
+- Japanese kawaii illustration style`;
+
+    case "COMIC_BOOK":
+      return `COMIC BOOK illustration style
 - Bold, clean linework with dynamic composition
 - Vibrant colors and strong contrast
 - Action-focused illustrations
 - Comic book panel aesthetic
-- Professional comic art style`,
-    SOFT_ANIME: `SOFT ANIME/MANGA style
+- Professional comic art style`;
+
+    case "SOFT_ANIME":
+      return `SOFT ANIME/MANGA style
 - Anime-inspired illustration with gentle aesthetics
 - Large expressive eyes and clean features
 - Soft shading and delicate linework
 - Pastel or vibrant colors depending on mood
-- Professional manga/anime art style`,
-    CLAY_ANIMATION: `CLAY ANIMATION style
+- Professional manga/anime art style`;
+
+    case "CLAY_ANIMATION":
+      return `CLAY ANIMATION style
 - Plasticine/clay texture and appearance
 - Stop-motion animation aesthetic
 - Handcrafted, tactile look
 - Similar to Wallace & Gromit or Shaun the Sheep
-- Charming claymation character design`,
-    GEOMETRIC: `GEOMETRIC ART style
+- Charming claymation character design`;
+
+    case "GEOMETRIC":
+      return `GEOMETRIC ART style
 - Simple geometric shapes and forms
 - Modern, minimalist aesthetic
 - Clean lines and bold colors
 - Abstract, stylized character design
-- Contemporary children's book illustration`,
-    BLOCK_WORLD: `BLOCK WORLD style (like Minecraft)
+- Contemporary children's book illustration`;
+
+    case "BLOCK_WORLD":
+      return `BLOCK WORLD style (like Minecraft)
 - Cubic, pixelated block aesthetic
 - Voxel-based character and environment design
 - Blocky, low-poly geometric style
 - Minecraft-inspired illustration
-- Playful blocky construction look`,
-    COLLAGE: `PAPER COLLAGE style
+- Playful blocky construction look`;
+
+    case "COLLAGE":
+      return `PAPER COLLAGE style
 - Cut paper texture and layered artwork
 - Mixed media collage aesthetic
 - Visible paper edges and textures
 - Artistic, handcrafted appearance
-- Eric Carle-inspired children's book style`,
-    STICKER_ART: `STICKER ART style
+- Eric Carle-inspired children's book style`;
+
+    case "STICKER_ART":
+      return `STICKER ART style
 - Flat, bold colors with clean outlines
 - Sticker-like appearance with slight borders
 - Playful, modern illustration style
 - Crisp edges and simple shapes
-- Fun, contemporary children's aesthetic`,
-  };
+- Fun, contemporary children's aesthetic`;
 
-  return styles[illustrationStyle] || styles.ANIMATION_3D!;
+    default:
+      // Default to 3D animation if unrecognized style
+      return `3D CGI CARTOON style (Pixar/Disney quality)
+- Professional 3D rendered children's book character
+- High-quality CGI animation style
+- Warm, pleasant colors with good contrast
+- Clean, polished 3D rendering`;
+  }
 }
 
 /**
  * Generate character reference image from child photo
+ * This creates a consistent 3D CGI character that will be used across all pages
+ * Phase 1 of character-first generation approach
  */
 export async function generateCharacterReference(
   input: CharacterReferenceInput,
   bookId: string,
 ): Promise<IllustrationResult> {
   const { childPhotoUrl, childName, childGender } = input;
+
   const genderNote = childGender
     ? ` (${childGender === "boy" ? "boy" : childGender === "girl" ? "girl" : "child"})`
     : "";
@@ -354,55 +399,130 @@ CHARACTER TO CREATE: ${childName}${genderNote}
 
 ★★★ ABSOLUTELY CRITICAL - PHOTO MATCHING RULES ★★★
 YOU MUST MATCH THE REFERENCE PHOTO WITH 100% ACCURACY. THIS IS NON-NEGOTIABLE.
+SPEND SIGNIFICANT TIME STUDYING THE PHOTO BEFORE GENERATING!
 
 ★★★ FACE SHAPE - MOST CRITICAL ★★★
+THIS IS THE #1 PRIORITY - FACE SHAPE MUST BE PERFECT!
 STEP 1: Look at the photo and identify the EXACT face shape:
-- Is it ROUND, OVAL, SQUARE, HEART-SHAPED, LONG, or TRIANGULAR?
+- Is it ROUND (cheeks wider, soft curves)?
+- Is it OVAL (balanced proportions, gently curved)?
+- Is it SQUARE (angular jaw, strong features)?
+- Is it HEART-SHAPED (wider forehead, pointed chin)?
+- Is it LONG (elongated proportions)?
+- Is it TRIANGULAR (wider jaw, narrower forehead)?
 
 STEP 2: Match EVERY facial proportion:
-- Face width vs height ratio (EXACTLY)
+- Face width vs height ratio (measure and match EXACTLY)
 - Chin shape: pointed, rounded, square, or soft? (CRITICAL!)
 - Jawline: sharp, soft, wide, narrow? (MUST MATCH!)
-- Cheekbone position: high, low, prominent, subtle?
-- Forehead size: wide, narrow, high, low?
+- Cheekbone position: high, low, prominent, subtle? (EXACT!)
+- Forehead size: wide, narrow, high, low? (MATCH EXACTLY!)
+- Face symmetry and unique features (COPY PRECISELY!)
+
+STEP 3: Verify face shape match:
+- Does the 3D character's face outline match the photo when overlaid?
+- Are the proportions IDENTICAL?
+- Would parents say "That's my child's face shape!" immediately?
+- If NO to any question, START OVER and match more carefully!
 
 ★★★ HAIR - ABSOLUTELY CRITICAL ★★★
+HAIR IS THE #2 MOST NOTICEABLE FEATURE - MUST BE PERFECT!
+
 STEP 1: Identify EXACT hair color from photo:
 - Black, dark brown, medium brown, light brown, blonde, red?
+- What EXACT shade? (dark black, soft brown, golden blonde, etc.)
+- Any highlights or color variations?
 - DO NOT guess - LOOK AT THE PHOTO CAREFULLY!
+- DO NOT make hair lighter or darker - EXACT MATCH ONLY!
 
 STEP 2: Identify EXACT hair style and texture:
 - STRAIGHT, WAVY, CURLY, or COILY?
+- How curly? (loose waves, tight curls, kinky coils?)
 - Texture: fine, thick, medium?
+- Volume: flat, voluminous, medium?
+- COPY THE EXACT TEXTURE from photo!
 
 STEP 3: Match hair LENGTH precisely:
+- Shoulder-length, long, short, bob, pixie cut?
 - Where does it fall? (ears, shoulders, mid-back, waist?)
+- Measure the length in the photo - MATCH IT EXACTLY!
 
 STEP 4: Match hair STYLE:
-- How is it parted? Any bangs? How does it frame face?
+- How is it parted? (center, side, no part?)
+- Does it cover forehead or show forehead?
+- How does it frame the face? (behind ears, covering ears, over face?)
+- Any bangs/fringe? (straight across, side-swept, none?)
+- Any specific style features? (ponytail, braids, etc.)
+- HAIRLINE shape: rounded, straight, widow's peak, receding?
 
-EYES, NOSE, MOUTH, SKIN TONE:
-- Match EXACTLY from photo
-- DO NOT use generic features - match THIS child's specific features
+STEP 5: Verify hair match:
+- Color: EXACT SAME shade as photo?
+- Style: EXACT SAME as photo?
+- Length: EXACT SAME as photo?
+- Texture: EXACT SAME as photo?
+- If NO to any question, FIX IT BEFORE GENERATING!
+
+EYES (CRITICAL):
+- Match the EXACT eye shape: almond, round, wide-set, close-set
+- Match the EXACT eye color visible in photo
+- Match the EXACT eyebrow shape and position
+- Match the EXACT distance between eyes
+- Eyes MUST look exactly like the child's eyes in the photo
+
+NOSE (CRITICAL):
+- Match the EXACT nose shape and size from photo
+- Match the EXACT nose bridge width
+- Match the EXACT nostril shape
+- DO NOT use generic nose - match THIS child's specific nose
+
+MOUTH (CRITICAL):
+- Match the EXACT lip shape and size from photo
+- Match the EXACT mouth width
+- Match the EXACT smile style if visible in photo
+
+SKIN TONE (CRITICAL):
+- Match the EXACT skin color from the photo
+- DO NOT lighten or darken - match it PRECISELY
+- Match any visible skin characteristics
+
+OVERALL APPEARANCE:
+- The character MUST be INSTANTLY recognizable as this specific child
+- Parents MUST immediately say "That's my child!"
+- Every facial feature MUST match the photo EXACTLY
+- DO NOT create a "generic cute child" - create THIS SPECIFIC CHILD
 
 ART STYLE:
 - 3D CGI cartoon style (Pixar/Disney quality)
 - Professional children's book character
-- Full body character view, standing in neutral pose
+- High-quality rendered look
+- Maintain photo accuracy while using 3D CGI style
+
+CHARACTER POSE:
+- Full body character view
+- Standing in neutral, friendly pose
+- Facing forward, slight smile
 - White or very light background
 
 ★★★ FINAL REQUIREMENT ★★★
-The character MUST be INSTANTLY recognizable as the child in the photo.
-Parents MUST immediately say "That's my child!"`;
+Before generating, ask yourself: "Does this character look EXACTLY like the child in the photo?"
+If the answer is not "YES, EXACTLY", start over and match the photo more carefully.
+Hair color, face shape, and facial features MUST be IDENTICAL to the reference photo.`;
 
   console.log(`[Character Reference] Generating character for ${childName}`);
 
   try {
+    // Fetch child photo and convert to base64
     const photoResponse = await fetch(childPhotoUrl);
     const photoBuffer = await photoResponse.arrayBuffer();
     const photoBase64 = Buffer.from(photoBuffer).toString("base64");
-    const photoMimeType = childPhotoUrl.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg';
 
+    const photoMimeType = childPhotoUrl.toLowerCase().includes('.png')
+      ? 'image/png'
+      : 'image/jpeg';
+
+    console.log(`[Character Reference] Using photo as reference (${photoMimeType})`);
+
+    // Generate character reference with Gemini (with retry logic + direct API)
     let response;
     let lastError: Error | null = null;
     const MAX_RETRIES = 3;
@@ -411,6 +531,7 @@ Parents MUST immediately say "That's my child!"`;
       try {
         console.log(`[Character Reference] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
+        // Use direct API call with JSON sanitization
         response = await callGeminiDirectly({
           model: "gemini-2.5-flash-image",
           contents: [
@@ -422,7 +543,9 @@ ${prompt}
 
 ★★★ ABSOLUTE REQUIREMENT ★★★
 This character MUST be INSTANTLY recognizable as the child in the photo.
-Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, skin tone.`
+Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, skin tone.
+DO NOT create a generic character - create THIS SPECIFIC CHILD from the photo.
+Parents must look at this and immediately recognize their child.`,
             },
             {
               inlineData: {
@@ -432,29 +555,52 @@ Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, ski
             },
           ],
         });
+
+        // Success - break out of retry loop
         break;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        console.error(`[Character Reference] Attempt ${attempt + 1} failed:`, lastError.message);
+        console.error(`[Character Reference] Gemini API attempt ${attempt + 1} failed:`, lastError.message);
 
+        // If this is a JSON parsing error, log more details
+        if (lastError.message.includes('parse') || lastError.message.includes('JSON')) {
+          console.error(`[Character Reference] JSON parsing error detected`);
+        }
+
+        // If this is the last attempt, throw the error
         if (attempt === MAX_RETRIES - 1) {
           throw new Error(`Gemini API failed after ${MAX_RETRIES} attempts: ${lastError.message}`);
         }
 
+        // Wait before retrying (exponential backoff)
         const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
+        console.log(`[Character Reference] Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
 
-    if (!response?.candidates?.[0]?.content?.parts) {
-      throw new Error("No valid response from Gemini");
+    if (!response) {
+      throw new Error(`Failed to get response from Gemini after ${MAX_RETRIES} attempts`);
+    }
+
+    // Extract image from response (direct API format)
+    if (!response.candidates || response.candidates.length === 0) {
+      throw new Error("No candidates in Gemini response");
+    }
+
+    const candidate = response.candidates[0];
+    if (!candidate?.content?.parts) {
+      throw new Error("No candidate data in Gemini response");
     }
 
     let imageBuffer: Buffer | null = null;
-    for (const part of response.candidates[0].content.parts) {
+
+    // Direct API uses snake_case: inline_data instead of inlineData
+    for (const part of candidate.content.parts) {
       const inlineData = part.inline_data || part.inlineData;
       if (inlineData?.data) {
         imageBuffer = Buffer.from(inlineData.data, "base64");
+        console.log(`[Character Reference] Image generated (${imageBuffer.length} bytes)`);
         break;
       }
     }
@@ -463,19 +609,31 @@ Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, ski
       throw new Error("No image data in Gemini response");
     }
 
-    // Resize to exact dimensions
+    // Resize to exact dimensions (8" × 10" portrait at 300 DPI)
+    const CHAR_REF_WIDTH = 2400;
+    const CHAR_REF_HEIGHT = 3000;
+    console.log(`[Character Reference] Resizing to ${CHAR_REF_WIDTH}x${CHAR_REF_HEIGHT}...`);
     const resizedImageBuffer = await sharp(imageBuffer)
-      .resize(IMAGE_WIDTH, IMAGE_HEIGHT, {
-        fit: "contain",
+      .resize(CHAR_REF_WIDTH, CHAR_REF_HEIGHT, {
+        fit: "contain", // Keep character proportions, add padding if needed
         position: "center",
-        background: { r: 255, g: 255, b: 255, alpha: 1 },
+        background: { r: 255, g: 255, b: 255, alpha: 1 }, // White background
       })
       .jpeg({ quality: 95 })
       .toBuffer();
 
-    const { url: r2Url } = await uploadPageImage(resizedImageBuffer, bookId, -1, "image/jpeg");
+    console.log(`[Character Reference] Image resized: ${resizedImageBuffer.length} bytes`);
 
-    console.log(`[Character Reference] Created: ${r2Url}`);
+    // Upload to R2 as "character-reference" (page -1)
+    console.log(`[Character Reference] Uploading to R2...`);
+    const { url: r2Url } = await uploadPageImage(
+      resizedImageBuffer,
+      bookId,
+      -1, // Special page number for character reference
+      "image/jpeg",
+    );
+
+    console.log(`[Character Reference] Character reference created: ${r2Url}`);
 
     return {
       imageUrl: r2Url,
@@ -483,12 +641,21 @@ Match the EXACT: face shape, hair color, hair style, eye shape, nose, mouth, ski
     };
   } catch (error) {
     console.error("[Character Reference] Error:", error);
-    throw error;
+
+    if (error instanceof Error) {
+      throw new Error(`Character reference generation failed: ${error.message}`);
+    }
+
+    throw new Error("Unknown error occurred while generating character reference");
   }
 }
 
 /**
- * Generate illustration using Gemini
+ * Generate illustration using Gemini 2.5 Flash Image (FREE for testing!)
+ * Synchronous generation - no webhooks/polling needed
+ * Cover page: AI generates artistic title text as part of the illustration
+ * Story pages: Illustration only (text overlaid in PDF for perfect spelling)
+ * Feature 006: Hybrid approach - artistic AI covers + perfect text overlay on story pages
  */
 export async function generateIllustration(
   input: IllustrationInput,
@@ -506,13 +673,12 @@ export async function generateIllustration(
     style,
   } = input;
 
-  const genderNote = childGender ? ` (${childGender === "boy" ? "boy" : "girl"})` : "";
+  const genderNote = childGender ? ` (${childGender === "boy" ? "boy" : childGender === "girl" ? "girl" : "child"})` : "";
 
-  // Build text instruction based on page type
-  let textInstruction: string;
-
-  if (pageType === "cover") {
-    textInstruction = `PROFESSIONAL BOOK COVER LAYOUT:
+  // Individual portrait page layout based on page type
+  const textInstruction =
+    pageType === "cover"
+      ? `PROFESSIONAL BOOK COVER LAYOUT:
 ★ This is the COVER of a professional children's book ★
 
 TITLE TEXT (MOST IMPORTANT):
@@ -521,108 +687,276 @@ TITLE TEXT (MOST IMPORTANT):
 - Title styling that matches the story theme:
 ${getTitleStyleInstructions(sceneDescription, storyText)}
 - Make title VERY prominent and easily readable
+- Add subtle shadows/outlines to make text pop
+- Title should be the FIRST thing people notice
 
 CHARACTER COMPOSITION:
 - Main character positioned prominently in center/lower area
 - Character looking happy, excited, and welcoming
+- Character should be facing slightly toward viewer
 - Full body or 3/4 view of character
 
 BACKGROUND:
 - Vibrant, engaging background that hints at the story theme
-- Professional published book quality`;
-  } else if (pageType === "story-background") {
-    textInstruction = `BACKGROUND/ENVIRONMENT PAGE LAYOUT (RIGHT SIDE OF OPEN BOOK):
+- Colors should be bright and eye-catching
+- Professional published book quality
+- Clean, not too cluttered
+- Should appeal to children and parents
+
+OVERALL DESIGN:
+- This should look like a real published children's book cover
+- Professional, polished, high-quality illustration
+- Warm, inviting, magical feeling
+- Perfect for bookstore display`
+      : pageType === "story-character"
+      ? `CHARACTER PAGE LAYOUT (Page 1 - LEFT):
+★★★ CLOSE-UP CHARACTER FOCUS ★★★
+- Character should be LARGE and RECOGNIZABLE in the frame
+- CLOSE framing - character should fill 60-70% of the image
+- Character's FACE should be clearly visible and expressive
+- Show character from waist-up or full body, but CLOSE enough to see facial features
+- Character actively participating in the scene
+- ABSOLUTELY NO text, words, letters, or writing
+- Professional children's book illustration with emphasis on character
+- Background visible but character is the MAIN focus`
+      : `BACKGROUND/ENVIRONMENT PAGE LAYOUT (Page 2 - RIGHT SIDE OF OPEN BOOK):
 ★★★ CRITICAL - SPATIAL CONTINUATION TO THE RIGHT ★★★
 
 WHAT YOU'RE CREATING:
 - Imagine standing in the scene and looking to the RIGHT →
-- Left page (character page): What you see looking STRAIGHT ahead
+- Left page: What you see looking STRAIGHT ahead (with character)
 - Right page (THIS PAGE): What you see when you turn your head RIGHT →
 - When book is open: ONE WIDE PANORAMIC VIEW spanning both pages
+
+SPATIAL THINKING:
+- If character is standing in a forest on left page:
+  → Left: Shows trees in FRONT of character (left side of panorama)
+  → Right (THIS PAGE): Shows MORE forest extending to the RIGHT (right side of panorama)
+- If character is on a beach on left page:
+  → Left: Beach scene with character (left portion)
+  → Right (THIS PAGE): MORE beach/ocean continuing to the RIGHT
+- The horizon line, sky, ground MUST align when pages are side-by-side
 
 CRITICAL RULES:
 1. SAME EXACT environment - just the RIGHT-SIDE VIEW
 2. SAME sky, horizon line, ground level (must align horizontally)
 3. SAME lighting, colors, weather, time of day
-4. NO character, NO people - just the environment extending rightward →
-5. LARGE CLEAR SPACE in center for text overlay
-6. ABSOLUTELY NO text, words, letters, or writing`;
-  } else {
-    textInstruction = `CHARACTER PAGE LAYOUT:
-★★★ CLOSE-UP CHARACTER FOCUS ★★★
-- Character should be LARGE and RECOGNIZABLE in the frame
-- CLOSE framing - character should fill 60-70% of the image
-- Character's FACE should be clearly visible and expressive
-- Character actively participating in the scene
-- ABSOLUTELY NO text, words, letters, or writing
-- Background visible but character is the MAIN focus`;
-  }
+4. Elements that were visible on the LEFT edge of character page → continue on RIGHT edge of this page
+5. NO character, NO people - just the environment extending rightward →
+6. LARGE CLEAR SPACE in center for text (especially middle area)
 
-  // Build character instructions based on available references
-  let characterInstructions: string;
+VISUAL ALIGNMENT:
+- Top of page: Sky/ceiling continues from left page
+- Middle: Main environment extends rightward
+- Bottom: Ground/floor continues from left page
+- Think: Camera panned RIGHT from character page
 
-  if (pageType === "story-background" && previousPageUrl) {
-    characterInstructions = `★★★ CRITICAL - PANORAMIC CONTINUATION (DO NOT COPY CHARACTER) ★★★
+ABSOLUTELY NO text, words, letters, or writing - text will be overlaid in PDF`;
+
+  const compositionRule =
+    pageType === "cover"
+      ? `COVER PAGE COMPOSITION:
+- Image dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- Single portrait cover page
+- Character prominently featured
+- Title text at top (rendered by AI)
+- Professional book cover design`
+      : pageType === "story-character"
+      ? `CHARACTER PAGE COMPOSITION:
+- Image dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- Single PORTRAIT page for children's book
+- CLOSE-UP CHARACTER SHOT: Character fills 60-70% of frame
+- Character's face MUST be clearly visible and recognizable
+- Camera positioned CLOSE to character (like a portrait)
+- Character in action, showing emotion and personality
+- Background provides context but doesn't dominate
+- Professional children's book page quality
+- NO text or words in illustration`
+      : `BACKGROUND PAGE COMPOSITION:
+- Image dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- Single PORTRAIT page for children's book
+- SAME SCENE as character page but empty
+- Recreate the SAME environment/setting
+- Leave clear space in middle for text overlay
+- Think: character walked away, scene remains
+- Professional children's book background`;
+
+  const characterInstructions =
+    pageType === "story-background" && previousPageUrl
+      ? `★★★ CRITICAL - PANORAMIC CONTINUATION (DO NOT COPY CHARACTER) ★★★
 
 You have been provided with the CHARACTER PAGE image (LEFT side of open book).
 YOUR TASK: Create the RIGHT side that CONTINUES this scene panoramically.
 
-STEP-BY-STEP:
-1. Study the CHARACTER PAGE: What environment? What lighting? What colors?
-2. Create CONTINUATION: Show MORE of that EXACT SAME environment extending to the right
-3. REMOVE the character: Show ONLY scenery/background, NO people
-4. Leave space for text: Clear center area
+⚠️ THINK: SPLIT PANORAMA ⚠️
+Imagine taking a WIDE PANORAMIC PHOTO and splitting it down the middle:
+- LEFT HALF (provided image): Character in environment
+- RIGHT HALF (YOUR TASK): SAME environment continuing, NO character
 
-NOT ALLOWED:
-❌ DO NOT duplicate/copy Image 1
-❌ DO NOT just "remove the character" from Image 1
-❌ DO NOT create a different/new scene
-❌ DO NOT add the character anywhere
+STEP-BY-STEP INSTRUCTIONS:
+1. Study the CHARACTER PAGE carefully:
+   - What environment is it? (forest, beach, room, street, etc.)
+   - What's the lighting? (sunny, cloudy, indoor, time of day)
+   - What's the color palette?
+   - What's the artistic style?
 
-WHAT TO DO:
-✅ Show what's PHYSICALLY TO THE RIGHT → of the character page's scene
-✅ SAME environment extending rightward
-✅ Horizon/sky/ground MUST align perfectly
-✅ NO characters, NO people - just scenery`;
-  } else if (previousPageUrl) {
-    characterInstructions = `CRITICAL - USE PREVIOUS PAGE AS REFERENCE FOR CHARACTER:
+2. Create the CONTINUATION:
+   - Show MORE of that EXACT SAME environment extending to the right
+   - SAME sky, SAME ground, SAME weather, SAME lighting
+   - If there are trees on left → show MORE trees continuing right
+   - If there's a building on left → show MORE of building/street right
+   - If there's ocean on left → show MORE ocean continuing right
+   - The scene MUST look CONNECTED when pages are side-by-side
+
+3. REMOVE the character:
+   - Show ONLY the environment/scenery/background
+   - NO people, NO children, NO characters AT ALL
+   - Like the character walked out of frame
+
+4. Leave space for text:
+   - Clear, uncluttered center area for text overlay
+
+WHAT SUCCESS LOOKS LIKE:
+When someone opens the book, they see ONE CONTINUOUS WIDE SCENE across both pages.
+Left + Right = Seamless panoramic view of the same location.
+
+FINAL OUTPUT:
+- Environment continuation (right side of panorama)
+- SAME location, SAME lighting, SAME style as left page
+- NO character visible
+- Professional children's book background illustration`
+      : previousPageUrl
+      ? `CRITICAL - USE PREVIOUS PAGE AS REFERENCE FOR CHARACTER:
 You have been provided with the PREVIOUS PAGE image showing the EXACT character to use.
 - Study the character from the previous page carefully
-- Match EVERY detail: face, hair, body, proportions, features
+- Match EVERY detail from the previous page: face, hair, body, proportions, features
 - The character MUST look IDENTICAL to how they appeared on the previous page
-- Only change: pose, expression, position in the new scene`;
-  } else if (characterReferenceUrl) {
-    characterInstructions = `★★★ CRITICAL - USE CHARACTER REFERENCE IMAGE ★★★
+- Keep consistent: face, hair style, hair color, body type, all features
+- Only change: pose, expression, position in the new scene
+- Maintain visual continuity - this is the SAME character, just a new scene`
+      : characterReferenceUrl
+      ? `★★★ CRITICAL - USE CHARACTER REFERENCE IMAGE ★★★
 You have been provided with a CHARACTER REFERENCE image showing the EXACT character to use.
+STUDY THE REFERENCE IMAGE VERY CAREFULLY BEFORE GENERATING!
 
 ABSOLUTE MATCHING REQUIREMENTS:
 - This is the MASTER CHARACTER REFERENCE - use this character EXACTLY as shown
-- Match EVERY SINGLE detail from the reference: face, hair, body, proportions
+- Match EVERY SINGLE detail from the reference: face, hair, body, proportions, features
 - DO NOT modify, change, interpret, or "improve" the character in ANY way
 - The character MUST look 100% IDENTICAL in this scene
 
 ★★★ FACE SHAPE MATCHING - CRITICAL ★★★
-STUDY the reference's face shape and match EXACTLY
+STUDY the reference's face shape:
+- What is the face shape? (round, oval, square, heart, long, triangular)
+- What is the chin shape? (pointed, rounded, square, soft)
+- What is the jawline? (sharp, soft, wide, narrow)
+- What are the cheekbones like? (high, low, prominent, subtle)
+- MATCH EVERY PROPORTION EXACTLY in your generation!
 
 ★★★ HAIR MATCHING - CRITICAL ★★★
-- EXACT hair color (Don't guess - LOOK!)
-- EXACT hair texture (Straight, wavy, curly, coily?)
-- EXACT hair length and style
-- COPY EVERY HAIR DETAIL EXACTLY!`;
-  } else {
-    characterInstructions = `★★★ CRITICAL - CHARACTER PHOTO MATCHING ★★★
+STUDY the reference's hair carefully:
+- EXACT hair color: What shade? (Don't guess - LOOK!)
+- EXACT hair texture: Straight, wavy, curly, coily?
+- EXACT hair length: Where does it fall?
+- EXACT hair style: How is it parted? Any bangs? How does it frame face?
+- EXACT hair volume: Thick, thin, medium?
+- COPY EVERY HAIR DETAIL EXACTLY!
+
+WHAT MUST STAY EXACTLY THE SAME:
+- Face shape and proportions (EXACTLY as in reference - measure it!)
+- Chin and jawline (EXACTLY as in reference)
+- Hair color, style, length, texture (EXACTLY as in reference - don't change ANYTHING!)
+- Eye shape, color, and placement (EXACTLY as in reference)
+- Nose shape and size (EXACTLY as in reference)
+- Mouth and lip shape (EXACTLY as in reference)
+- Skin tone (EXACTLY as in reference)
+- Body proportions and build (EXACTLY as in reference)
+- Overall appearance (MUST be instantly recognizable)
+
+WHAT CAN CHANGE:
+- Pose and body position (to fit the scene)
+- Facial expression (to show emotion)
+- Clothing (only if scene requires different outfit)
+- Position in scene
+
+★★★ VERIFICATION CHECKLIST ★★★
+Before generating, verify:
+□ Face shape IDENTICAL to reference?
+□ Chin and jawline IDENTICAL to reference?
+□ Hair color IDENTICAL to reference (exact shade)?
+□ Hair style IDENTICAL to reference?
+□ Hair length IDENTICAL to reference?
+□ Hair texture IDENTICAL to reference?
+□ All facial features IDENTICAL to reference?
+□ Character instantly recognizable?
+
+If answer is NO to ANY question, STUDY REFERENCE AGAIN and match more carefully!
+This character MUST be 100% IDENTICAL to the reference image.`
+      : `★★★ CRITICAL - CHARACTER PHOTO MATCHING ★★★
 Main character: ${childName}${genderNote}
 
 YOU MUST MATCH THE REFERENCE PHOTO WITH 100% ACCURACY.
+STUDY THE PHOTO CAREFULLY FOR AT LEAST 30 SECONDS BEFORE GENERATING!
 
 ★★★ FACE SHAPE - #1 PRIORITY ★★★
-Match face shape, chin, jawline, cheekbones EXACTLY from photo
+STEP 1: Analyze the photo's face shape carefully:
+- Round, oval, square, heart-shaped, long, or triangular?
+- Measure face width vs height ratio
+- Study chin shape: pointed, rounded, square, soft?
+- Study jawline: sharp, soft, wide, narrow?
+- Study cheekbones: high, low, prominent, subtle?
+- Study forehead: wide, narrow, high, low?
+
+STEP 2: Match face shape EXACTLY:
+- The character's face MUST have IDENTICAL proportions
+- Chin shape MUST match EXACTLY
+- Jawline MUST match EXACTLY
+- Cheekbones MUST match EXACTLY
+- Every parent MUST immediately say "That's my child's face!"
 
 ★★★ HAIR - #2 PRIORITY ★★★
-Match EXACT color, texture, length, style from photo
+STEP 1: Identify EXACT hair details from photo:
+- EXACT color: black, dark brown, medium brown, light brown, blonde, red?
+- EXACT shade (don't guess - LOOK at the photo!)
+- EXACT texture: straight, wavy, curly, coily?
+- EXACT length: where does it fall? (ears, shoulders, back, waist?)
+- EXACT style: parted? bangs? how does it frame the face?
+- EXACT volume: thick, thin, medium?
+- EXACT hairline shape
 
-FACIAL FEATURES: Match eyes, nose, mouth, skin tone EXACTLY from photo`;
-  }
+STEP 2: Match hair EXACTLY:
+- Color: EXACT SAME shade (DO NOT lighten or darken!)
+- Texture: EXACT SAME (straight stays straight, curly stays curly!)
+- Length: EXACT SAME (measure it!)
+- Style: EXACT SAME (part, bangs, everything!)
+- DO NOT "improve" or change ANYTHING about the hair!
+
+FACIAL FEATURES (MUST MATCH EXACTLY):
+- Eye shape, color, spacing: EXACT MATCH from photo
+- Nose shape and size: EXACT MATCH from photo
+- Mouth and lip shape: EXACT MATCH from photo
+- Eyebrow shape and position: EXACT MATCH from photo
+- Skin tone: EXACT MATCH from photo (DO NOT lighten or darken!)
+
+CHARACTER CONSISTENCY:
+- Character MUST look IDENTICAL on EVERY page
+- Parents MUST immediately recognize their child
+- DO NOT create a "generic cute child"
+- Create THIS SPECIFIC CHILD from the photo
+
+★★★ VERIFICATION CHECKLIST ★★★
+Before generating, verify:
+□ Face shape matches photo EXACTLY?
+□ Chin and jawline match photo EXACTLY?
+□ Hair color matches photo EXACTLY (same shade)?
+□ Hair style matches photo EXACTLY?
+□ Hair length matches photo EXACTLY?
+□ Hair texture matches photo EXACTLY?
+□ All facial features match photo EXACTLY?
+□ Parents would recognize their child instantly?
+
+If answer is NO to ANY question, STUDY THE PHOTO AGAIN and match more carefully!
+This character MUST be INSTANTLY recognizable as the child in the photo.`;
 
   const enhancedPrompt = `Professional children's book ${pageType === "cover" ? "cover" : "page"} illustration. ${sceneDescription}
 
@@ -631,89 +965,321 @@ ${characterInstructions}
 PROFESSIONAL BOOK QUALITY - KEEP IT SIMPLE:
 - Focus ONLY on the main character and essential scene elements
 - NO random animals unless they are part of the story scene
+- NO unnecessary creatures, objects, or clutter
 - Clean, simple, uncluttered composition
-- Professional like real published children's books
+- Professional like real published children's books (NOT busy or chaotic)
+- Simple backgrounds that support the story
 
 ART STYLE - MUST BE CONSISTENT ON EVERY PAGE:
 ${getArtStyleInstructions(style)}
+- Same art style on EVERY single page
+- Consistent visual style throughout the entire book
+- Professional children's book quality
+
+${compositionRule}
 
 ${textInstruction}
 
-IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px).`;
+IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px). ${pageType === "cover" ? "Single portrait cover page" : "Single portrait page"}`;
 
-  console.log(`[Illustration] Generating ${pageType} for page ${pageNumber}`);
+  console.log(`[Illustration Generator] Generating ${pageType} with Gemini 2.5 Flash Image`);
+  console.log(`[Illustration Generator] Prompt: ${enhancedPrompt.substring(0, 200)}...`);
 
   try {
-    const contents: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [];
-    contents.push({ text: enhancedPrompt });
+    // Fetch child photo for reference
+    const photoResponse = await fetch(input.childPhotoUrl);
+    const photoBuffer = await photoResponse.arrayBuffer();
+    const photoBase64 = Buffer.from(photoBuffer).toString("base64");
+    const photoMimeType = input.childPhotoUrl.toLowerCase().includes('.png')
+      ? 'image/png'
+      : 'image/jpeg';
 
-    // Add reference images
+    console.log(`[Illustration Generator] Using child photo as reference (${photoMimeType})`);
+
+    // Prepare contents for Gemini
+    const contents: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [];
+
+    // Build the prompt text based on what references we have
+    let promptText: string;
+
+    if (previousPageUrl && pageType === "story-background") {
+      // BACKGROUND PAGE: Create panoramic continuation
+      promptText = `★★★ CRITICAL: CREATE THE RIGHT-SIDE CONTINUATION OF THE PANORAMA ★★★
+
+IMAGE 1: Shows the LEFT HALF of a wide panoramic scene (with character)
+IMAGE 2: Child photo reference (DO NOT include character in your output)
+
+${enhancedPrompt}
+
+★★★ UNDERSTAND THIS CAREFULLY ★★★
+
+You are creating a PANORAMIC BOOK SPREAD:
+- When the book is OPEN: LEFT page + RIGHT page = ONE WIDE CONTINUOUS SCENE
+- Image 1 = LEFT HALF of the panorama (already created)
+- YOUR TASK = Create the RIGHT HALF (what continues to the right →)
+
+THINK LIKE A CAMERA:
+- Image 1: Camera pointing LEFT, capturing left side of scene
+- YOUR IMAGE: Camera pointing RIGHT, capturing right side of SAME scene
+- Together: 180° or wide-angle view of ONE location
+
+NOT ALLOWED:
+❌ DO NOT duplicate/copy Image 1
+❌ DO NOT just "remove the character" from Image 1
+❌ DO NOT create a different/new scene
+❌ DO NOT add the character anywhere
+
+WHAT TO DO:
+✅ Show what's PHYSICALLY TO THE RIGHT → of Image 1's scene
+✅ SAME environment extending rightward
+✅ Horizon/sky/ground MUST align perfectly with Image 1
+✅ NO characters, NO people - just scenery
+
+OUTPUT SPECS:
+- Dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- Style: 3D CGI CARTOON (Pixar/Disney) - EXACT SAME as Image 1
+- This is the RIGHT HALF continuing from Image 1
+
+PRECISE INSTRUCTIONS:
+
+STEP 1 - ANALYZE IMAGE 1 CAREFULLY:
+□ What is the environment type? (forest/beach/city/room/space/etc.)
+□ Where is the horizon line? (measure from bottom - must match exactly)
+□ What's the sky like? (color, clouds, weather, time of day)
+□ What's the ground like? (grass/sand/floor - color and texture)
+□ What elements are visible? (trees/water/buildings/objects)
+□ Where is the light coming from? (angle and color)
+□ What are the dominant colors?
+□ What's on the RIGHT EDGE of Image 1? (this continues on YOUR left edge)
+
+STEP 2 - CREATE YOUR RIGHT CONTINUATION:
+□ Place horizon at EXACT SAME height as Image 1
+□ Sky: IDENTICAL color, clouds, lighting, weather
+□ Ground: CONTINUES seamlessly (same texture/color as Image 1)
+□ Elements: Show MORE of what's in Image 1 (more trees/more ocean/more buildings)
+□ LEFT edge of YOUR image: Should connect to RIGHT edge of Image 1
+□ RIGHT edge of YOUR image: Scene continues further right
+□ Lighting: SAME angle and color as Image 1
+□ Color palette: IDENTICAL to Image 1
+
+STEP 3 - ALIGNMENT CHECKLIST:
+□ Top 30%: Sky matches Image 1 exactly
+□ Middle 40%: Environment extends right - KEEP SIMPLE/CLEAR for text overlay
+□ Bottom 30%: Ground matches Image 1 exactly
+□ NO people, NO characters, NO children anywhere
+□ Just pure scenery/environment
+
+STEP 4 - TEXT SPACE:
+□ Center area: SIMPLE backgrounds (sky/water/ground) - text will overlay here
+□ Avoid complex objects in the center
+□ Details can be at edges
+
+CONCRETE EXAMPLES:
+
+Example 1 - FOREST:
+- Image 1: Character standing among trees on left side
+- YOUR IMAGE: MORE trees extending to the right, same forest, NO character
+
+Example 2 - BEACH:
+- Image 1: Character on beach with ocean on left
+- YOUR IMAGE: MORE ocean/beach extending right, same water/sand, NO character
+
+Example 3 - CITY:
+- Image 1: Character on street with buildings on left
+- YOUR IMAGE: MORE street/buildings extending right, same cityscape, NO character
+
+Example 4 - ROOM:
+- Image 1: Character in room with furniture on left
+- YOUR IMAGE: MORE of the same room extending right, same walls/floor, NO character
+
+ABSOLUTELY NO text, words, letters, or writing anywhere in the illustration.
+
+FINAL REMINDER:
+This is NOT "Image 1 without the character"
+This IS "What you see when you look TO THE RIGHT → from Image 1's viewpoint"
+Think: PANORAMIC PHOTOGRAPHY - one continuous wide scene split into two frames`;
+    } else if (previousPageUrl) {
+      // CHARACTER PAGE: Copy character from previous page
+      promptText = `PREVIOUS PAGE REFERENCE: The first image shows the character from the previous page.
+CHILD PHOTO: The second image is the original photo for additional reference.
+
+${enhancedPrompt}
+
+CRITICAL REQUIREMENTS:
+- Output dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- This is a SINGLE PORTRAIT PAGE for a children's book
+- 3D CGI CARTOON style (Pixar/Disney quality) - SAME style as previous page
+- Use the PREVIOUS PAGE as reference - character must look IDENTICAL
+- Character must look the SAME as on the previous page (same face, hair, features, proportions)
+- Only change: pose, expression, position for this new scene
+- SAME 3D art style on every page - consistent CGI look throughout
+- Leave clear space in middle/center for text overlay
+- Simple, clean, professional illustrations - NOT cluttered or busy
+- NO random animals or creatures unless specifically mentioned in the scene
+
+WHAT TO AVOID:
+- Different art styles (2D flat, realistic, photographic) - ONLY 3D CGI
+- Changing the character's appearance from the previous page
+- Random animals, creatures, or objects not in the scene description
+- Cluttered, busy compositions
+- Text or words in the illustration`;
+    } else if (characterReferenceUrl) {
+      promptText = `CHARACTER REFERENCE IMAGE: The first image shows the EXACT character to use in this scene.
+CHILD PHOTO: The second image is the original photo for additional reference.
+
+${enhancedPrompt}
+
+CRITICAL REQUIREMENTS:
+- Output dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- This is a SINGLE PORTRAIT PAGE for a children's book
+- 3D CGI CARTOON style (Pixar/Disney quality) on EVERY page
+- Use the CHARACTER REFERENCE image - recreate that EXACT character in this scene
+- Character must look IDENTICAL to the reference (same face, hair, features, proportions)
+- DO NOT change the character's appearance, hair, or features
+- SAME 3D art style on every page - consistent CGI look throughout
+- Leave clear space in middle/center for text overlay
+- Simple, clean, professional illustrations - NOT cluttered or busy
+- NO random animals or creatures unless specifically mentioned in the scene
+
+WHAT TO AVOID:
+- Different art styles (2D flat, realistic, photographic) - ONLY 3D CGI
+- Changing the character's appearance from the reference
+- Random animals, creatures, or objects not in the scene description
+- Cluttered, busy compositions
+- Text or words in the illustration`;
+    } else {
+      promptText = `REFERENCE PHOTO: Study this child's appearance - recreate the EXACT same character on every page.
+
+${enhancedPrompt}
+
+CRITICAL REQUIREMENTS:
+- Output dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- This is a SINGLE PORTRAIT PAGE for a children's book
+- 3D CGI CARTOON style (Pixar/Disney quality) on EVERY page
+- Character must look IDENTICAL on every page (same face, same hair, same everything)
+- DO NOT change the character's hair style, hair color, or appearance between pages
+- SAME 3D art style on every page - consistent CGI look throughout
+- Leave clear space in middle/center for text overlay
+- Simple, clean, professional illustrations - NOT cluttered or busy
+- NO random animals or creatures unless specifically mentioned in the scene
+
+WHAT TO AVOID:
+- Different art styles (2D flat, realistic, photographic) - ONLY 3D CGI
+- Changing the character's appearance, hair, or features between pages
+- Random animals, creatures, or objects not in the scene description
+- Cluttered, busy compositions
+- Text or words in the illustration`;
+    }
+
+    contents.push({ text: promptText });
+
+    // If previous page is provided, add it first (for sequential consistency)
     if (previousPageUrl) {
-      console.log(`[Illustration] Using previous page as reference`);
-      const prevResponse = await fetch(previousPageUrl);
-      const prevBuffer = await prevResponse.arrayBuffer();
+      console.log(`[Illustration Generator] Using previous page as reference: ${previousPageUrl}`);
+      const prevPageResponse = await fetch(previousPageUrl);
+      const prevPageBuffer = await prevPageResponse.arrayBuffer();
+      const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
+      const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')
+        ? 'image/png'
+        : 'image/jpeg';
+
       contents.push({
         inlineData: {
-          mimeType: previousPageUrl.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg',
-          data: Buffer.from(prevBuffer).toString("base64"),
+          mimeType: prevPageMimeType,
+          data: prevPageBase64,
         },
       });
-    } else if (characterReferenceUrl) {
-      console.log(`[Illustration] Using character reference`);
-      const charResponse = await fetch(characterReferenceUrl);
-      const charBuffer = await charResponse.arrayBuffer();
+    }
+    // Otherwise, if character reference is provided, add it
+    else if (characterReferenceUrl) {
+      console.log(`[Illustration Generator] Using character reference: ${characterReferenceUrl}`);
+      const charRefResponse = await fetch(characterReferenceUrl);
+      const charRefBuffer = await charRefResponse.arrayBuffer();
+      const charRefBase64 = Buffer.from(charRefBuffer).toString("base64");
+      const charRefMimeType = characterReferenceUrl.toLowerCase().includes('.png')
+        ? 'image/png'
+        : 'image/jpeg';
+
       contents.push({
         inlineData: {
-          mimeType: characterReferenceUrl.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg',
-          data: Buffer.from(charBuffer).toString("base64"),
+          mimeType: charRefMimeType,
+          data: charRefBase64,
         },
       });
     }
 
     // Add child photo
-    const photoResponse = await fetch(input.childPhotoUrl);
-    const photoBuffer = await photoResponse.arrayBuffer();
     contents.push({
       inlineData: {
-        mimeType: input.childPhotoUrl.toLowerCase().includes('.png') ? 'image/png' : 'image/jpeg',
-        data: Buffer.from(photoBuffer).toString("base64"),
+        mimeType: photoMimeType,
+        data: photoBase64,
       },
     });
 
+    // Generate with Gemini (with retry logic + direct API)
     let response;
+    let lastError: Error | null = null;
     const MAX_RETRIES = 3;
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        console.log(`[Illustration] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
+        console.log(`[Illustration Generator] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
+        // Use direct API call with JSON sanitization
         response = await callGeminiDirectly({
           model: "gemini-2.5-flash-image",
           contents: contents,
         });
+
+        // Success - break out of retry loop
+        console.log(`[Illustration Generator] Gemini API call successful`);
         break;
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        console.error(`[Illustration] Attempt ${attempt + 1} failed:`, err.message);
+        lastError = error instanceof Error ? error : new Error(String(error));
+        console.error(`[Illustration Generator] Gemini API attempt ${attempt + 1} failed:`, lastError.message);
 
-        if (attempt === MAX_RETRIES - 1) {
-          throw new Error(`Gemini API failed after ${MAX_RETRIES} attempts: ${err.message}`);
+        // Log full error for debugging
+        if (lastError.message.includes('parse') || lastError.message.includes('JSON') || lastError.message.includes('control character')) {
+          console.error(`[Illustration Generator] JSON/parsing error details:`, {
+            message: lastError.message,
+            stack: lastError.stack,
+          });
         }
 
+        // If this is the last attempt, throw the error
+        if (attempt === MAX_RETRIES - 1) {
+          throw new Error(`Gemini API failed after ${MAX_RETRIES} attempts: ${lastError.message}`);
+        }
+
+        // Wait before retrying (exponential backoff)
         const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
+        console.log(`[Illustration Generator] Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
 
-    if (!response?.candidates?.[0]?.content?.parts) {
-      throw new Error("No valid response from Gemini");
+    if (!response) {
+      throw new Error(`Failed to get response from Gemini after ${MAX_RETRIES} attempts`);
+    }
+
+    // Extract image from response (direct API format)
+    if (!response.candidates || response.candidates.length === 0) {
+      throw new Error("No candidates in Gemini response");
+    }
+
+    const candidate = response.candidates[0];
+    if (!candidate?.content?.parts) {
+      throw new Error("No candidate data in Gemini response");
     }
 
     let imageBuffer: Buffer | null = null;
-    for (const part of response.candidates[0].content.parts) {
+
+    // Direct API uses snake_case: inline_data instead of inlineData
+    for (const part of candidate.content.parts) {
       const inlineData = part.inline_data || part.inlineData;
       if (inlineData?.data) {
         imageBuffer = Buffer.from(inlineData.data, "base64");
+        console.log(`[Illustration Generator] Image generated successfully (${imageBuffer.length} bytes)`);
         break;
       }
     }
@@ -722,7 +1288,8 @@ IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px).`;
       throw new Error("No image data in Gemini response");
     }
 
-    // Resize to exact dimensions
+    // Resize image to exact dimensions (2400x3000)
+    console.log(`[Illustration Generator] Resizing to ${IMAGE_WIDTH}x${IMAGE_HEIGHT}...`);
     const resizedImageBuffer = await sharp(imageBuffer)
       .resize(IMAGE_WIDTH, IMAGE_HEIGHT, {
         fit: "cover",
@@ -731,18 +1298,31 @@ IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px).`;
       .jpeg({ quality: 95 })
       .toBuffer();
 
-    // Upload to R2
-    const uploadFn = pageType === "story-background" ? uploadBackgroundImage : uploadPageImage;
-    const { url: r2Url } = await uploadFn(resizedImageBuffer, bookId, pageNumber, "image/jpeg");
+    console.log(`[Illustration Generator] Image resized: ${resizedImageBuffer.length} bytes`);
 
-    console.log(`[Illustration] Page ${pageNumber} created: ${r2Url}`);
+    // Upload to R2 immediately
+    console.log(`[Illustration Generator] Uploading to R2...`);
+    const uploadFn = pageType === "story-background" ? uploadBackgroundImage : uploadPageImage;
+    const { url: r2Url } = await uploadFn(
+      resizedImageBuffer,
+      bookId,
+      pageNumber,
+      "image/jpeg",
+    );
+
+    console.log(`[Illustration Generator] Image uploaded to R2: ${r2Url}`);
 
     return {
       imageUrl: r2Url,
       status: "succeeded",
     };
   } catch (error) {
-    console.error("[Illustration] Error:", error);
-    throw error;
+    console.error("[Illustration Generator] Gemini API Error:", error);
+
+    if (error instanceof Error) {
+      throw new Error(`Gemini API error: ${error.message}`);
+    }
+
+    throw new Error("Unknown error occurred while generating illustration");
   }
 }
