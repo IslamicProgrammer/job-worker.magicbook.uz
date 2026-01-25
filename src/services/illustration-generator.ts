@@ -1004,10 +1004,13 @@ IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px). ${pageType ===
 
     if (previousPageUrl && pageType === "story-background") {
       // BACKGROUND PAGE: Create panoramic continuation
+      const hasCharRef = !!characterReferenceUrl;
       promptText = `★★★ CRITICAL: CREATE THE RIGHT-SIDE CONTINUATION OF THE PANORAMA ★★★
 
-IMAGE 1: Shows the LEFT HALF of a wide panoramic scene (with character)
-IMAGE 2: Child photo reference (DO NOT include character in your output)
+${hasCharRef ? `IMAGE 1: Character reference (for style reference only - DO NOT include character)
+IMAGE 2: Shows the LEFT HALF of the panoramic scene (with character) - THIS IS YOUR MAIN REFERENCE
+IMAGE 3: Child photo (for reference only - DO NOT include in output)` : `IMAGE 1: Shows the LEFT HALF of a wide panoramic scene (with character)
+IMAGE 2: Child photo reference (DO NOT include character in your output)`}
 
 ${enhancedPrompt}
 
@@ -1098,8 +1101,46 @@ FINAL REMINDER:
 This is NOT "Image 1 without the character"
 This IS "What you see when you look TO THE RIGHT → from Image 1's viewpoint"
 Think: PANORAMIC PHOTOGRAPHY - one continuous wide scene split into two frames`;
+    } else if (previousPageUrl && characterReferenceUrl) {
+      // CHARACTER PAGE with both references: Use character reference as MASTER, previous page for scene style
+      promptText = `★★★ THREE REFERENCE IMAGES PROVIDED ★★★
+
+IMAGE 1 (MASTER CHARACTER REFERENCE): The FIRST image is the CHARACTER REFERENCE - this is the EXACT character you MUST recreate.
+IMAGE 2 (SCENE REFERENCE): The second image shows the previous page for art style/scene continuity.
+IMAGE 3 (ORIGINAL PHOTO): The third image is the original child photo for verification.
+
+★★★ ABSOLUTE RULE: COPY CHARACTER FROM IMAGE 1 EXACTLY ★★★
+- IMAGE 1 is the MASTER - copy this character with 100% accuracy
+- DO NOT modify, change, or "interpret" the character in any way
+- SAME face shape, SAME hair (color, style, length), SAME features
+- The character in YOUR output must be INDISTINGUISHABLE from IMAGE 1
+
+${enhancedPrompt}
+
+CRITICAL REQUIREMENTS:
+- Output dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
+- CHARACTER: Copy EXACTLY from IMAGE 1 (master reference)
+- STYLE: Match art style from IMAGE 2 (previous page)
+- 3D CGI CARTOON style (Pixar/Disney quality)
+- Only change: pose, expression, position for this new scene
+- Leave clear space in middle/center for text overlay
+- Simple, clean, professional illustrations
+
+★★★ DO NOT CHANGE THESE FEATURES ★★★
+- Face shape and proportions - COPY FROM IMAGE 1
+- Hair color - EXACT SAME as IMAGE 1
+- Hair style/length - EXACT SAME as IMAGE 1
+- Eye shape/color - EXACT SAME as IMAGE 1
+- Skin tone - EXACT SAME as IMAGE 1
+- Body proportions - EXACT SAME as IMAGE 1
+
+WHAT TO AVOID:
+- Changing ANY character features from IMAGE 1
+- Different art styles - ONLY 3D CGI
+- Random animals or objects not in scene
+- Text or words in the illustration`;
     } else if (previousPageUrl) {
-      // CHARACTER PAGE: Copy character from previous page
+      // CHARACTER PAGE: Only previous page available (no character reference)
       promptText = `PREVIOUS PAGE REFERENCE: The first image shows the character from the previous page.
 CHILD PHOTO: The second image is the original photo for additional reference.
 
@@ -1124,28 +1165,40 @@ WHAT TO AVOID:
 - Cluttered, busy compositions
 - Text or words in the illustration`;
     } else if (characterReferenceUrl) {
-      promptText = `CHARACTER REFERENCE IMAGE: The first image shows the EXACT character to use in this scene.
-CHILD PHOTO: The second image is the original photo for additional reference.
+      promptText = `★★★ TWO REFERENCE IMAGES PROVIDED ★★★
+
+IMAGE 1 (MASTER CHARACTER REFERENCE): This is the EXACT character you MUST recreate - copy with 100% accuracy.
+IMAGE 2 (ORIGINAL PHOTO): The original child photo for verification.
+
+★★★ ABSOLUTE RULE: COPY CHARACTER FROM IMAGE 1 EXACTLY ★★★
+The character in IMAGE 1 is the MASTER REFERENCE.
+You MUST recreate this EXACT character - no modifications allowed.
 
 ${enhancedPrompt}
 
 CRITICAL REQUIREMENTS:
 - Output dimensions: 2400×3000 pixels (8" × 10" portrait at 300 DPI)
-- This is a SINGLE PORTRAIT PAGE for a children's book
+- CHARACTER: Copy EXACTLY from IMAGE 1 (master reference)
 - 3D CGI CARTOON style (Pixar/Disney quality) on EVERY page
-- Use the CHARACTER REFERENCE image - recreate that EXACT character in this scene
-- Character must look IDENTICAL to the reference (same face, hair, features, proportions)
-- DO NOT change the character's appearance, hair, or features
-- SAME 3D art style on every page - consistent CGI look throughout
 - Leave clear space in middle/center for text overlay
-- Simple, clean, professional illustrations - NOT cluttered or busy
-- NO random animals or creatures unless specifically mentioned in the scene
+- Simple, clean, professional illustrations
+
+★★★ COPY THESE EXACTLY FROM IMAGE 1 - NO CHANGES ★★★
+- Face shape: IDENTICAL to IMAGE 1
+- Hair color: EXACT SAME shade as IMAGE 1
+- Hair style: EXACT SAME as IMAGE 1
+- Hair length: EXACT SAME as IMAGE 1
+- Eye shape/color: IDENTICAL to IMAGE 1
+- Nose shape: IDENTICAL to IMAGE 1
+- Skin tone: IDENTICAL to IMAGE 1
+- Body proportions: IDENTICAL to IMAGE 1
 
 WHAT TO AVOID:
-- Different art styles (2D flat, realistic, photographic) - ONLY 3D CGI
-- Changing the character's appearance from the reference
-- Random animals, creatures, or objects not in the scene description
-- Cluttered, busy compositions
+- Changing ANY character features from IMAGE 1
+- Making hair lighter, darker, or different style
+- Changing face shape or proportions
+- Different art styles - ONLY 3D CGI
+- Random animals or objects not in scene
 - Text or words in the illustration`;
     } else {
       promptText = `REFERENCE PHOTO: Study this child's appearance - recreate the EXACT same character on every page.
@@ -1173,26 +1226,10 @@ WHAT TO AVOID:
 
     contents.push({ text: promptText });
 
-    // If previous page is provided, add it first (for sequential consistency)
-    if (previousPageUrl) {
-      console.log(`[Illustration Generator] Using previous page as reference: ${previousPageUrl}`);
-      const prevPageResponse = await fetch(previousPageUrl);
-      const prevPageBuffer = await prevPageResponse.arrayBuffer();
-      const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
-      const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')
-        ? 'image/png'
-        : 'image/jpeg';
-
-      contents.push({
-        inlineData: {
-          mimeType: prevPageMimeType,
-          data: prevPageBase64,
-        },
-      });
-    }
-    // Otherwise, if character reference is provided, add it
-    else if (characterReferenceUrl) {
-      console.log(`[Illustration Generator] Using character reference: ${characterReferenceUrl}`);
+    // ALWAYS include character reference first (master reference for consistency)
+    // This prevents "drift" where character changes across pages
+    if (characterReferenceUrl) {
+      console.log(`[Illustration Generator] Using CHARACTER REFERENCE (master): ${characterReferenceUrl}`);
       const charRefResponse = await fetch(characterReferenceUrl);
       const charRefBuffer = await charRefResponse.arrayBuffer();
       const charRefBase64 = Buffer.from(charRefBuffer).toString("base64");
@@ -1204,6 +1241,24 @@ WHAT TO AVOID:
         inlineData: {
           mimeType: charRefMimeType,
           data: charRefBase64,
+        },
+      });
+    }
+
+    // ALSO include previous page for scene/style continuity (but NOT as primary character reference)
+    if (previousPageUrl) {
+      console.log(`[Illustration Generator] Also using previous page for scene continuity: ${previousPageUrl}`);
+      const prevPageResponse = await fetch(previousPageUrl);
+      const prevPageBuffer = await prevPageResponse.arrayBuffer();
+      const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
+      const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')
+        ? 'image/png'
+        : 'image/jpeg';
+
+      contents.push({
+        inlineData: {
+          mimeType: prevPageMimeType,
+          data: prevPageBase64,
         },
       });
     }

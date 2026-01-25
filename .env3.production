@@ -1,0 +1,20 @@
+# Server Configuration
+PORT=3001
+NODE_ENV=production
+
+# API Security - Used to authenticate requests from the main app
+JOB_WORKER_SECRET="cdpxRVgQIrKx9dPuGL5zRpwK6uwr+obWb3GgidUESsA="
+
+# Gemini API (for image generation)
+GEMINI_API_KEY="AIzaSyAIEeYlM0sTMHujh_lNFxRb2gk2OYu5MyQ"
+
+# Cloudflare R2 Configuration
+R2_ACCOUNT_ID="af0ac2f4c866462d4508dd3d5da1619b"
+R2_ACCESS_KEY_ID="63b0930c942d913700e7b63079b74746"
+R2_SECRET_ACCESS_KEY="804a6a10c5a08f3b0a6f95fa2b43bb955f1a0571b41a1865ebcb78e44b23a9f8"
+R2_BUCKET_NAME="children"
+R2_PUBLIC_URL="https://pub-94bcf3e523ae4358b647cc11e908c3dd.r2.dev"
+
+# Main App Callback URL (your Vercel app)
+MAIN_APP_URL="https://app.magicbook.uz"
+MAIN_APP_SECRET="q0OMC9yx62047GQ3KiG6cVLDX8K+uug9s1u2ZWLka6Y="
