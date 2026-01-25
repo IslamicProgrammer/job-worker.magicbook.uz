@@ -7,7 +7,7 @@ import {
   type IllustrationInput,
   type CharacterReferenceInput,
 } from "../services/illustration-generator.js";
-import { generateSimplePDF } from "../services/pdf/simple-pdf-generator.js";
+import { generatePlaywrightPDF } from "../services/pdf/playwright-pdf-generator.js";
 import { uploadPDF } from "../lib/r2-upload.js";
 
 const router = Router();
@@ -73,6 +73,7 @@ const pdfGenerationSchema = z.object({
   jobId: z.string(),
   title: z.string(),
   childName: z.string(),
+  childPhotoUrl: z.string().url().optional(),
   pdfFormat: z.enum(["RGB", "CMYK"]).default("RGB"),
   pages: z.array(z.object({
     pageNumber: z.number(),
@@ -303,11 +304,12 @@ async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
       message: "Starting PDF generation...",
     });
 
-    // Generate PDF
-    const pdfBuffer = await generateSimplePDF(
+    // Generate PDF with Playwright (full formatting)
+    const pdfBuffer = await generatePlaywrightPDF(
       input.pages,
       input.title,
-      input.childName
+      input.childName,
+      input.childPhotoUrl
     );
 
     console.log(`[PDF ${input.jobId}] Generated ${pdfBuffer.length} bytes`);
