@@ -7,7 +7,7 @@ import {
   type IllustrationInput,
   type CharacterReferenceInput,
 } from "../services/illustration-generator.js";
-import { generatePlaywrightPDF } from "../services/pdf/playwright-pdf-generator.js";
+import { generateSimplePDF } from "../services/pdf/simple-pdf-generator.js";
 import { uploadPDF } from "../lib/r2-upload.js";
 
 const router = Router();
@@ -304,8 +304,8 @@ async function processPdfJob(input: z.infer<typeof pdfGenerationSchema>) {
       message: "Starting PDF generation...",
     });
 
-    // Generate PDF with Playwright (full formatting)
-    const pdfBuffer = await generatePlaywrightPDF(
+    // Generate PDF with enhanced pdf-lib (no Chromium needed)
+    const pdfBuffer = await generateSimplePDF(
       input.pages,
       input.title,
       input.childName,

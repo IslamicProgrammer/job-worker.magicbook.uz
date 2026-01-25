@@ -1,16 +1,15 @@
 /**
- * Full-featured PDF generator using pdf-lib
+ * Enhanced PDF generator using pdf-lib
  * Creates professional children's book PDF with:
- * - Cover page (image + title)
- * - Title page
+ * - Cover page (image + title + child photo badge)
+ * - Title page (elegant typography)
  * - Story pages (image on left, text on right)
  * - Back cover with branding
  *
- * Works on Vercel without Playwright/Chromium
+ * Works without Playwright/Chromium - pure Node.js
  */
 
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import fontkit from "@pdf-lib/fontkit";
+import { PDFDocument, rgb, StandardFonts, PDFPage, PDFFont } from "pdf-lib";
 
 interface PageData {
   pageNumber: number;
@@ -24,8 +23,11 @@ const PAGE_HEIGHT = 720; // 10 inches
 
 // Colors
 const PRIMARY_COLOR = rgb(0.4, 0.2, 0.6); // Purple
-const TEXT_COLOR = rgb(0.2, 0.2, 0.2);
-const LIGHT_GRAY = rgb(0.95, 0.95, 0.95);
+const SECONDARY_COLOR = rgb(0.82, 0.41, 0.12); // Orange/brown
+const TEXT_COLOR = rgb(0.18, 0.18, 0.18);
+const LIGHT_TEXT = rgb(0.5, 0.5, 0.5);
+const CREAM_BG = rgb(0.98, 0.97, 0.95);
+const WARM_PEACH = rgb(1.0, 0.88, 0.7);
 
 /**
  * Download image and return as buffer
@@ -62,30 +64,29 @@ async function embedImage(pdfDoc: PDFDocument, imageBuffer: Buffer) {
 }
 
 /**
- * Sanitize text for PDF rendering - remove/replace characters that can't be encoded
+ * Sanitize text for PDF rendering
  */
 function sanitizeText(text: string): string {
   return text
-    .replace(/\r\n/g, ' ')  // Windows newlines
-    .replace(/\n/g, ' ')     // Unix newlines
-    .replace(/\r/g, ' ')     // Old Mac newlines
-    .replace(/\t/g, ' ')     // Tabs
-    .replace(/\s+/g, ' ')    // Multiple spaces to single
+    .replace(/\r\n/g, ' ')
+    .replace(/\n/g, ' ')
+    .replace(/\r/g, ' ')
+    .replace(/\t/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 /**
  * Word wrap text to fit within maxWidth
  */
-function wrapText(text: string, font: any, fontSize: number, maxWidth: number): string[] {
-  // Sanitize text first to remove newlines and special characters
+function wrapText(text: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
   const cleanText = sanitizeText(text);
   const words = cleanText.split(' ');
   const lines: string[] = [];
   let currentLine = '';
 
   for (const word of words) {
-    if (!word) continue; // Skip empty words
+    if (!word) continue;
     const testLine = currentLine ? `${currentLine} ${word}` : word;
     const testWidth = font.widthOfTextAtSize(testLine, fontSize);
 
@@ -105,19 +106,52 @@ function wrapText(text: string, font: any, fontSize: number, maxWidth: number): 
 }
 
 /**
+ * Draw decorative circle/bubble
+ */
+function drawBubble(page: PDFPage, x: number, y: number, radius: number, color: { r: number; g: number; b: number }, opacity: number) {
+  // Draw filled circle using multiple small rectangles (approximation)
+  const steps = 36;
+  for (let i = 0; i < steps; i++) {
+    const angle1 = (i / steps) * 2 * Math.PI;
+    const angle2 = ((i + 1) / steps) * 2 * Math.PI;
+
+    // Draw pie slice as triangle approximation
+    page.drawCircle({
+      x,
+      y,
+      size: radius,
+      color: rgb(color.r, color.g, color.b),
+      opacity,
+    });
+  }
+}
+
+/**
+ * Draw a star
+ */
+function drawStar(page: PDFPage, x: number, y: number, font: PDFFont, size: number, opacity: number) {
+  page.drawText("★", {
+    x: x - size / 2,
+    y: y - size / 2,
+    size,
+    font,
+    color: rgb(1, 0.84, 0),
+    opacity,
+  });
+}
+
+/**
  * Generate complete book PDF
  */
 export async function generateSimplePDF(
   pages: PageData[],
   title: string,
-  childName: string
+  childName: string,
+  childPhotoUrl?: string
 ): Promise<Buffer> {
-  console.log(`[PDF] Generating full book PDF with ${pages.length} story pages`);
+  console.log(`[PDF] Generating enhanced book PDF with ${pages.length} story pages`);
 
   const pdfDoc = await PDFDocument.create();
-
-  // Register fontkit for custom fonts (if needed later)
-  pdfDoc.registerFontkit(fontkit);
 
   // Set metadata
   pdfDoc.setTitle(title);
@@ -131,6 +165,7 @@ export async function generateSimplePDF(
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
   const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+  const timesBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 
   // Sort pages by page number
   const sortedPages = [...pages].sort((a, b) => a.pageNumber - b.pageNumber);
@@ -138,7 +173,7 @@ export async function generateSimplePDF(
   const storyPages = sortedPages.filter(p => p.pageNumber > 0);
 
   // ============================================
-  // 1. COVER PAGE - Full image with title overlay
+  // 1. COVER PAGE - Full image with title overlay and child photo badge
   // ============================================
   if (coverPage) {
     console.log(`[PDF] Creating cover page...`);
@@ -157,110 +192,151 @@ export async function generateSimplePDF(
 
       cover.drawImage(image, { x, y, width: drawWidth, height: drawHeight });
 
-      // Title text at bottom with background
-      const titleFontSize = 28;
-      const cleanTitle = sanitizeText(title);
-      const titleWidth = helveticaBold.widthOfTextAtSize(cleanTitle, titleFontSize);
+      // Add child photo badge if available
+      if (childPhotoUrl) {
+        try {
+          const photoBuffer = await downloadImage(childPhotoUrl);
+          const photo = await embedImage(pdfDoc, photoBuffer);
 
-      // Semi-transparent background for title
-      cover.drawRectangle({
-        x: 0,
-        y: 0,
-        width: PAGE_WIDTH,
-        height: 80,
-        color: rgb(1, 1, 1),
-        opacity: 0.85,
-      });
+          const badgeSize = 90;
+          const badgeX = PAGE_WIDTH - badgeSize - 25;
+          const badgeY = 25;
 
-      cover.drawText(cleanTitle, {
-        x: (PAGE_WIDTH - titleWidth) / 2,
-        y: 35,
-        size: titleFontSize,
-        font: helveticaBold,
-        color: PRIMARY_COLOR,
-      });
+          // White border (draw larger white circle behind)
+          cover.drawCircle({
+            x: badgeX + badgeSize / 2,
+            y: badgeY + badgeSize / 2,
+            size: badgeSize / 2 + 4,
+            color: rgb(1, 1, 1),
+          });
+
+          // Photo (clipped to circle - approximation with square)
+          cover.drawImage(photo, {
+            x: badgeX,
+            y: badgeY,
+            width: badgeSize,
+            height: badgeSize,
+          });
+        } catch (error) {
+          console.error(`[PDF] Child photo error:`, error);
+        }
+      }
     } catch (error) {
       console.error(`[PDF] Cover page error:`, error);
     }
   }
 
   // ============================================
-  // 2. TITLE PAGE - Clean typography
+  // 2. TITLE PAGE - Elegant typography with decorations
   // ============================================
   console.log(`[PDF] Creating title page...`);
   const titlePage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
 
-  // Background
+  // Warm gradient-like background (solid color approximation)
   titlePage.drawRectangle({
     x: 0, y: 0,
     width: PAGE_WIDTH, height: PAGE_HEIGHT,
+    color: WARM_PEACH,
+  });
+
+  // Decorative circles
+  titlePage.drawCircle({
+    x: PAGE_WIDTH * 0.25,
+    y: PAGE_HEIGHT * 0.75,
+    size: 80,
     color: rgb(1, 1, 1),
+    opacity: 0.3,
+  });
+  titlePage.drawCircle({
+    x: PAGE_WIDTH * 0.75,
+    y: PAGE_HEIGHT * 0.25,
+    size: 60,
+    color: rgb(1, 1, 1),
+    opacity: 0.25,
   });
 
-  // Decorative line
-  titlePage.drawRectangle({
-    x: PAGE_WIDTH / 2 - 100,
-    y: PAGE_HEIGHT / 2 + 80,
-    width: 200,
-    height: 3,
-    color: PRIMARY_COLOR,
+  // "Mo'jizaviy Hikoya" label
+  const labelText = "MO'JIZAVIY HIKOYA";
+  const labelWidth = helvetica.widthOfTextAtSize(labelText, 11);
+  titlePage.drawText(labelText, {
+    x: (PAGE_WIDTH - labelWidth) / 2,
+    y: PAGE_HEIGHT / 2 + 120,
+    size: 11,
+    font: helvetica,
+    color: rgb(0.55, 0.35, 0.12),
   });
 
-  // Title
-  const mainTitleSize = 32;
-  const titleLines = wrapText(title, helveticaBold, mainTitleSize, PAGE_WIDTH - 100);
-  let yPos = PAGE_HEIGHT / 2 + 40;
+  // Main title
+  const mainTitleSize = 36;
+  const cleanTitle = sanitizeText(title);
+  const titleLines = wrapText(cleanTitle, timesBold, mainTitleSize, PAGE_WIDTH - 80);
+  let yPos = PAGE_HEIGHT / 2 + 60;
   for (const line of titleLines) {
-    const lineWidth = helveticaBold.widthOfTextAtSize(line, mainTitleSize);
+    const lineWidth = timesBold.widthOfTextAtSize(line, mainTitleSize);
     titlePage.drawText(line, {
       x: (PAGE_WIDTH - lineWidth) / 2,
       y: yPos,
       size: mainTitleSize,
-      font: helveticaBold,
-      color: PRIMARY_COLOR,
+      font: timesBold,
+      color: SECONDARY_COLOR,
     });
-    yPos -= mainTitleSize + 10;
+    yPos -= mainTitleSize + 8;
   }
 
-  // Child name
-  const childText = `${childName} uchun maxsus kitob`;
-  const childTextWidth = timesItalic.widthOfTextAtSize(childText, 18);
-  titlePage.drawText(childText, {
-    x: (PAGE_WIDTH - childTextWidth) / 2,
-    y: PAGE_HEIGHT / 2 - 60,
-    size: 18,
-    font: timesItalic,
-    color: TEXT_COLOR,
-  });
-
-  // Decorative line
+  // Decorative divider line
+  const dividerWidth = 100;
   titlePage.drawRectangle({
-    x: PAGE_WIDTH / 2 - 100,
-    y: PAGE_HEIGHT / 2 - 100,
-    width: 200,
-    height: 3,
-    color: PRIMARY_COLOR,
+    x: (PAGE_WIDTH - dividerWidth) / 2,
+    y: PAGE_HEIGHT / 2 - 30,
+    width: dividerWidth,
+    height: 2,
+    color: rgb(0.55, 0.35, 0.12),
+    opacity: 0.4,
   });
 
-  // MagicBook.uz at bottom
-  const brandText = "MagicBook.uz";
-  const brandWidth = helvetica.widthOfTextAtSize(brandText, 14);
-  titlePage.drawText(brandText, {
-    x: (PAGE_WIDTH - brandWidth) / 2,
-    y: 50,
+  // "Qahramonimiz" label
+  const heroLabel = "Qahramonimiz";
+  const heroLabelWidth = timesItalic.widthOfTextAtSize(heroLabel, 14);
+  titlePage.drawText(heroLabel, {
+    x: (PAGE_WIDTH - heroLabelWidth) / 2,
+    y: PAGE_HEIGHT / 2 - 70,
     size: 14,
-    font: helvetica,
-    color: rgb(0.5, 0.5, 0.5),
+    font: timesItalic,
+    color: rgb(0.55, 0.35, 0.12),
+  });
+
+  // Child name
+  const childNameSize = 30;
+  const childNameWidth = timesBold.widthOfTextAtSize(childName, childNameSize);
+  titlePage.drawText(childName, {
+    x: (PAGE_WIDTH - childNameWidth) / 2,
+    y: PAGE_HEIGHT / 2 - 110,
+    size: childNameSize,
+    font: timesBold,
+    color: rgb(0.82, 0.41, 0.12),
+  });
+
+  // Subtitle
+  const subtitle = "MagicBook tomonidan yaratilgan shaxsiy kitob";
+  const subtitleWidth = timesItalic.widthOfTextAtSize(subtitle, 11);
+  titlePage.drawText(subtitle, {
+    x: (PAGE_WIDTH - subtitleWidth) / 2,
+    y: PAGE_HEIGHT / 2 - 170,
+    size: 11,
+    font: timesItalic,
+    color: rgb(0.55, 0.35, 0.12),
   });
 
   // ============================================
   // 3. STORY PAGES - Image left, Text right (spreads)
   // ============================================
+  let pdfPageNum = 2; // Start after cover and title
   for (let i = 0; i < storyPages.length; i++) {
     const page = storyPages[i]!;
     console.log(`[PDF] Creating story page ${page.pageNumber}...`);
 
-    // LEFT PAGE - Full illustration (no text)
+    // LEFT PAGE - Full illustration
+    pdfPageNum++;
     const leftPage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
 
     try {
@@ -276,66 +352,116 @@ export async function generateSimplePDF(
 
       leftPage.drawImage(image, { x, y, width: drawWidth, height: drawHeight });
 
-      // Page number at bottom
-      const pageNumText = `${(i + 1) * 2}`;
-      const pageNumWidth = helvetica.widthOfTextAtSize(pageNumText, 10);
+      // Page number at bottom left
+      const pageNumText = `${pdfPageNum}`;
       leftPage.drawText(pageNumText, {
-        x: (PAGE_WIDTH - pageNumWidth) / 2,
-        y: 20,
+        x: 50,
+        y: 30,
         size: 10,
         font: helvetica,
-        color: rgb(0.6, 0.6, 0.6),
+        color: LIGHT_TEXT,
       });
     } catch (error) {
       console.error(`[PDF] Story page ${page.pageNumber} image error:`, error);
     }
 
-    // RIGHT PAGE - Text only (elegant)
+    // RIGHT PAGE - Text only with bubble decorations
+    pdfPageNum++;
     const rightPage = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
 
-    // Cream/off-white background
+    // Cream background
     rightPage.drawRectangle({
       x: 0, y: 0,
       width: PAGE_WIDTH, height: PAGE_HEIGHT,
-      color: rgb(0.99, 0.98, 0.96),
+      color: CREAM_BG,
+    });
+
+    // Decorative bubbles
+    rightPage.drawCircle({
+      x: -30,
+      y: PAGE_HEIGHT + 30,
+      size: 90,
+      color: rgb(1, 0.96, 0.9),
+    });
+    rightPage.drawCircle({
+      x: PAGE_WIDTH + 20,
+      y: PAGE_HEIGHT * 0.7,
+      size: 60,
+      color: rgb(0.9, 0.94, 1),
+    });
+    rightPage.drawCircle({
+      x: 40,
+      y: 100,
+      size: 50,
+      color: rgb(1, 0.92, 0.96),
+    });
+    rightPage.drawCircle({
+      x: PAGE_WIDTH - 50,
+      y: 50,
+      size: 70,
+      color: rgb(0.94, 1, 0.94),
     });
 
     // Text content
     if (page.text) {
-      const textFontSize = 16;
-      const lineHeight = 28;
-      const margin = 60;
+      const textFontSize = 15;
+      const lineHeight = 26;
+      const margin = 55;
       const maxTextWidth = PAGE_WIDTH - margin * 2;
 
-      const lines = wrapText(page.text, timesRoman, textFontSize, maxTextWidth);
+      // Split into paragraphs
+      const paragraphs = page.text
+        .split(/\n\n+/)
+        .map(p => p.replace(/\n/g, ' '))
+        .filter(p => p.trim().length > 0);
 
-      // Center text vertically
-      const totalTextHeight = lines.length * lineHeight;
+      // Calculate total height for centering
+      let totalLines = 0;
+      const allLines: { text: string; indent: boolean }[] = [];
+      for (let pIdx = 0; pIdx < paragraphs.length; pIdx++) {
+        const para = paragraphs[pIdx]!;
+        const lines = wrapText(para, timesRoman, textFontSize, maxTextWidth - 25);
+        for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+          allLines.push({
+            text: lines[lIdx]!,
+            indent: lIdx === 0 && pIdx > 0 // Indent first line of non-first paragraphs
+          });
+          totalLines++;
+        }
+        // Add spacing between paragraphs
+        if (pIdx < paragraphs.length - 1) {
+          allLines.push({ text: '', indent: false });
+          totalLines++;
+        }
+      }
+
+      const totalTextHeight = totalLines * lineHeight;
       let textY = (PAGE_HEIGHT + totalTextHeight) / 2;
 
-      for (const line of lines) {
-        // Center each line
-        const lineWidth = timesRoman.widthOfTextAtSize(line, textFontSize);
-        rightPage.drawText(line, {
-          x: (PAGE_WIDTH - lineWidth) / 2,
-          y: textY,
-          size: textFontSize,
-          font: timesRoman,
-          color: TEXT_COLOR,
-        });
+      for (const line of allLines) {
+        if (line.text) {
+          const xOffset = line.indent ? 25 : 0;
+          rightPage.drawText(line.text, {
+            x: margin + xOffset,
+            y: textY,
+            size: textFontSize,
+            font: timesRoman,
+            color: TEXT_COLOR,
+          });
+        }
         textY -= lineHeight;
       }
     }
 
-    // Page number at bottom
-    const rightPageNum = `${(i + 1) * 2 + 1}`;
+    // Page number at bottom right
+    const rightPageNum = `${pdfPageNum}`;
     const rightPageNumWidth = helvetica.widthOfTextAtSize(rightPageNum, 10);
     rightPage.drawText(rightPageNum, {
-      x: (PAGE_WIDTH - rightPageNumWidth) / 2,
-      y: 20,
+      x: PAGE_WIDTH - 50 - rightPageNumWidth,
+      y: 30,
       size: 10,
       font: helvetica,
-      color: rgb(0.6, 0.6, 0.6),
+      color: LIGHT_TEXT,
     });
   }
 
@@ -345,65 +471,127 @@ export async function generateSimplePDF(
   console.log(`[PDF] Creating back cover...`);
   const backCover = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
 
-  // Gradient-like background (solid purple)
+  // Gradient-like background (using solid orange-teal blend approximation)
+  backCover.drawRectangle({
+    x: 0, y: PAGE_HEIGHT / 2,
+    width: PAGE_WIDTH, height: PAGE_HEIGHT / 2,
+    color: rgb(1, 0.44, 0.26), // Orange top
+  });
   backCover.drawRectangle({
     x: 0, y: 0,
-    width: PAGE_WIDTH, height: PAGE_HEIGHT,
-    color: rgb(0.95, 0.93, 0.98),
+    width: PAGE_WIDTH, height: PAGE_HEIGHT / 2,
+    color: rgb(0.3, 0.71, 0.67), // Teal bottom
   });
 
-  // Logo text
-  const logoText = "MagicBook.uz";
-  const logoSize = 36;
+  // Decorative circles
+  backCover.drawCircle({
+    x: PAGE_WIDTH * 0.2,
+    y: PAGE_HEIGHT * 0.7,
+    size: 100,
+    color: rgb(1, 1, 1),
+    opacity: 0.1,
+  });
+  backCover.drawCircle({
+    x: PAGE_WIDTH * 0.8,
+    y: PAGE_HEIGHT * 0.3,
+    size: 80,
+    color: rgb(1, 1, 1),
+    opacity: 0.08,
+  });
+
+  // Logo text "MagicBook"
+  const logoText = "MagicBook";
+  const logoSize = 42;
   const logoWidth = helveticaBold.widthOfTextAtSize(logoText, logoSize);
   backCover.drawText(logoText, {
     x: (PAGE_WIDTH - logoWidth) / 2,
-    y: PAGE_HEIGHT / 2 + 50,
+    y: PAGE_HEIGHT / 2 + 100,
     size: logoSize,
     font: helveticaBold,
-    color: PRIMARY_COLOR,
+    color: rgb(1, 1, 1),
   });
 
   // Tagline
-  const tagline = "Bolalar uchun shaxsiylashtirilgan kitoblar";
-  const taglineWidth = timesItalic.widthOfTextAtSize(tagline, 16);
-  backCover.drawText(tagline, {
-    x: (PAGE_WIDTH - taglineWidth) / 2,
-    y: PAGE_HEIGHT / 2,
-    size: 16,
-    font: timesItalic,
-    color: TEXT_COLOR,
+  const tagline1 = "Farzandingiz uchun";
+  const tagline1Width = timesBold.widthOfTextAtSize(tagline1, 18);
+  backCover.drawText(tagline1, {
+    x: (PAGE_WIDTH - tagline1Width) / 2,
+    y: PAGE_HEIGHT / 2 + 40,
+    size: 18,
+    font: timesBold,
+    color: rgb(1, 1, 1),
   });
 
-  // Decorative line
-  backCover.drawRectangle({
-    x: PAGE_WIDTH / 2 - 80,
+  const tagline2 = "sehrli hikoyalar yarating";
+  const tagline2Width = timesBold.widthOfTextAtSize(tagline2, 18);
+  backCover.drawText(tagline2, {
+    x: (PAGE_WIDTH - tagline2Width) / 2,
+    y: PAGE_HEIGHT / 2 + 15,
+    size: 18,
+    font: timesBold,
+    color: rgb(1, 1, 1),
+  });
+
+  // Description
+  const description = "Har bir bola o'z hikoyasining qahramoni bo'lishga loyiq";
+  const descWidth = timesRoman.widthOfTextAtSize(description, 13);
+  backCover.drawText(description, {
+    x: (PAGE_WIDTH - descWidth) / 2,
     y: PAGE_HEIGHT / 2 - 30,
-    width: 160,
-    height: 2,
-    color: PRIMARY_COLOR,
+    size: 13,
+    font: timesRoman,
+    color: rgb(1, 1, 1),
+    opacity: 0.95,
   });
 
-  // Social info
-  const socialText = "@magicbook.uz";
-  const socialWidth = helvetica.widthOfTextAtSize(socialText, 14);
-  backCover.drawText(socialText, {
-    x: (PAGE_WIDTH - socialWidth) / 2,
-    y: PAGE_HEIGHT / 2 - 60,
-    size: 14,
-    font: helvetica,
-    color: rgb(0.5, 0.5, 0.5),
+  // Website
+  const website = "magicbook.uz";
+  const websiteWidth = helveticaBold.widthOfTextAtSize(website, 16);
+  backCover.drawText(website, {
+    x: (PAGE_WIDTH - websiteWidth) / 2,
+    y: PAGE_HEIGHT / 2 - 80,
+    size: 16,
+    font: helveticaBold,
+    color: rgb(1, 1, 1),
   });
 
-  // Year
-  const yearText = `© ${new Date().getFullYear()} MagicBook.uz`;
-  const yearWidth = helvetica.widthOfTextAtSize(yearText, 12);
-  backCover.drawText(yearText, {
-    x: (PAGE_WIDTH - yearWidth) / 2,
-    y: 40,
+  // Social handles
+  const instagram = "@magicbook.uz";
+  const telegram = "@magicbook_uz";
+  const socialY = PAGE_HEIGHT / 2 - 130;
+
+  const instaWidth = helvetica.widthOfTextAtSize(instagram, 12);
+  const teleWidth = helvetica.widthOfTextAtSize(telegram, 12);
+  const socialGap = 60;
+
+  backCover.drawText(instagram, {
+    x: PAGE_WIDTH / 2 - instaWidth - socialGap / 2,
+    y: socialY,
     size: 12,
     font: helvetica,
-    color: rgb(0.6, 0.6, 0.6),
+    color: rgb(1, 1, 1),
+    opacity: 0.9,
+  });
+
+  backCover.drawText(telegram, {
+    x: PAGE_WIDTH / 2 + socialGap / 2,
+    y: socialY,
+    size: 12,
+    font: helvetica,
+    color: rgb(1, 1, 1),
+    opacity: 0.9,
+  });
+
+  // Copyright
+  const yearText = `© ${new Date().getFullYear()} MagicBook.uz`;
+  const yearWidth = helvetica.widthOfTextAtSize(yearText, 10);
+  backCover.drawText(yearText, {
+    x: (PAGE_WIDTH - yearWidth) / 2,
+    y: 35,
+    size: 10,
+    font: helvetica,
+    color: rgb(1, 1, 1),
+    opacity: 0.7,
   });
 
   // Save PDF
