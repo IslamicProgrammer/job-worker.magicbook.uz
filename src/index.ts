@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
 import jobsRouter from "./routes/jobs.js";
+import { startWorker } from "./worker.js";
 
 const app = express();
 
@@ -23,7 +24,8 @@ app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     service: "magicbook-job-worker",
-    version: "1.0.0",
+    version: "2.0.0",
+    mode: "queue-based",
     timestamp: new Date().toISOString(),
   });
 });
@@ -32,9 +34,12 @@ app.get("/health", (req, res) => {
 app.get("/", (req, res) => {
   res.json({
     service: "MagicBook Job Worker",
-    version: "1.1.0",
+    version: "2.0.0",
+    mode: "Database Queue Worker",
+    description: "Polls PostgreSQL for pending jobs and processes one at a time",
     endpoints: {
       health: "GET /health",
+      // Legacy endpoints still available for backwards compatibility
       characterReference: "POST /jobs/character-reference",
       illustration: "POST /jobs/illustration",
       batch: "POST /jobs/batch",
@@ -58,9 +63,16 @@ const PORT = parseInt(env.PORT, 10);
 app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════╗
-║     MagicBook Job Worker                          ║
+║     MagicBook Job Worker v2.0                     ║
 ║     Running on port ${PORT}                           ║
 ║     Environment: ${env.NODE_ENV.padEnd(11)}                   ║
+║     Mode: Database Queue                          ║
 ╚═══════════════════════════════════════════════════╝
   `);
+
+  // Start the queue worker
+  startWorker().catch((error) => {
+    console.error("[Worker] Fatal error:", error);
+    process.exit(1);
+  });
 });

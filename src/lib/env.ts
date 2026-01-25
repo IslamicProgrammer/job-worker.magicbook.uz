@@ -7,6 +7,10 @@ const envSchema = z.object({
   PORT: z.string().default("3001"),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
 
+  // Database (same as frontend)
+  DATABASE_URL: z.string().min(1),
+  DIRECT_URL: z.string().min(1).optional(),
+
   // API Security
   JOB_WORKER_SECRET: z.string().min(1),
 
@@ -20,9 +24,9 @@ const envSchema = z.object({
   R2_BUCKET_NAME: z.string().min(1),
   R2_PUBLIC_URL: z.string().url(),
 
-  // Main App Callback
-  MAIN_APP_URL: z.string().url(),
-  MAIN_APP_SECRET: z.string().min(1),
+  // Main App Callback (optional - for legacy API endpoints)
+  MAIN_APP_URL: z.string().url().optional(),
+  MAIN_APP_SECRET: z.string().min(1).optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
