@@ -274,36 +274,72 @@ function getArtStyleInstructions(illustrationStyle?: string | null): string {
 
   switch (illustrationStyle) {
     case "ANIMATION_3D":
-      return `3D CGI CARTOON style (Pixar/Disney quality)
-- Professional 3D rendered children's book character
-- High-quality CGI animation style like Toy Story, Finding Nemo
-- Warm, pleasant colors with good contrast
-- Clean, polished 3D rendering with realistic lighting
-- Expressive characters with detailed textures`;
+      return `★★★ 3D CGI PIXAR/DISNEY ANIMATION STYLE ★★★
+MANDATORY: This MUST look like a Pixar/Disney 3D animated movie!
+- Professional 3D CGI rendered character like Toy Story, Coco, Moana, Encanto
+- Smooth, polished 3D surfaces with subsurface scattering on skin
+- Realistic 3D lighting with soft shadows and ambient occlusion
+- High-quality CGI textures - fabric, hair, skin all look 3D rendered
+- Big expressive eyes with 3D reflections and catchlights
+- 3D volumetric hair with individual strands visible
+- Warm, vibrant Pixar color palette
+- Professional animation studio quality rendering`;
 
     case "FANTASY_STORYBOOK":
-      return `HAND-DRAWN FANTASY STORYBOOK illustration style
-- Whimsical, magical hand-drawn illustration with enchanting details
-- Soft, warm colors with gentle gradients and dreamy atmosphere
-- Delicate linework with artistic brushstrokes
-- Classic fairy tale book aesthetic - like illustrations in beloved storybooks
-- Child's face should be accurately drawn and recognizable
-- Gentle, friendly expressions that feel warm and inviting
-- Magical elements: soft glows, sparkles, enchanted details
-- Rich textures and intricate backgrounds
-- Traditional illustrated book quality - NOT CGI, NOT photorealistic`;
+      return `★★★ HAND-DRAWN FANTASY STORYBOOK ILLUSTRATION - NOT 3D! ★★★
+CRITICAL: This MUST be 2D HAND-DRAWN illustration! ABSOLUTELY NO 3D CGI!
+
+MANDATORY STYLE REQUIREMENTS:
+- 2D HAND-DRAWN/PAINTED illustration like classic fairy tale books
+- Style reference: Arthur Rackham, Edmund Dulac, Brian Froud, classic Disney 2D animation (Sleeping Beauty backgrounds)
+- Visible BRUSH STROKES, pencil lines, or paint textures - this is hand-made art!
+- Soft watercolor or gouache painting aesthetic with gentle color blending
+- Delicate linework - you should see the artist's hand in every stroke
+- Dreamy, magical atmosphere with soft glowing light effects
+- Warm, muted color palette: soft golds, gentle greens, dusty pinks, warm browns
+- Slightly stylized, whimsical character proportions (larger eyes, softer features)
+- Rich, detailed backgrounds with nature elements, flowers, magical sparkles
+- Paper or canvas texture visible in the artwork
+- Classic fairy tale book aesthetic - think "The Secret Garden", "Peter Pan" illustrations
+
+ABSOLUTELY FORBIDDEN:
+- NO 3D CGI rendering whatsoever
+- NO plastic/smooth 3D surfaces
+- NO Pixar/Disney 3D movie style
+- NO photorealistic rendering
+- NO sharp, computer-generated edges
+
+The final image should look like it was painted by hand with watercolors or gouache!`;
 
     case "SEMI_REALISTIC":
-      return `SEMI-REALISTIC CARTOON illustration style
-- Child's face should closely match the reference photo with high accuracy
-- Natural, realistic facial proportions with soft, gentle stylization
-- Slightly stylized for storybook charm but recognizably the same child
-- Warm, friendly colors with natural lighting
-- Soft facial features with realistic skin tones
-- Professional quality illustration that parents would recognize their child in
-- Cozy storybook scene aesthetic - inviting and warm
-- NOT fully photorealistic, but clearly resembles the child
-- Bright, cheerful atmosphere with natural expressions`;
+      return `★★★ SEMI-REALISTIC PORTRAIT ILLUSTRATION STYLE ★★★
+CRITICAL: Balance between REALISTIC portrait and gentle illustration!
+
+MANDATORY STYLE REQUIREMENTS:
+- Child's face MUST closely match the reference photo - parents should recognize their child!
+- Realistic facial proportions, bone structure, and features
+- Style reference: Norman Rockwell, classic portrait illustration, modern children's book portraiture
+- Natural skin tones with realistic but soft shading
+- Eyes should be realistic size (NOT anime large), with natural catchlights
+- Realistic hair texture and color matching the photo exactly
+- Gentle stylization - slightly softened edges, warm color grading
+- Natural lighting like professional portrait photography
+- Warm, inviting atmosphere with soft focus backgrounds
+- Professional illustration quality - like premium children's book covers
+
+KEY BALANCE:
+- More REALISTIC than cartoon - face should be recognizable
+- More ILLUSTRATED than photo - artistic interpretation with warmth
+- Think "painted portrait" not "3D render" or "anime"
+- Cozy, nostalgic storybook feeling
+
+ABSOLUTELY FORBIDDEN:
+- NO anime/manga large eyes
+- NO heavy cartoon stylization that loses the child's likeness
+- NO 3D CGI plastic look
+- NO photorealistic uncanny valley effect
+
+Parents should say "That looks just like my child!" when they see it!`;
 
     case "WATERCOLOR":
       return `SOFT WATERCOLOR illustration style
@@ -405,7 +441,7 @@ function getArtStyleInstructions(illustrationStyle?: string | null): string {
 
 /**
  * Generate character reference image from child photo
- * This creates a consistent 3D CGI character that will be used across all pages
+ * This creates a consistent character in the specified art style that will be used across all pages
  * Phase 1 of character-first generation approach
  */
 export async function generateCharacterReference(
@@ -421,7 +457,14 @@ export async function generateCharacterReference(
   // Get style-specific art instructions
   const artStyleInstructions = getArtStyleInstructions(style);
 
-  const prompt = `Create a professional character reference for a children's book.
+  // Style-specific intro for character reference
+  const styleIntro = style === "FANTASY_STORYBOOK"
+    ? "Create a HAND-DRAWN 2D ILLUSTRATION character reference (NOT 3D!) for a fantasy storybook."
+    : style === "SEMI_REALISTIC"
+    ? "Create a SEMI-REALISTIC PORTRAIT ILLUSTRATION character reference for a children's book."
+    : "Create a professional 3D CGI character reference for a children's book.";
+
+  const prompt = `${styleIntro}
 
 CHARACTER TO CREATE: ${childName}${genderNote}
 
@@ -984,7 +1027,29 @@ Before generating, verify:
 If answer is NO to ANY question, STUDY THE PHOTO AGAIN and match more carefully!
 This character MUST be INSTANTLY recognizable as the child in the photo.`;
 
-  const enhancedPrompt = `Professional children's book ${pageType === "cover" ? "cover" : "page"} illustration. ${sceneDescription}
+  // Get style-specific rendering instruction
+  const styleEnforcement = style === "FANTASY_STORYBOOK"
+    ? `★★★ MANDATORY ART STYLE: HAND-DRAWN 2D ILLUSTRATION ★★★
+THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE 2D HAND-DRAWN/PAINTED!
+- Must look like traditional watercolor or gouache painting
+- Visible brush strokes, pencil textures, paint marks
+- NO 3D CGI rendering! NO plastic smooth surfaces!
+- If it looks like Pixar/Disney 3D, you have FAILED - redo it!`
+    : style === "SEMI_REALISTIC"
+    ? `★★★ MANDATORY ART STYLE: SEMI-REALISTIC PORTRAIT ★★★
+THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE A REALISTIC PORTRAIT ILLUSTRATION!
+- Face must look realistic enough that parents recognize their child
+- Natural proportions, realistic skin tones and lighting
+- NO anime eyes! NO heavy cartoon stylization!
+- Think painted portrait, not 3D render or cartoon`
+    : `★★★ MANDATORY ART STYLE: 3D CGI PIXAR/DISNEY ★★★
+THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE 3D CGI ANIMATION STYLE!
+- Professional 3D rendered like Pixar/Disney movies
+- Smooth 3D surfaces, realistic lighting, polished render`;
+
+  const enhancedPrompt = `${styleEnforcement}
+
+Professional children's book ${pageType === "cover" ? "cover" : "page"} illustration. ${sceneDescription}
 
 ${characterInstructions}
 
