@@ -16,8 +16,9 @@ ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
 
 WORKDIR /app
 
-# Copy package files only
+# Copy package files and prisma schema (needed for postinstall prisma generate)
 COPY package*.json ./
+COPY prisma ./prisma/
 
 # Install ALL dependencies including optional (sharp needs this)
 RUN npm install --include=optional
