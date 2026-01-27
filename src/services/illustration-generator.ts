@@ -312,34 +312,51 @@ ABSOLUTELY FORBIDDEN:
 The final image should look like it was painted by hand with watercolors or gouache!`;
 
     case "SEMI_REALISTIC":
-      return `★★★ SEMI-REALISTIC PORTRAIT ILLUSTRATION STYLE ★★★
-CRITICAL: Balance between REALISTIC portrait and gentle illustration!
+      return `★★★ SEMI-REALISTIC DIGITAL PORTRAIT ILLUSTRATION ★★★
+STYLE: Detailed digital illustration maintaining realistic facial features
 
-MANDATORY STYLE REQUIREMENTS:
-- Child's face MUST closely match the reference photo - parents should recognize their child!
-- Realistic facial proportions, bone structure, and features
-- Style reference: Norman Rockwell, classic portrait illustration, modern children's book portraiture
-- Natural skin tones with realistic but soft shading
-- Eyes should be realistic size (NOT anime large), with natural catchlights
-- Realistic hair texture and color matching the photo exactly
-- Gentle stylization - slightly softened edges, warm color grading
-- Natural lighting like professional portrait photography
-- Warm, inviting atmosphere with soft focus backgrounds
-- Professional illustration quality - like premium children's book covers
+CORE STYLE DEFINITION:
+- Digital painting style - smooth gradients, clean edges, polished finish
+- Realistic facial proportions preserved from reference photo
+- Style reference: Modern digital portrait art, Artstation portraits, premium children's book covers
+- Natural skin tones with soft, airbrushed shading (NOT harsh shadows)
+- Balanced lighting - soft diffused light, no dramatic shadows
+- Clean, professional illustration quality
 
-KEY BALANCE:
-- More REALISTIC than cartoon - face should be recognizable
-- More ILLUSTRATED than photo - artistic interpretation with warmth
-- Think "painted portrait" not "3D render" or "anime"
-- Cozy, nostalgic storybook feeling
+FACIAL FEATURES - CRITICAL:
+- Face shape, bone structure MUST match reference photo EXACTLY
+- Eyes: realistic size and shape (NOT enlarged), natural catchlights, same color as photo
+- Nose: exact same shape and size as reference
+- Mouth: natural shape, gentle expression
+- Skin: smooth but natural texture, realistic skin tones from photo
+- Hair: EXACT color, style, length, and texture from reference photo
+
+COLOR AND LIGHTING:
+- Warm, inviting color palette
+- Soft, even lighting across the face
+- Gentle color grading - slightly warm tones
+- NO harsh contrasts or dramatic shadows
+- Background: soft focus, complementary colors, NOT distracting
+
+TECHNICAL REQUIREMENTS:
+- Clean, artifact-free image
+- NO white boxes, rectangles, or frames anywhere
+- NO text, watermarks, signatures, or labels
+- NO UI elements or borders
+- Full bleed illustration - image fills entire frame
+- Consistent style on EVERY page
 
 ABSOLUTELY FORBIDDEN:
-- NO anime/manga large eyes
-- NO heavy cartoon stylization that loses the child's likeness
+- NO white squares or rectangles on the image
+- NO text overlays or captions
+- NO watermarks or signatures
+- NO anime/manga stylization
 - NO 3D CGI plastic look
-- NO photorealistic uncanny valley effect
+- NO photorealistic uncanny valley
+- NO dramatic lighting or harsh shadows
+- NO busy or cluttered compositions
 
-Parents should say "That looks just like my child!" when they see it!`;
+The child should be INSTANTLY recognizable to parents!`;
 
     case "WATERCOLOR":
       return `SOFT WATERCOLOR illustration style
@@ -785,9 +802,17 @@ OVERALL DESIGN:
 - Character's FACE should be clearly visible and expressive
 - Show character from waist-up or full body, but CLOSE enough to see facial features
 - Character actively participating in the scene
-- ABSOLUTELY NO text, words, letters, or writing
 - Professional children's book illustration with emphasis on character
-- Background visible but character is the MAIN focus`
+- Background visible but character is the MAIN focus
+
+★★★ CLEAN IMAGE - NO ARTIFACTS ★★★
+- ABSOLUTELY NO text, words, letters, or writing anywhere on the image
+- NO white boxes, rectangles, squares, or frames
+- NO borders, UI elements, or overlays
+- NO watermarks, signatures, or labels
+- NO captions or title cards
+- FULL BLEED: Image must fill the ENTIRE canvas edge-to-edge
+- CLEAN, PROFESSIONAL illustration only`
       : `BACKGROUND/ENVIRONMENT PAGE LAYOUT (Page 2 - RIGHT SIDE OF OPEN BOOK):
 ★★★ CRITICAL - SPATIAL CONTINUATION TO THE RIGHT ★★★
 
@@ -1036,12 +1061,14 @@ THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE 2D HAND-DRAWN/PAINTED!
 - NO 3D CGI rendering! NO plastic smooth surfaces!
 - If it looks like Pixar/Disney 3D, you have FAILED - redo it!`
     : style === "SEMI_REALISTIC"
-    ? `★★★ MANDATORY ART STYLE: SEMI-REALISTIC PORTRAIT ★★★
-THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE A REALISTIC PORTRAIT ILLUSTRATION!
-- Face must look realistic enough that parents recognize their child
-- Natural proportions, realistic skin tones and lighting
-- NO anime eyes! NO heavy cartoon stylization!
-- Think painted portrait, not 3D render or cartoon`
+    ? `★★★ MANDATORY ART STYLE: SEMI-REALISTIC DIGITAL PORTRAIT ★★★
+THIS IS NOT NEGOTIABLE - CLEAN DIGITAL PORTRAIT ILLUSTRATION!
+- Digital painting style with smooth gradients and polished finish
+- Face MUST be realistic - parents should recognize their child instantly
+- Natural proportions, realistic skin tones, soft even lighting
+- NO anime eyes! NO cartoon stylization! NO 3D CGI plastic look!
+- CLEAN IMAGE: NO white boxes, NO rectangles, NO frames, NO text, NO watermarks!
+- Full bleed illustration - image must fill the ENTIRE frame with NO borders!`
     : `★★★ MANDATORY ART STYLE: 3D CGI PIXAR/DISNEY ★★★
 THIS IS NOT NEGOTIABLE - THE IMAGE MUST BE 3D CGI ANIMATION STYLE!
 - Professional 3D rendered like Pixar/Disney movies
