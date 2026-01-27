@@ -75,6 +75,9 @@ model Book {
     status       BookStatus @default(PREVIEW_GENERATING)
 
     // Customization
+    ageCategory       String?
+    theme             String?
+    subject           String?
     illustrationStyle IllustrationStyle @default(ANIMATION_3D)
 
     // Character reference

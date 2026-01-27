@@ -187,6 +187,9 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
       childGender: childInput.gender,
       genreName: genre.nameUz,
       genreDescription: genre.description,
+      ageCategory: book.ageCategory,
+      theme: book.theme,
+      subject: book.subject,
       illustrationStyle: book.illustrationStyle ?? "ANIMATION_3D",
     });
 

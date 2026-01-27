@@ -2542,6 +2542,9 @@ export namespace Prisma {
     childInputId: string | null
     genreId: string | null
     status: $Enums.BookStatus | null
+    ageCategory: string | null
+    theme: string | null
+    subject: string | null
     illustrationStyle: $Enums.IllustrationStyle | null
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2555,6 +2558,9 @@ export namespace Prisma {
     childInputId: string | null
     genreId: string | null
     status: $Enums.BookStatus | null
+    ageCategory: string | null
+    theme: string | null
+    subject: string | null
     illustrationStyle: $Enums.IllustrationStyle | null
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2568,6 +2574,9 @@ export namespace Prisma {
     childInputId: number
     genreId: number
     status: number
+    ageCategory: number
+    theme: number
+    subject: number
     illustrationStyle: number
     characterReferenceUrl: number
     pdfUrl: number
@@ -2583,6 +2592,9 @@ export namespace Prisma {
     childInputId?: true
     genreId?: true
     status?: true
+    ageCategory?: true
+    theme?: true
+    subject?: true
     illustrationStyle?: true
     characterReferenceUrl?: true
     pdfUrl?: true
@@ -2596,6 +2608,9 @@ export namespace Prisma {
     childInputId?: true
     genreId?: true
     status?: true
+    ageCategory?: true
+    theme?: true
+    subject?: true
     illustrationStyle?: true
     characterReferenceUrl?: true
     pdfUrl?: true
@@ -2609,6 +2624,9 @@ export namespace Prisma {
     childInputId?: true
     genreId?: true
     status?: true
+    ageCategory?: true
+    theme?: true
+    subject?: true
     illustrationStyle?: true
     characterReferenceUrl?: true
     pdfUrl?: true
@@ -2695,6 +2713,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status: $Enums.BookStatus
+    ageCategory: string | null
+    theme: string | null
+    subject: string | null
     illustrationStyle: $Enums.IllustrationStyle
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2725,6 +2746,9 @@ export namespace Prisma {
     childInputId?: boolean
     genreId?: boolean
     status?: boolean
+    ageCategory?: boolean
+    theme?: boolean
+    subject?: boolean
     illustrationStyle?: boolean
     characterReferenceUrl?: boolean
     pdfUrl?: boolean
@@ -2743,6 +2767,9 @@ export namespace Prisma {
     childInputId?: boolean
     genreId?: boolean
     status?: boolean
+    ageCategory?: boolean
+    theme?: boolean
+    subject?: boolean
     illustrationStyle?: boolean
     characterReferenceUrl?: boolean
     pdfUrl?: boolean
@@ -2758,6 +2785,9 @@ export namespace Prisma {
     childInputId?: boolean
     genreId?: boolean
     status?: boolean
+    ageCategory?: boolean
+    theme?: boolean
+    subject?: boolean
     illustrationStyle?: boolean
     characterReferenceUrl?: boolean
     pdfUrl?: boolean
@@ -2773,6 +2803,9 @@ export namespace Prisma {
     childInputId?: boolean
     genreId?: boolean
     status?: boolean
+    ageCategory?: boolean
+    theme?: boolean
+    subject?: boolean
     illustrationStyle?: boolean
     characterReferenceUrl?: boolean
     pdfUrl?: boolean
@@ -2780,7 +2813,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "childInputId" | "genreId" | "status" | "illustrationStyle" | "characterReferenceUrl" | "pdfUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["book"]>
+  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "childInputId" | "genreId" | "status" | "ageCategory" | "theme" | "subject" | "illustrationStyle" | "characterReferenceUrl" | "pdfUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["book"]>
   export type BookInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     childInput?: boolean | ChildInputDefaultArgs<ExtArgs>
     genre?: boolean | GenreDefaultArgs<ExtArgs>
@@ -2811,6 +2844,9 @@ export namespace Prisma {
       childInputId: string
       genreId: string
       status: $Enums.BookStatus
+      ageCategory: string | null
+      theme: string | null
+      subject: string | null
       illustrationStyle: $Enums.IllustrationStyle
       characterReferenceUrl: string | null
       pdfUrl: string | null
@@ -3248,6 +3284,9 @@ export namespace Prisma {
     readonly childInputId: FieldRef<"Book", 'String'>
     readonly genreId: FieldRef<"Book", 'String'>
     readonly status: FieldRef<"Book", 'BookStatus'>
+    readonly ageCategory: FieldRef<"Book", 'String'>
+    readonly theme: FieldRef<"Book", 'String'>
+    readonly subject: FieldRef<"Book", 'String'>
     readonly illustrationStyle: FieldRef<"Book", 'IllustrationStyle'>
     readonly characterReferenceUrl: FieldRef<"Book", 'String'>
     readonly pdfUrl: FieldRef<"Book", 'String'>
@@ -7201,6 +7240,9 @@ export namespace Prisma {
     childInputId: 'childInputId',
     genreId: 'genreId',
     status: 'status',
+    ageCategory: 'ageCategory',
+    theme: 'theme',
+    subject: 'subject',
     illustrationStyle: 'illustrationStyle',
     characterReferenceUrl: 'characterReferenceUrl',
     pdfUrl: 'pdfUrl',
@@ -7479,6 +7521,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    ageCategory?: StringNullableFilter<"Book"> | string | null
+    theme?: StringNullableFilter<"Book"> | string | null
+    subject?: StringNullableFilter<"Book"> | string | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -7496,6 +7541,9 @@ export namespace Prisma {
     childInputId?: SortOrder
     genreId?: SortOrder
     status?: SortOrder
+    ageCategory?: SortOrderInput | SortOrder
+    theme?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
     illustrationStyle?: SortOrder
     characterReferenceUrl?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
@@ -7516,6 +7564,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    ageCategory?: StringNullableFilter<"Book"> | string | null
+    theme?: StringNullableFilter<"Book"> | string | null
+    subject?: StringNullableFilter<"Book"> | string | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -7533,6 +7584,9 @@ export namespace Prisma {
     childInputId?: SortOrder
     genreId?: SortOrder
     status?: SortOrder
+    ageCategory?: SortOrderInput | SortOrder
+    theme?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
     illustrationStyle?: SortOrder
     characterReferenceUrl?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
@@ -7552,6 +7606,9 @@ export namespace Prisma {
     childInputId?: StringWithAggregatesFilter<"Book"> | string
     genreId?: StringWithAggregatesFilter<"Book"> | string
     status?: EnumBookStatusWithAggregatesFilter<"Book"> | $Enums.BookStatus
+    ageCategory?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    theme?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    subject?: StringNullableWithAggregatesFilter<"Book"> | string | null
     illustrationStyle?: EnumIllustrationStyleWithAggregatesFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
     pdfUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
@@ -7878,6 +7935,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -7895,6 +7955,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -7908,6 +7971,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7925,6 +7991,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7940,6 +8009,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -7951,6 +8023,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7964,6 +8039,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8491,6 +8569,9 @@ export namespace Prisma {
     childInputId?: SortOrder
     genreId?: SortOrder
     status?: SortOrder
+    ageCategory?: SortOrder
+    theme?: SortOrder
+    subject?: SortOrder
     illustrationStyle?: SortOrder
     characterReferenceUrl?: SortOrder
     pdfUrl?: SortOrder
@@ -8504,6 +8585,9 @@ export namespace Prisma {
     childInputId?: SortOrder
     genreId?: SortOrder
     status?: SortOrder
+    ageCategory?: SortOrder
+    theme?: SortOrder
+    subject?: SortOrder
     illustrationStyle?: SortOrder
     characterReferenceUrl?: SortOrder
     pdfUrl?: SortOrder
@@ -8517,6 +8601,9 @@ export namespace Prisma {
     childInputId?: SortOrder
     genreId?: SortOrder
     status?: SortOrder
+    ageCategory?: SortOrder
+    theme?: SortOrder
+    subject?: SortOrder
     illustrationStyle?: SortOrder
     characterReferenceUrl?: SortOrder
     pdfUrl?: SortOrder
@@ -9249,6 +9336,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9265,6 +9355,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9293,6 +9386,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9309,6 +9405,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9571,6 +9670,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9586,6 +9688,9 @@ export namespace Prisma {
     userId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9630,6 +9735,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    ageCategory?: StringNullableFilter<"Book"> | string | null
+    theme?: StringNullableFilter<"Book"> | string | null
+    subject?: StringNullableFilter<"Book"> | string | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -9641,6 +9749,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9656,6 +9767,9 @@ export namespace Prisma {
     userId: string
     childInputId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9695,6 +9809,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9711,6 +9828,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9739,6 +9859,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9755,6 +9878,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9816,6 +9942,9 @@ export namespace Prisma {
     userId: string
     genreId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9827,6 +9956,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9842,6 +9974,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9856,6 +9991,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9868,6 +10006,9 @@ export namespace Prisma {
     userId: string
     childInputId: string
     status?: $Enums.BookStatus
+    ageCategory?: string | null
+    theme?: string | null
+    subject?: string | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9879,6 +10020,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9894,6 +10038,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9908,6 +10055,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
