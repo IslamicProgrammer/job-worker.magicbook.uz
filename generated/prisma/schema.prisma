@@ -31,6 +31,57 @@ enum BookStatus {
   FAILED
 }
 
+enum AgeCategory {
+  AGE_0_2
+  AGE_3_5
+  AGE_6_9
+  AGE_10_PLUS
+}
+
+enum BookTheme {
+  EDUCATIONAL
+  FAIRY_TALES
+  ADVENTURE
+  ACTIVITIES
+  WORLDS
+  STORIES
+  HOLIDAYS
+  FAMILY
+}
+
+enum StorySubject {
+  IN_THE_JUNGLE
+  THE_SAVANNA
+  DEEP_IN_THE_OCEAN
+  AT_THE_NORTH_POLE
+  CANDY_LAND
+  MAGICAL_FOREST
+  FAIRY_KINGDOM
+  THE_MIDDLE_AGES
+  THE_PREHISTORIC_AGE
+  THE_WILD_WEST
+  THE_VIKINGS
+  ANCIENT_EGYPT
+  ANCIENT_GREECE
+  ANCIENT_ROME
+  ARABIAN_NIGHTS_1001
+  IN_SPACE
+  IN_THE_FUTURE
+  ON_MARS
+  SAMARKAND_HISTORY
+  BUKHARA_TALES
+  KHIVA_LEGENDS
+  SILK_ROAD_ADVENTURE
+  UZBEK_CUISINE
+  NAVRUZ_CELEBRATION
+  UZBEK_FAIRY_TALES
+  AMIR_TEMUR_ERA
+  TASHKENT_MODERN
+  FERGANA_VALLEY
+  DESERT_KYZYLKUM
+  MOUNTAIN_TIEN_SHAN
+}
+
 enum IllustrationStyle {
   // Main 3 styles (recommended)
   ANIMATION_3D
@@ -75,9 +126,9 @@ model Book {
   status       BookStatus @default(PREVIEW_GENERATING)
 
   // Customization
-  ageCategory       String?
-  theme             String?
-  subject           String?
+  ageCategory       AgeCategory?
+  theme             BookTheme?
+  subject           StorySubject?
   illustrationStyle IllustrationStyle @default(ANIMATION_3D)
 
   // Character reference

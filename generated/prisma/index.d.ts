@@ -67,6 +67,66 @@ export const BookStatus: {
 export type BookStatus = (typeof BookStatus)[keyof typeof BookStatus]
 
 
+export const AgeCategory: {
+  AGE_0_2: 'AGE_0_2',
+  AGE_3_5: 'AGE_3_5',
+  AGE_6_9: 'AGE_6_9',
+  AGE_10_PLUS: 'AGE_10_PLUS'
+};
+
+export type AgeCategory = (typeof AgeCategory)[keyof typeof AgeCategory]
+
+
+export const BookTheme: {
+  EDUCATIONAL: 'EDUCATIONAL',
+  FAIRY_TALES: 'FAIRY_TALES',
+  ADVENTURE: 'ADVENTURE',
+  ACTIVITIES: 'ACTIVITIES',
+  WORLDS: 'WORLDS',
+  STORIES: 'STORIES',
+  HOLIDAYS: 'HOLIDAYS',
+  FAMILY: 'FAMILY'
+};
+
+export type BookTheme = (typeof BookTheme)[keyof typeof BookTheme]
+
+
+export const StorySubject: {
+  IN_THE_JUNGLE: 'IN_THE_JUNGLE',
+  THE_SAVANNA: 'THE_SAVANNA',
+  DEEP_IN_THE_OCEAN: 'DEEP_IN_THE_OCEAN',
+  AT_THE_NORTH_POLE: 'AT_THE_NORTH_POLE',
+  CANDY_LAND: 'CANDY_LAND',
+  MAGICAL_FOREST: 'MAGICAL_FOREST',
+  FAIRY_KINGDOM: 'FAIRY_KINGDOM',
+  THE_MIDDLE_AGES: 'THE_MIDDLE_AGES',
+  THE_PREHISTORIC_AGE: 'THE_PREHISTORIC_AGE',
+  THE_WILD_WEST: 'THE_WILD_WEST',
+  THE_VIKINGS: 'THE_VIKINGS',
+  ANCIENT_EGYPT: 'ANCIENT_EGYPT',
+  ANCIENT_GREECE: 'ANCIENT_GREECE',
+  ANCIENT_ROME: 'ANCIENT_ROME',
+  ARABIAN_NIGHTS_1001: 'ARABIAN_NIGHTS_1001',
+  IN_SPACE: 'IN_SPACE',
+  IN_THE_FUTURE: 'IN_THE_FUTURE',
+  ON_MARS: 'ON_MARS',
+  SAMARKAND_HISTORY: 'SAMARKAND_HISTORY',
+  BUKHARA_TALES: 'BUKHARA_TALES',
+  KHIVA_LEGENDS: 'KHIVA_LEGENDS',
+  SILK_ROAD_ADVENTURE: 'SILK_ROAD_ADVENTURE',
+  UZBEK_CUISINE: 'UZBEK_CUISINE',
+  NAVRUZ_CELEBRATION: 'NAVRUZ_CELEBRATION',
+  UZBEK_FAIRY_TALES: 'UZBEK_FAIRY_TALES',
+  AMIR_TEMUR_ERA: 'AMIR_TEMUR_ERA',
+  TASHKENT_MODERN: 'TASHKENT_MODERN',
+  FERGANA_VALLEY: 'FERGANA_VALLEY',
+  DESERT_KYZYLKUM: 'DESERT_KYZYLKUM',
+  MOUNTAIN_TIEN_SHAN: 'MOUNTAIN_TIEN_SHAN'
+};
+
+export type StorySubject = (typeof StorySubject)[keyof typeof StorySubject]
+
+
 export const IllustrationStyle: {
   ANIMATION_3D: 'ANIMATION_3D',
   FANTASY_STORYBOOK: 'FANTASY_STORYBOOK',
@@ -95,6 +155,18 @@ export const GenerationJobStatus: typeof $Enums.GenerationJobStatus
 export type BookStatus = $Enums.BookStatus
 
 export const BookStatus: typeof $Enums.BookStatus
+
+export type AgeCategory = $Enums.AgeCategory
+
+export const AgeCategory: typeof $Enums.AgeCategory
+
+export type BookTheme = $Enums.BookTheme
+
+export const BookTheme: typeof $Enums.BookTheme
+
+export type StorySubject = $Enums.StorySubject
+
+export const StorySubject: typeof $Enums.StorySubject
 
 export type IllustrationStyle = $Enums.IllustrationStyle
 
@@ -2542,9 +2614,9 @@ export namespace Prisma {
     childInputId: string | null
     genreId: string | null
     status: $Enums.BookStatus | null
-    ageCategory: string | null
-    theme: string | null
-    subject: string | null
+    ageCategory: $Enums.AgeCategory | null
+    theme: $Enums.BookTheme | null
+    subject: $Enums.StorySubject | null
     illustrationStyle: $Enums.IllustrationStyle | null
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2558,9 +2630,9 @@ export namespace Prisma {
     childInputId: string | null
     genreId: string | null
     status: $Enums.BookStatus | null
-    ageCategory: string | null
-    theme: string | null
-    subject: string | null
+    ageCategory: $Enums.AgeCategory | null
+    theme: $Enums.BookTheme | null
+    subject: $Enums.StorySubject | null
     illustrationStyle: $Enums.IllustrationStyle | null
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2713,9 +2785,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status: $Enums.BookStatus
-    ageCategory: string | null
-    theme: string | null
-    subject: string | null
+    ageCategory: $Enums.AgeCategory | null
+    theme: $Enums.BookTheme | null
+    subject: $Enums.StorySubject | null
     illustrationStyle: $Enums.IllustrationStyle
     characterReferenceUrl: string | null
     pdfUrl: string | null
@@ -2844,9 +2916,9 @@ export namespace Prisma {
       childInputId: string
       genreId: string
       status: $Enums.BookStatus
-      ageCategory: string | null
-      theme: string | null
-      subject: string | null
+      ageCategory: $Enums.AgeCategory | null
+      theme: $Enums.BookTheme | null
+      subject: $Enums.StorySubject | null
       illustrationStyle: $Enums.IllustrationStyle
       characterReferenceUrl: string | null
       pdfUrl: string | null
@@ -3284,9 +3356,9 @@ export namespace Prisma {
     readonly childInputId: FieldRef<"Book", 'String'>
     readonly genreId: FieldRef<"Book", 'String'>
     readonly status: FieldRef<"Book", 'BookStatus'>
-    readonly ageCategory: FieldRef<"Book", 'String'>
-    readonly theme: FieldRef<"Book", 'String'>
-    readonly subject: FieldRef<"Book", 'String'>
+    readonly ageCategory: FieldRef<"Book", 'AgeCategory'>
+    readonly theme: FieldRef<"Book", 'BookTheme'>
+    readonly subject: FieldRef<"Book", 'StorySubject'>
     readonly illustrationStyle: FieldRef<"Book", 'IllustrationStyle'>
     readonly characterReferenceUrl: FieldRef<"Book", 'String'>
     readonly pdfUrl: FieldRef<"Book", 'String'>
@@ -7398,6 +7470,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'AgeCategory'
+   */
+  export type EnumAgeCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AgeCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'AgeCategory[]'
+   */
+  export type ListEnumAgeCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AgeCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BookTheme'
+   */
+  export type EnumBookThemeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookTheme'>
+    
+
+
+  /**
+   * Reference to a field of type 'BookTheme[]'
+   */
+  export type ListEnumBookThemeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookTheme[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'StorySubject'
+   */
+  export type EnumStorySubjectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StorySubject'>
+    
+
+
+  /**
+   * Reference to a field of type 'StorySubject[]'
+   */
+  export type ListEnumStorySubjectFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StorySubject[]'>
+    
+
+
+  /**
    * Reference to a field of type 'IllustrationStyle'
    */
   export type EnumIllustrationStyleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IllustrationStyle'>
@@ -7521,9 +7635,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
-    ageCategory?: StringNullableFilter<"Book"> | string | null
-    theme?: StringNullableFilter<"Book"> | string | null
-    subject?: StringNullableFilter<"Book"> | string | null
+    ageCategory?: EnumAgeCategoryNullableFilter<"Book"> | $Enums.AgeCategory | null
+    theme?: EnumBookThemeNullableFilter<"Book"> | $Enums.BookTheme | null
+    subject?: EnumStorySubjectNullableFilter<"Book"> | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -7564,9 +7678,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
-    ageCategory?: StringNullableFilter<"Book"> | string | null
-    theme?: StringNullableFilter<"Book"> | string | null
-    subject?: StringNullableFilter<"Book"> | string | null
+    ageCategory?: EnumAgeCategoryNullableFilter<"Book"> | $Enums.AgeCategory | null
+    theme?: EnumBookThemeNullableFilter<"Book"> | $Enums.BookTheme | null
+    subject?: EnumStorySubjectNullableFilter<"Book"> | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -7606,9 +7720,9 @@ export namespace Prisma {
     childInputId?: StringWithAggregatesFilter<"Book"> | string
     genreId?: StringWithAggregatesFilter<"Book"> | string
     status?: EnumBookStatusWithAggregatesFilter<"Book"> | $Enums.BookStatus
-    ageCategory?: StringNullableWithAggregatesFilter<"Book"> | string | null
-    theme?: StringNullableWithAggregatesFilter<"Book"> | string | null
-    subject?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    ageCategory?: EnumAgeCategoryNullableWithAggregatesFilter<"Book"> | $Enums.AgeCategory | null
+    theme?: EnumBookThemeNullableWithAggregatesFilter<"Book"> | $Enums.BookTheme | null
+    subject?: EnumStorySubjectNullableWithAggregatesFilter<"Book"> | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleWithAggregatesFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
     pdfUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
@@ -7935,9 +8049,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -7955,9 +8069,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -7971,9 +8085,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7991,9 +8105,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8009,9 +8123,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -8023,9 +8137,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8039,9 +8153,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8531,6 +8645,27 @@ export namespace Prisma {
     not?: NestedEnumBookStatusFilter<$PrismaModel> | $Enums.BookStatus
   }
 
+  export type EnumAgeCategoryNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AgeCategory | EnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAgeCategoryNullableFilter<$PrismaModel> | $Enums.AgeCategory | null
+  }
+
+  export type EnumBookThemeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookTheme | EnumBookThemeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBookThemeNullableFilter<$PrismaModel> | $Enums.BookTheme | null
+  }
+
+  export type EnumStorySubjectNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.StorySubject | EnumStorySubjectFieldRefInput<$PrismaModel> | null
+    in?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumStorySubjectNullableFilter<$PrismaModel> | $Enums.StorySubject | null
+  }
+
   export type EnumIllustrationStyleFilter<$PrismaModel = never> = {
     equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
     in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
@@ -8619,6 +8754,36 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBookStatusFilter<$PrismaModel>
     _max?: NestedEnumBookStatusFilter<$PrismaModel>
+  }
+
+  export type EnumAgeCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AgeCategory | EnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAgeCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.AgeCategory | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumAgeCategoryNullableFilter<$PrismaModel>
+    _max?: NestedEnumAgeCategoryNullableFilter<$PrismaModel>
+  }
+
+  export type EnumBookThemeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookTheme | EnumBookThemeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBookThemeNullableWithAggregatesFilter<$PrismaModel> | $Enums.BookTheme | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumBookThemeNullableFilter<$PrismaModel>
+    _max?: NestedEnumBookThemeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumStorySubjectNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StorySubject | EnumStorySubjectFieldRefInput<$PrismaModel> | null
+    in?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumStorySubjectNullableWithAggregatesFilter<$PrismaModel> | $Enums.StorySubject | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumStorySubjectNullableFilter<$PrismaModel>
+    _max?: NestedEnumStorySubjectNullableFilter<$PrismaModel>
   }
 
   export type EnumIllustrationStyleWithAggregatesFilter<$PrismaModel = never> = {
@@ -8900,6 +9065,18 @@ export namespace Prisma {
 
   export type EnumBookStatusFieldUpdateOperationsInput = {
     set?: $Enums.BookStatus
+  }
+
+  export type NullableEnumAgeCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.AgeCategory | null
+  }
+
+  export type NullableEnumBookThemeFieldUpdateOperationsInput = {
+    set?: $Enums.BookTheme | null
+  }
+
+  export type NullableEnumStorySubjectFieldUpdateOperationsInput = {
+    set?: $Enums.StorySubject | null
   }
 
   export type EnumIllustrationStyleFieldUpdateOperationsInput = {
@@ -9265,6 +9442,27 @@ export namespace Prisma {
     not?: NestedEnumBookStatusFilter<$PrismaModel> | $Enums.BookStatus
   }
 
+  export type NestedEnumAgeCategoryNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AgeCategory | EnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAgeCategoryNullableFilter<$PrismaModel> | $Enums.AgeCategory | null
+  }
+
+  export type NestedEnumBookThemeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookTheme | EnumBookThemeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBookThemeNullableFilter<$PrismaModel> | $Enums.BookTheme | null
+  }
+
+  export type NestedEnumStorySubjectNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.StorySubject | EnumStorySubjectFieldRefInput<$PrismaModel> | null
+    in?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumStorySubjectNullableFilter<$PrismaModel> | $Enums.StorySubject | null
+  }
+
   export type NestedEnumIllustrationStyleFilter<$PrismaModel = never> = {
     equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
     in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
@@ -9280,6 +9478,36 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBookStatusFilter<$PrismaModel>
     _max?: NestedEnumBookStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAgeCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AgeCategory | EnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AgeCategory[] | ListEnumAgeCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAgeCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.AgeCategory | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumAgeCategoryNullableFilter<$PrismaModel>
+    _max?: NestedEnumAgeCategoryNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBookThemeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BookTheme | EnumBookThemeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BookTheme[] | ListEnumBookThemeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBookThemeNullableWithAggregatesFilter<$PrismaModel> | $Enums.BookTheme | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumBookThemeNullableFilter<$PrismaModel>
+    _max?: NestedEnumBookThemeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumStorySubjectNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StorySubject | EnumStorySubjectFieldRefInput<$PrismaModel> | null
+    in?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.StorySubject[] | ListEnumStorySubjectFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumStorySubjectNullableWithAggregatesFilter<$PrismaModel> | $Enums.StorySubject | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumStorySubjectNullableFilter<$PrismaModel>
+    _max?: NestedEnumStorySubjectNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumIllustrationStyleWithAggregatesFilter<$PrismaModel = never> = {
@@ -9336,9 +9564,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9355,9 +9583,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9386,9 +9614,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9405,9 +9633,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9670,9 +9898,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9688,9 +9916,9 @@ export namespace Prisma {
     userId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9735,9 +9963,9 @@ export namespace Prisma {
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
-    ageCategory?: StringNullableFilter<"Book"> | string | null
-    theme?: StringNullableFilter<"Book"> | string | null
-    subject?: StringNullableFilter<"Book"> | string | null
+    ageCategory?: EnumAgeCategoryNullableFilter<"Book"> | $Enums.AgeCategory | null
+    theme?: EnumBookThemeNullableFilter<"Book"> | $Enums.BookTheme | null
+    subject?: EnumStorySubjectNullableFilter<"Book"> | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
     characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
@@ -9749,9 +9977,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9767,9 +9995,9 @@ export namespace Prisma {
     userId: string
     childInputId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9809,9 +10037,9 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9828,9 +10056,9 @@ export namespace Prisma {
     childInputId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9859,9 +10087,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9878,9 +10106,9 @@ export namespace Prisma {
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9942,9 +10170,9 @@ export namespace Prisma {
     userId: string
     genreId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -9956,9 +10184,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9974,9 +10202,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9991,9 +10219,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10006,9 +10234,9 @@ export namespace Prisma {
     userId: string
     childInputId: string
     status?: $Enums.BookStatus
-    ageCategory?: string | null
-    theme?: string | null
-    subject?: string | null
+    ageCategory?: $Enums.AgeCategory | null
+    theme?: $Enums.BookTheme | null
+    subject?: $Enums.StorySubject | null
     illustrationStyle?: $Enums.IllustrationStyle
     characterReferenceUrl?: string | null
     pdfUrl?: string | null
@@ -10020,9 +10248,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10038,9 +10266,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10055,9 +10283,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
-    ageCategory?: NullableStringFieldUpdateOperationsInput | string | null
-    theme?: NullableStringFieldUpdateOperationsInput | string | null
-    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    ageCategory?: NullableEnumAgeCategoryFieldUpdateOperationsInput | $Enums.AgeCategory | null
+    theme?: NullableEnumBookThemeFieldUpdateOperationsInput | $Enums.BookTheme | null
+    subject?: NullableEnumStorySubjectFieldUpdateOperationsInput | $Enums.StorySubject | null
     illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
     characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
