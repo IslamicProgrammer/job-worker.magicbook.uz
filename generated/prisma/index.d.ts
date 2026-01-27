@@ -34,10 +34,10 @@ export type ChildInput = $Result.DefaultSelection<Prisma.$ChildInputPayload>
  */
 export type Genre = $Result.DefaultSelection<Prisma.$GenrePayload>
 /**
- * Model BookPage
+ * Model Page
  * 
  */
-export type BookPage = $Result.DefaultSelection<Prisma.$BookPagePayload>
+export type Page = $Result.DefaultSelection<Prisma.$PagePayload>
 
 /**
  * Enums
@@ -56,13 +56,35 @@ export type GenerationJobStatus = (typeof GenerationJobStatus)[keyof typeof Gene
 
 
 export const BookStatus: {
-  PENDING: 'PENDING',
-  GENERATING: 'GENERATING',
+  PREVIEW_GENERATING: 'PREVIEW_GENERATING',
+  PREVIEW_READY: 'PREVIEW_READY',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETING: 'COMPLETING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED'
 };
 
 export type BookStatus = (typeof BookStatus)[keyof typeof BookStatus]
+
+
+export const IllustrationStyle: {
+  ANIMATION_3D: 'ANIMATION_3D',
+  FANTASY_STORYBOOK: 'FANTASY_STORYBOOK',
+  SEMI_REALISTIC: 'SEMI_REALISTIC',
+  GEOMETRIC: 'GEOMETRIC',
+  WATERCOLOR: 'WATERCOLOR',
+  GOUACHE: 'GOUACHE',
+  PICTURE_BOOK: 'PICTURE_BOOK',
+  BLOCK_WORLD: 'BLOCK_WORLD',
+  SOFT_ANIME: 'SOFT_ANIME',
+  COLLAGE: 'COLLAGE',
+  CLAY_ANIMATION: 'CLAY_ANIMATION',
+  KAWAII: 'KAWAII',
+  COMIC_BOOK: 'COMIC_BOOK',
+  STICKER_ART: 'STICKER_ART'
+};
+
+export type IllustrationStyle = (typeof IllustrationStyle)[keyof typeof IllustrationStyle]
 
 }
 
@@ -73,6 +95,10 @@ export const GenerationJobStatus: typeof $Enums.GenerationJobStatus
 export type BookStatus = $Enums.BookStatus
 
 export const BookStatus: typeof $Enums.BookStatus
+
+export type IllustrationStyle = $Enums.IllustrationStyle
+
+export const IllustrationStyle: typeof $Enums.IllustrationStyle
 
 /**
  * ##  Prisma Client ʲˢ
@@ -233,14 +259,14 @@ export class PrismaClient<
   get genre(): Prisma.GenreDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.bookPage`: Exposes CRUD operations for the **BookPage** model.
+   * `prisma.page`: Exposes CRUD operations for the **Page** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more BookPages
-    * const bookPages = await prisma.bookPage.findMany()
+    * // Fetch zero or more Pages
+    * const pages = await prisma.page.findMany()
     * ```
     */
-  get bookPage(): Prisma.BookPageDelegate<ExtArgs, ClientOptions>;
+  get page(): Prisma.PageDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -686,7 +712,7 @@ export namespace Prisma {
     Book: 'Book',
     ChildInput: 'ChildInput',
     Genre: 'Genre',
-    BookPage: 'BookPage'
+    Page: 'Page'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -705,7 +731,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "generationJob" | "book" | "childInput" | "genre" | "bookPage"
+      modelProps: "generationJob" | "book" | "childInput" | "genre" | "page"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1005,77 +1031,77 @@ export namespace Prisma {
           }
         }
       }
-      BookPage: {
-        payload: Prisma.$BookPagePayload<ExtArgs>
-        fields: Prisma.BookPageFieldRefs
+      Page: {
+        payload: Prisma.$PagePayload<ExtArgs>
+        fields: Prisma.PageFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.BookPageFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload> | null
+            args: Prisma.PageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.BookPageFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           findFirst: {
-            args: Prisma.BookPageFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload> | null
+            args: Prisma.PageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.BookPageFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           findMany: {
-            args: Prisma.BookPageFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>[]
+            args: Prisma.PageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>[]
           }
           create: {
-            args: Prisma.BookPageCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           createMany: {
-            args: Prisma.BookPageCreateManyArgs<ExtArgs>
+            args: Prisma.PageCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.BookPageCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>[]
+            args: Prisma.PageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>[]
           }
           delete: {
-            args: Prisma.BookPageDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           update: {
-            args: Prisma.BookPageUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           deleteMany: {
-            args: Prisma.BookPageDeleteManyArgs<ExtArgs>
+            args: Prisma.PageDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.BookPageUpdateManyArgs<ExtArgs>
+            args: Prisma.PageUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.BookPageUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>[]
+            args: Prisma.PageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>[]
           }
           upsert: {
-            args: Prisma.BookPageUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BookPagePayload>
+            args: Prisma.PageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PagePayload>
           }
           aggregate: {
-            args: Prisma.BookPageAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBookPage>
+            args: Prisma.PageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePage>
           }
           groupBy: {
-            args: Prisma.BookPageGroupByArgs<ExtArgs>
-            result: $Utils.Optional<BookPageGroupByOutputType>[]
+            args: Prisma.PageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PageGroupByOutputType>[]
           }
           count: {
-            args: Prisma.BookPageCountArgs<ExtArgs>
-            result: $Utils.Optional<BookPageCountAggregateOutputType> | number
+            args: Prisma.PageCountArgs<ExtArgs>
+            result: $Utils.Optional<PageCountAggregateOutputType> | number
           }
         }
       }
@@ -1179,7 +1205,7 @@ export namespace Prisma {
     book?: BookOmit
     childInput?: ChildInputOmit
     genre?: GenreOmit
-    bookPage?: BookPageOmit
+    page?: PageOmit
   }
 
   /* Types for Logging */
@@ -1282,7 +1308,7 @@ export namespace Prisma {
    * BookCountOutputType without action
    */
   export type BookCountOutputTypeCountPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BookPageWhereInput
+    where?: PageWhereInput
   }
 
 
@@ -2515,10 +2541,10 @@ export namespace Prisma {
     userId: string | null
     childInputId: string | null
     genreId: string | null
-    title: string | null
     status: $Enums.BookStatus | null
+    illustrationStyle: $Enums.IllustrationStyle | null
+    characterReferenceUrl: string | null
     pdfUrl: string | null
-    illustrationStyle: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2528,10 +2554,10 @@ export namespace Prisma {
     userId: string | null
     childInputId: string | null
     genreId: string | null
-    title: string | null
     status: $Enums.BookStatus | null
+    illustrationStyle: $Enums.IllustrationStyle | null
+    characterReferenceUrl: string | null
     pdfUrl: string | null
-    illustrationStyle: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2541,10 +2567,10 @@ export namespace Prisma {
     userId: number
     childInputId: number
     genreId: number
-    title: number
     status: number
-    pdfUrl: number
     illustrationStyle: number
+    characterReferenceUrl: number
+    pdfUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2556,10 +2582,10 @@ export namespace Prisma {
     userId?: true
     childInputId?: true
     genreId?: true
-    title?: true
     status?: true
-    pdfUrl?: true
     illustrationStyle?: true
+    characterReferenceUrl?: true
+    pdfUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2569,10 +2595,10 @@ export namespace Prisma {
     userId?: true
     childInputId?: true
     genreId?: true
-    title?: true
     status?: true
-    pdfUrl?: true
     illustrationStyle?: true
+    characterReferenceUrl?: true
+    pdfUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2582,10 +2608,10 @@ export namespace Prisma {
     userId?: true
     childInputId?: true
     genreId?: true
-    title?: true
     status?: true
-    pdfUrl?: true
     illustrationStyle?: true
+    characterReferenceUrl?: true
+    pdfUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2668,10 +2694,10 @@ export namespace Prisma {
     userId: string
     childInputId: string
     genreId: string
-    title: string | null
     status: $Enums.BookStatus
+    illustrationStyle: $Enums.IllustrationStyle
+    characterReferenceUrl: string | null
     pdfUrl: string | null
-    illustrationStyle: string | null
     createdAt: Date
     updatedAt: Date
     _count: BookCountAggregateOutputType | null
@@ -2698,10 +2724,10 @@ export namespace Prisma {
     userId?: boolean
     childInputId?: boolean
     genreId?: boolean
-    title?: boolean
     status?: boolean
-    pdfUrl?: boolean
     illustrationStyle?: boolean
+    characterReferenceUrl?: boolean
+    pdfUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     childInput?: boolean | ChildInputDefaultArgs<ExtArgs>
@@ -2716,10 +2742,10 @@ export namespace Prisma {
     userId?: boolean
     childInputId?: boolean
     genreId?: boolean
-    title?: boolean
     status?: boolean
-    pdfUrl?: boolean
     illustrationStyle?: boolean
+    characterReferenceUrl?: boolean
+    pdfUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     childInput?: boolean | ChildInputDefaultArgs<ExtArgs>
@@ -2731,10 +2757,10 @@ export namespace Prisma {
     userId?: boolean
     childInputId?: boolean
     genreId?: boolean
-    title?: boolean
     status?: boolean
-    pdfUrl?: boolean
     illustrationStyle?: boolean
+    characterReferenceUrl?: boolean
+    pdfUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     childInput?: boolean | ChildInputDefaultArgs<ExtArgs>
@@ -2746,15 +2772,15 @@ export namespace Prisma {
     userId?: boolean
     childInputId?: boolean
     genreId?: boolean
-    title?: boolean
     status?: boolean
-    pdfUrl?: boolean
     illustrationStyle?: boolean
+    characterReferenceUrl?: boolean
+    pdfUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "childInputId" | "genreId" | "title" | "status" | "pdfUrl" | "illustrationStyle" | "createdAt" | "updatedAt", ExtArgs["result"]["book"]>
+  export type BookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "childInputId" | "genreId" | "status" | "illustrationStyle" | "characterReferenceUrl" | "pdfUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["book"]>
   export type BookInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     childInput?: boolean | ChildInputDefaultArgs<ExtArgs>
     genre?: boolean | GenreDefaultArgs<ExtArgs>
@@ -2776,7 +2802,7 @@ export namespace Prisma {
     objects: {
       childInput: Prisma.$ChildInputPayload<ExtArgs>
       genre: Prisma.$GenrePayload<ExtArgs>
-      pages: Prisma.$BookPagePayload<ExtArgs>[]
+      pages: Prisma.$PagePayload<ExtArgs>[]
       generationJob: Prisma.$GenerationJobPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2784,10 +2810,10 @@ export namespace Prisma {
       userId: string
       childInputId: string
       genreId: string
-      title: string | null
       status: $Enums.BookStatus
+      illustrationStyle: $Enums.IllustrationStyle
+      characterReferenceUrl: string | null
       pdfUrl: string | null
-      illustrationStyle: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["book"]>
@@ -3186,7 +3212,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     childInput<T extends ChildInputDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChildInputDefaultArgs<ExtArgs>>): Prisma__ChildInputClient<$Result.GetResult<Prisma.$ChildInputPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     genre<T extends GenreDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GenreDefaultArgs<ExtArgs>>): Prisma__GenreClient<$Result.GetResult<Prisma.$GenrePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    pages<T extends Book$pagesArgs<ExtArgs> = {}>(args?: Subset<T, Book$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pages<T extends Book$pagesArgs<ExtArgs> = {}>(args?: Subset<T, Book$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     generationJob<T extends Book$generationJobArgs<ExtArgs> = {}>(args?: Subset<T, Book$generationJobArgs<ExtArgs>>): Prisma__GenerationJobClient<$Result.GetResult<Prisma.$GenerationJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3221,10 +3247,10 @@ export namespace Prisma {
     readonly userId: FieldRef<"Book", 'String'>
     readonly childInputId: FieldRef<"Book", 'String'>
     readonly genreId: FieldRef<"Book", 'String'>
-    readonly title: FieldRef<"Book", 'String'>
     readonly status: FieldRef<"Book", 'BookStatus'>
+    readonly illustrationStyle: FieldRef<"Book", 'IllustrationStyle'>
+    readonly characterReferenceUrl: FieldRef<"Book", 'String'>
     readonly pdfUrl: FieldRef<"Book", 'String'>
-    readonly illustrationStyle: FieldRef<"Book", 'String'>
     readonly createdAt: FieldRef<"Book", 'DateTime'>
     readonly updatedAt: FieldRef<"Book", 'DateTime'>
   }
@@ -3627,23 +3653,23 @@ export namespace Prisma {
    */
   export type Book$pagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
-    where?: BookPageWhereInput
-    orderBy?: BookPageOrderByWithRelationInput | BookPageOrderByWithRelationInput[]
-    cursor?: BookPageWhereUniqueInput
+    include?: PageInclude<ExtArgs> | null
+    where?: PageWhereInput
+    orderBy?: PageOrderByWithRelationInput | PageOrderByWithRelationInput[]
+    cursor?: PageWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: BookPageScalarFieldEnum | BookPageScalarFieldEnum[]
+    distinct?: PageScalarFieldEnum | PageScalarFieldEnum[]
   }
 
   /**
@@ -4864,42 +4890,33 @@ export namespace Prisma {
     id: string | null
     nameUz: string | null
     nameRu: string | null
-    descriptionUz: string | null
-    descriptionRu: string | null
-    promptTemplate: string | null
-    iconEmoji: string | null
-    isActive: boolean | null
+    nameEn: string | null
+    description: string | null
+    iconName: string | null
     sortOrder: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
+    isActive: boolean | null
   }
 
   export type GenreMaxAggregateOutputType = {
     id: string | null
     nameUz: string | null
     nameRu: string | null
-    descriptionUz: string | null
-    descriptionRu: string | null
-    promptTemplate: string | null
-    iconEmoji: string | null
-    isActive: boolean | null
+    nameEn: string | null
+    description: string | null
+    iconName: string | null
     sortOrder: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
+    isActive: boolean | null
   }
 
   export type GenreCountAggregateOutputType = {
     id: number
     nameUz: number
     nameRu: number
-    descriptionUz: number
-    descriptionRu: number
-    promptTemplate: number
-    iconEmoji: number
-    isActive: number
+    nameEn: number
+    description: number
+    iconName: number
     sortOrder: number
-    createdAt: number
-    updatedAt: number
+    isActive: number
     _all: number
   }
 
@@ -4916,42 +4933,33 @@ export namespace Prisma {
     id?: true
     nameUz?: true
     nameRu?: true
-    descriptionUz?: true
-    descriptionRu?: true
-    promptTemplate?: true
-    iconEmoji?: true
-    isActive?: true
+    nameEn?: true
+    description?: true
+    iconName?: true
     sortOrder?: true
-    createdAt?: true
-    updatedAt?: true
+    isActive?: true
   }
 
   export type GenreMaxAggregateInputType = {
     id?: true
     nameUz?: true
     nameRu?: true
-    descriptionUz?: true
-    descriptionRu?: true
-    promptTemplate?: true
-    iconEmoji?: true
-    isActive?: true
+    nameEn?: true
+    description?: true
+    iconName?: true
     sortOrder?: true
-    createdAt?: true
-    updatedAt?: true
+    isActive?: true
   }
 
   export type GenreCountAggregateInputType = {
     id?: true
     nameUz?: true
     nameRu?: true
-    descriptionUz?: true
-    descriptionRu?: true
-    promptTemplate?: true
-    iconEmoji?: true
-    isActive?: true
+    nameEn?: true
+    description?: true
+    iconName?: true
     sortOrder?: true
-    createdAt?: true
-    updatedAt?: true
+    isActive?: true
     _all?: true
   }
 
@@ -5044,15 +5052,12 @@ export namespace Prisma {
   export type GenreGroupByOutputType = {
     id: string
     nameUz: string
-    nameRu: string | null
-    descriptionUz: string | null
-    descriptionRu: string | null
-    promptTemplate: string
-    iconEmoji: string | null
-    isActive: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder: number
-    createdAt: Date
-    updatedAt: Date
+    isActive: boolean
     _count: GenreCountAggregateOutputType | null
     _avg: GenreAvgAggregateOutputType | null
     _sum: GenreSumAggregateOutputType | null
@@ -5078,14 +5083,11 @@ export namespace Prisma {
     id?: boolean
     nameUz?: boolean
     nameRu?: boolean
-    descriptionUz?: boolean
-    descriptionRu?: boolean
-    promptTemplate?: boolean
-    iconEmoji?: boolean
-    isActive?: boolean
+    nameEn?: boolean
+    description?: boolean
+    iconName?: boolean
     sortOrder?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
+    isActive?: boolean
     books?: boolean | Genre$booksArgs<ExtArgs>
     _count?: boolean | GenreCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["genre"]>
@@ -5094,45 +5096,36 @@ export namespace Prisma {
     id?: boolean
     nameUz?: boolean
     nameRu?: boolean
-    descriptionUz?: boolean
-    descriptionRu?: boolean
-    promptTemplate?: boolean
-    iconEmoji?: boolean
-    isActive?: boolean
+    nameEn?: boolean
+    description?: boolean
+    iconName?: boolean
     sortOrder?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
+    isActive?: boolean
   }, ExtArgs["result"]["genre"]>
 
   export type GenreSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     nameUz?: boolean
     nameRu?: boolean
-    descriptionUz?: boolean
-    descriptionRu?: boolean
-    promptTemplate?: boolean
-    iconEmoji?: boolean
-    isActive?: boolean
+    nameEn?: boolean
+    description?: boolean
+    iconName?: boolean
     sortOrder?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
+    isActive?: boolean
   }, ExtArgs["result"]["genre"]>
 
   export type GenreSelectScalar = {
     id?: boolean
     nameUz?: boolean
     nameRu?: boolean
-    descriptionUz?: boolean
-    descriptionRu?: boolean
-    promptTemplate?: boolean
-    iconEmoji?: boolean
-    isActive?: boolean
+    nameEn?: boolean
+    description?: boolean
+    iconName?: boolean
     sortOrder?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
+    isActive?: boolean
   }
 
-  export type GenreOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nameUz" | "nameRu" | "descriptionUz" | "descriptionRu" | "promptTemplate" | "iconEmoji" | "isActive" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["genre"]>
+  export type GenreOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nameUz" | "nameRu" | "nameEn" | "description" | "iconName" | "sortOrder" | "isActive", ExtArgs["result"]["genre"]>
   export type GenreInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     books?: boolean | Genre$booksArgs<ExtArgs>
     _count?: boolean | GenreCountOutputTypeDefaultArgs<ExtArgs>
@@ -5148,15 +5141,12 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       nameUz: string
-      nameRu: string | null
-      descriptionUz: string | null
-      descriptionRu: string | null
-      promptTemplate: string
-      iconEmoji: string | null
-      isActive: boolean
+      nameRu: string
+      nameEn: string
+      description: string
+      iconName: string
       sortOrder: number
-      createdAt: Date
-      updatedAt: Date
+      isActive: boolean
     }, ExtArgs["result"]["genre"]>
     composites: {}
   }
@@ -5584,14 +5574,11 @@ export namespace Prisma {
     readonly id: FieldRef<"Genre", 'String'>
     readonly nameUz: FieldRef<"Genre", 'String'>
     readonly nameRu: FieldRef<"Genre", 'String'>
-    readonly descriptionUz: FieldRef<"Genre", 'String'>
-    readonly descriptionRu: FieldRef<"Genre", 'String'>
-    readonly promptTemplate: FieldRef<"Genre", 'String'>
-    readonly iconEmoji: FieldRef<"Genre", 'String'>
-    readonly isActive: FieldRef<"Genre", 'Boolean'>
+    readonly nameEn: FieldRef<"Genre", 'String'>
+    readonly description: FieldRef<"Genre", 'String'>
+    readonly iconName: FieldRef<"Genre", 'String'>
     readonly sortOrder: FieldRef<"Genre", 'Int'>
-    readonly createdAt: FieldRef<"Genre", 'DateTime'>
-    readonly updatedAt: FieldRef<"Genre", 'DateTime'>
+    readonly isActive: FieldRef<"Genre", 'Boolean'>
   }
     
 
@@ -6023,311 +6010,300 @@ export namespace Prisma {
 
 
   /**
-   * Model BookPage
+   * Model Page
    */
 
-  export type AggregateBookPage = {
-    _count: BookPageCountAggregateOutputType | null
-    _avg: BookPageAvgAggregateOutputType | null
-    _sum: BookPageSumAggregateOutputType | null
-    _min: BookPageMinAggregateOutputType | null
-    _max: BookPageMaxAggregateOutputType | null
+  export type AggregatePage = {
+    _count: PageCountAggregateOutputType | null
+    _avg: PageAvgAggregateOutputType | null
+    _sum: PageSumAggregateOutputType | null
+    _min: PageMinAggregateOutputType | null
+    _max: PageMaxAggregateOutputType | null
   }
 
-  export type BookPageAvgAggregateOutputType = {
+  export type PageAvgAggregateOutputType = {
     pageNumber: number | null
   }
 
-  export type BookPageSumAggregateOutputType = {
+  export type PageSumAggregateOutputType = {
     pageNumber: number | null
   }
 
-  export type BookPageMinAggregateOutputType = {
+  export type PageMinAggregateOutputType = {
     id: string | null
     bookId: string | null
     pageNumber: number | null
     text: string | null
     sceneDescription: string | null
     imageUrl: string | null
-    imageKey: string | null
     backgroundImageUrl: string | null
-    backgroundImageKey: string | null
+    replicatePredictionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type BookPageMaxAggregateOutputType = {
+  export type PageMaxAggregateOutputType = {
     id: string | null
     bookId: string | null
     pageNumber: number | null
     text: string | null
     sceneDescription: string | null
     imageUrl: string | null
-    imageKey: string | null
     backgroundImageUrl: string | null
-    backgroundImageKey: string | null
+    replicatePredictionId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type BookPageCountAggregateOutputType = {
+  export type PageCountAggregateOutputType = {
     id: number
     bookId: number
     pageNumber: number
     text: number
     sceneDescription: number
     imageUrl: number
-    imageKey: number
     backgroundImageUrl: number
-    backgroundImageKey: number
+    replicatePredictionId: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type BookPageAvgAggregateInputType = {
+  export type PageAvgAggregateInputType = {
     pageNumber?: true
   }
 
-  export type BookPageSumAggregateInputType = {
+  export type PageSumAggregateInputType = {
     pageNumber?: true
   }
 
-  export type BookPageMinAggregateInputType = {
+  export type PageMinAggregateInputType = {
     id?: true
     bookId?: true
     pageNumber?: true
     text?: true
     sceneDescription?: true
     imageUrl?: true
-    imageKey?: true
     backgroundImageUrl?: true
-    backgroundImageKey?: true
+    replicatePredictionId?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type BookPageMaxAggregateInputType = {
+  export type PageMaxAggregateInputType = {
     id?: true
     bookId?: true
     pageNumber?: true
     text?: true
     sceneDescription?: true
     imageUrl?: true
-    imageKey?: true
     backgroundImageUrl?: true
-    backgroundImageKey?: true
+    replicatePredictionId?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type BookPageCountAggregateInputType = {
+  export type PageCountAggregateInputType = {
     id?: true
     bookId?: true
     pageNumber?: true
     text?: true
     sceneDescription?: true
     imageUrl?: true
-    imageKey?: true
     backgroundImageUrl?: true
-    backgroundImageKey?: true
+    replicatePredictionId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type BookPageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which BookPage to aggregate.
+     * Filter which Page to aggregate.
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of BookPages to fetch.
+     * Determine the order of Pages to fetch.
      */
-    orderBy?: BookPageOrderByWithRelationInput | BookPageOrderByWithRelationInput[]
+    orderBy?: PageOrderByWithRelationInput | PageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: BookPageWhereUniqueInput
+    cursor?: PageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` BookPages from the position of the cursor.
+     * Take `±n` Pages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` BookPages.
+     * Skip the first `n` Pages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned BookPages
+     * Count returned Pages
     **/
-    _count?: true | BookPageCountAggregateInputType
+    _count?: true | PageCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: BookPageAvgAggregateInputType
+    _avg?: PageAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: BookPageSumAggregateInputType
+    _sum?: PageSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: BookPageMinAggregateInputType
+    _min?: PageMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: BookPageMaxAggregateInputType
+    _max?: PageMaxAggregateInputType
   }
 
-  export type GetBookPageAggregateType<T extends BookPageAggregateArgs> = {
-        [P in keyof T & keyof AggregateBookPage]: P extends '_count' | 'count'
+  export type GetPageAggregateType<T extends PageAggregateArgs> = {
+        [P in keyof T & keyof AggregatePage]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateBookPage[P]>
-      : GetScalarType<T[P], AggregateBookPage[P]>
+        : GetScalarType<T[P], AggregatePage[P]>
+      : GetScalarType<T[P], AggregatePage[P]>
   }
 
 
 
 
-  export type BookPageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BookPageWhereInput
-    orderBy?: BookPageOrderByWithAggregationInput | BookPageOrderByWithAggregationInput[]
-    by: BookPageScalarFieldEnum[] | BookPageScalarFieldEnum
-    having?: BookPageScalarWhereWithAggregatesInput
+  export type PageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PageWhereInput
+    orderBy?: PageOrderByWithAggregationInput | PageOrderByWithAggregationInput[]
+    by: PageScalarFieldEnum[] | PageScalarFieldEnum
+    having?: PageScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: BookPageCountAggregateInputType | true
-    _avg?: BookPageAvgAggregateInputType
-    _sum?: BookPageSumAggregateInputType
-    _min?: BookPageMinAggregateInputType
-    _max?: BookPageMaxAggregateInputType
+    _count?: PageCountAggregateInputType | true
+    _avg?: PageAvgAggregateInputType
+    _sum?: PageSumAggregateInputType
+    _min?: PageMinAggregateInputType
+    _max?: PageMaxAggregateInputType
   }
 
-  export type BookPageGroupByOutputType = {
+  export type PageGroupByOutputType = {
     id: string
     bookId: string
     pageNumber: number
     text: string
-    sceneDescription: string | null
+    sceneDescription: string
     imageUrl: string | null
-    imageKey: string | null
     backgroundImageUrl: string | null
-    backgroundImageKey: string | null
+    replicatePredictionId: string | null
     createdAt: Date
     updatedAt: Date
-    _count: BookPageCountAggregateOutputType | null
-    _avg: BookPageAvgAggregateOutputType | null
-    _sum: BookPageSumAggregateOutputType | null
-    _min: BookPageMinAggregateOutputType | null
-    _max: BookPageMaxAggregateOutputType | null
+    _count: PageCountAggregateOutputType | null
+    _avg: PageAvgAggregateOutputType | null
+    _sum: PageSumAggregateOutputType | null
+    _min: PageMinAggregateOutputType | null
+    _max: PageMaxAggregateOutputType | null
   }
 
-  type GetBookPageGroupByPayload<T extends BookPageGroupByArgs> = Prisma.PrismaPromise<
+  type GetPageGroupByPayload<T extends PageGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<BookPageGroupByOutputType, T['by']> &
+      PickEnumerable<PageGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof BookPageGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof PageGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], BookPageGroupByOutputType[P]>
-            : GetScalarType<T[P], BookPageGroupByOutputType[P]>
+              : GetScalarType<T[P], PageGroupByOutputType[P]>
+            : GetScalarType<T[P], PageGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type BookPageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     bookId?: boolean
     pageNumber?: boolean
     text?: boolean
     sceneDescription?: boolean
     imageUrl?: boolean
-    imageKey?: boolean
     backgroundImageUrl?: boolean
-    backgroundImageKey?: boolean
+    replicatePredictionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     book?: boolean | BookDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bookPage"]>
+  }, ExtArgs["result"]["page"]>
 
-  export type BookPageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     bookId?: boolean
     pageNumber?: boolean
     text?: boolean
     sceneDescription?: boolean
     imageUrl?: boolean
-    imageKey?: boolean
     backgroundImageUrl?: boolean
-    backgroundImageKey?: boolean
+    replicatePredictionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     book?: boolean | BookDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bookPage"]>
+  }, ExtArgs["result"]["page"]>
 
-  export type BookPageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     bookId?: boolean
     pageNumber?: boolean
     text?: boolean
     sceneDescription?: boolean
     imageUrl?: boolean
-    imageKey?: boolean
     backgroundImageUrl?: boolean
-    backgroundImageKey?: boolean
+    replicatePredictionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     book?: boolean | BookDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["bookPage"]>
+  }, ExtArgs["result"]["page"]>
 
-  export type BookPageSelectScalar = {
+  export type PageSelectScalar = {
     id?: boolean
     bookId?: boolean
     pageNumber?: boolean
     text?: boolean
     sceneDescription?: boolean
     imageUrl?: boolean
-    imageKey?: boolean
     backgroundImageUrl?: boolean
-    backgroundImageKey?: boolean
+    replicatePredictionId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BookPageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "bookId" | "pageNumber" | "text" | "sceneDescription" | "imageUrl" | "imageKey" | "backgroundImageUrl" | "backgroundImageKey" | "createdAt" | "updatedAt", ExtArgs["result"]["bookPage"]>
-  export type BookPageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "bookId" | "pageNumber" | "text" | "sceneDescription" | "imageUrl" | "backgroundImageUrl" | "replicatePredictionId" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
+  export type PageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     book?: boolean | BookDefaultArgs<ExtArgs>
   }
-  export type BookPageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     book?: boolean | BookDefaultArgs<ExtArgs>
   }
-  export type BookPageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     book?: boolean | BookDefaultArgs<ExtArgs>
   }
 
-  export type $BookPagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "BookPage"
+  export type $PagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Page"
     objects: {
       book: Prisma.$BookPayload<ExtArgs>
     }
@@ -6336,143 +6312,142 @@ export namespace Prisma {
       bookId: string
       pageNumber: number
       text: string
-      sceneDescription: string | null
+      sceneDescription: string
       imageUrl: string | null
-      imageKey: string | null
       backgroundImageUrl: string | null
-      backgroundImageKey: string | null
+      replicatePredictionId: string | null
       createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["bookPage"]>
+    }, ExtArgs["result"]["page"]>
     composites: {}
   }
 
-  type BookPageGetPayload<S extends boolean | null | undefined | BookPageDefaultArgs> = $Result.GetResult<Prisma.$BookPagePayload, S>
+  type PageGetPayload<S extends boolean | null | undefined | PageDefaultArgs> = $Result.GetResult<Prisma.$PagePayload, S>
 
-  type BookPageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<BookPageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: BookPageCountAggregateInputType | true
+  type PageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PageCountAggregateInputType | true
     }
 
-  export interface BookPageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BookPage'], meta: { name: 'BookPage' } }
+  export interface PageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Page'], meta: { name: 'Page' } }
     /**
-     * Find zero or one BookPage that matches the filter.
-     * @param {BookPageFindUniqueArgs} args - Arguments to find a BookPage
+     * Find zero or one Page that matches the filter.
+     * @param {PageFindUniqueArgs} args - Arguments to find a Page
      * @example
-     * // Get one BookPage
-     * const bookPage = await prisma.bookPage.findUnique({
+     * // Get one Page
+     * const page = await prisma.page.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends BookPageFindUniqueArgs>(args: SelectSubset<T, BookPageFindUniqueArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends PageFindUniqueArgs>(args: SelectSubset<T, PageFindUniqueArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one BookPage that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Page that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {BookPageFindUniqueOrThrowArgs} args - Arguments to find a BookPage
+     * @param {PageFindUniqueOrThrowArgs} args - Arguments to find a Page
      * @example
-     * // Get one BookPage
-     * const bookPage = await prisma.bookPage.findUniqueOrThrow({
+     * // Get one Page
+     * const page = await prisma.page.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends BookPageFindUniqueOrThrowArgs>(args: SelectSubset<T, BookPageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends PageFindUniqueOrThrowArgs>(args: SelectSubset<T, PageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first BookPage that matches the filter.
+     * Find the first Page that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageFindFirstArgs} args - Arguments to find a BookPage
+     * @param {PageFindFirstArgs} args - Arguments to find a Page
      * @example
-     * // Get one BookPage
-     * const bookPage = await prisma.bookPage.findFirst({
+     * // Get one Page
+     * const page = await prisma.page.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends BookPageFindFirstArgs>(args?: SelectSubset<T, BookPageFindFirstArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends PageFindFirstArgs>(args?: SelectSubset<T, PageFindFirstArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first BookPage that matches the filter or
+     * Find the first Page that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageFindFirstOrThrowArgs} args - Arguments to find a BookPage
+     * @param {PageFindFirstOrThrowArgs} args - Arguments to find a Page
      * @example
-     * // Get one BookPage
-     * const bookPage = await prisma.bookPage.findFirstOrThrow({
+     * // Get one Page
+     * const page = await prisma.page.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends BookPageFindFirstOrThrowArgs>(args?: SelectSubset<T, BookPageFindFirstOrThrowArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends PageFindFirstOrThrowArgs>(args?: SelectSubset<T, PageFindFirstOrThrowArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more BookPages that matches the filter.
+     * Find zero or more Pages that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {PageFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all BookPages
-     * const bookPages = await prisma.bookPage.findMany()
+     * // Get all Pages
+     * const pages = await prisma.page.findMany()
      * 
-     * // Get first 10 BookPages
-     * const bookPages = await prisma.bookPage.findMany({ take: 10 })
+     * // Get first 10 Pages
+     * const pages = await prisma.page.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const bookPageWithIdOnly = await prisma.bookPage.findMany({ select: { id: true } })
+     * const pageWithIdOnly = await prisma.page.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends BookPageFindManyArgs>(args?: SelectSubset<T, BookPageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends PageFindManyArgs>(args?: SelectSubset<T, PageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a BookPage.
-     * @param {BookPageCreateArgs} args - Arguments to create a BookPage.
+     * Create a Page.
+     * @param {PageCreateArgs} args - Arguments to create a Page.
      * @example
-     * // Create one BookPage
-     * const BookPage = await prisma.bookPage.create({
+     * // Create one Page
+     * const Page = await prisma.page.create({
      *   data: {
-     *     // ... data to create a BookPage
+     *     // ... data to create a Page
      *   }
      * })
      * 
      */
-    create<T extends BookPageCreateArgs>(args: SelectSubset<T, BookPageCreateArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends PageCreateArgs>(args: SelectSubset<T, PageCreateArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many BookPages.
-     * @param {BookPageCreateManyArgs} args - Arguments to create many BookPages.
+     * Create many Pages.
+     * @param {PageCreateManyArgs} args - Arguments to create many Pages.
      * @example
-     * // Create many BookPages
-     * const bookPage = await prisma.bookPage.createMany({
+     * // Create many Pages
+     * const page = await prisma.page.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends BookPageCreateManyArgs>(args?: SelectSubset<T, BookPageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends PageCreateManyArgs>(args?: SelectSubset<T, PageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many BookPages and returns the data saved in the database.
-     * @param {BookPageCreateManyAndReturnArgs} args - Arguments to create many BookPages.
+     * Create many Pages and returns the data saved in the database.
+     * @param {PageCreateManyAndReturnArgs} args - Arguments to create many Pages.
      * @example
-     * // Create many BookPages
-     * const bookPage = await prisma.bookPage.createManyAndReturn({
+     * // Create many Pages
+     * const page = await prisma.page.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many BookPages and only return the `id`
-     * const bookPageWithIdOnly = await prisma.bookPage.createManyAndReturn({
+     * // Create many Pages and only return the `id`
+     * const pageWithIdOnly = await prisma.page.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -6482,28 +6457,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends BookPageCreateManyAndReturnArgs>(args?: SelectSubset<T, BookPageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends PageCreateManyAndReturnArgs>(args?: SelectSubset<T, PageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a BookPage.
-     * @param {BookPageDeleteArgs} args - Arguments to delete one BookPage.
+     * Delete a Page.
+     * @param {PageDeleteArgs} args - Arguments to delete one Page.
      * @example
-     * // Delete one BookPage
-     * const BookPage = await prisma.bookPage.delete({
+     * // Delete one Page
+     * const Page = await prisma.page.delete({
      *   where: {
-     *     // ... filter to delete one BookPage
+     *     // ... filter to delete one Page
      *   }
      * })
      * 
      */
-    delete<T extends BookPageDeleteArgs>(args: SelectSubset<T, BookPageDeleteArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends PageDeleteArgs>(args: SelectSubset<T, PageDeleteArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one BookPage.
-     * @param {BookPageUpdateArgs} args - Arguments to update one BookPage.
+     * Update one Page.
+     * @param {PageUpdateArgs} args - Arguments to update one Page.
      * @example
-     * // Update one BookPage
-     * const bookPage = await prisma.bookPage.update({
+     * // Update one Page
+     * const page = await prisma.page.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6513,30 +6488,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends BookPageUpdateArgs>(args: SelectSubset<T, BookPageUpdateArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends PageUpdateArgs>(args: SelectSubset<T, PageUpdateArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more BookPages.
-     * @param {BookPageDeleteManyArgs} args - Arguments to filter BookPages to delete.
+     * Delete zero or more Pages.
+     * @param {PageDeleteManyArgs} args - Arguments to filter Pages to delete.
      * @example
-     * // Delete a few BookPages
-     * const { count } = await prisma.bookPage.deleteMany({
+     * // Delete a few Pages
+     * const { count } = await prisma.page.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends BookPageDeleteManyArgs>(args?: SelectSubset<T, BookPageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends PageDeleteManyArgs>(args?: SelectSubset<T, PageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more BookPages.
+     * Update zero or more Pages.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {PageUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many BookPages
-     * const bookPage = await prisma.bookPage.updateMany({
+     * // Update many Pages
+     * const page = await prisma.page.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6546,14 +6521,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends BookPageUpdateManyArgs>(args: SelectSubset<T, BookPageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends PageUpdateManyArgs>(args: SelectSubset<T, PageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more BookPages and returns the data updated in the database.
-     * @param {BookPageUpdateManyAndReturnArgs} args - Arguments to update many BookPages.
+     * Update zero or more Pages and returns the data updated in the database.
+     * @param {PageUpdateManyAndReturnArgs} args - Arguments to update many Pages.
      * @example
-     * // Update many BookPages
-     * const bookPage = await prisma.bookPage.updateManyAndReturn({
+     * // Update many Pages
+     * const page = await prisma.page.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6562,8 +6537,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more BookPages and only return the `id`
-     * const bookPageWithIdOnly = await prisma.bookPage.updateManyAndReturn({
+     * // Update zero or more Pages and only return the `id`
+     * const pageWithIdOnly = await prisma.page.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -6576,56 +6551,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends BookPageUpdateManyAndReturnArgs>(args: SelectSubset<T, BookPageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends PageUpdateManyAndReturnArgs>(args: SelectSubset<T, PageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one BookPage.
-     * @param {BookPageUpsertArgs} args - Arguments to update or create a BookPage.
+     * Create or update one Page.
+     * @param {PageUpsertArgs} args - Arguments to update or create a Page.
      * @example
-     * // Update or create a BookPage
-     * const bookPage = await prisma.bookPage.upsert({
+     * // Update or create a Page
+     * const page = await prisma.page.upsert({
      *   create: {
-     *     // ... data to create a BookPage
+     *     // ... data to create a Page
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the BookPage we want to update
+     *     // ... the filter for the Page we want to update
      *   }
      * })
      */
-    upsert<T extends BookPageUpsertArgs>(args: SelectSubset<T, BookPageUpsertArgs<ExtArgs>>): Prisma__BookPageClient<$Result.GetResult<Prisma.$BookPagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends PageUpsertArgs>(args: SelectSubset<T, PageUpsertArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of BookPages.
+     * Count the number of Pages.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageCountArgs} args - Arguments to filter BookPages to count.
+     * @param {PageCountArgs} args - Arguments to filter Pages to count.
      * @example
-     * // Count the number of BookPages
-     * const count = await prisma.bookPage.count({
+     * // Count the number of Pages
+     * const count = await prisma.page.count({
      *   where: {
-     *     // ... the filter for the BookPages we want to count
+     *     // ... the filter for the Pages we want to count
      *   }
      * })
     **/
-    count<T extends BookPageCountArgs>(
-      args?: Subset<T, BookPageCountArgs>,
+    count<T extends PageCountArgs>(
+      args?: Subset<T, PageCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], BookPageCountAggregateOutputType>
+          : GetScalarType<T['select'], PageCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a BookPage.
+     * Allows you to perform aggregations operations on a Page.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {PageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -6645,13 +6620,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends BookPageAggregateArgs>(args: Subset<T, BookPageAggregateArgs>): Prisma.PrismaPromise<GetBookPageAggregateType<T>>
+    aggregate<T extends PageAggregateArgs>(args: Subset<T, PageAggregateArgs>): Prisma.PrismaPromise<GetPageAggregateType<T>>
 
     /**
-     * Group by BookPage.
+     * Group by Page.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BookPageGroupByArgs} args - Group by arguments.
+     * @param {PageGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -6666,14 +6641,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends BookPageGroupByArgs,
+      T extends PageGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: BookPageGroupByArgs['orderBy'] }
-        : { orderBy?: BookPageGroupByArgs['orderBy'] },
+        ? { orderBy: PageGroupByArgs['orderBy'] }
+        : { orderBy?: PageGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -6722,20 +6697,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, BookPageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBookPageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, PageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the BookPage model
+   * Fields of the Page model
    */
-  readonly fields: BookPageFieldRefs;
+  readonly fields: PageFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for BookPage.
+   * The delegate class that acts as a "Promise-like" for Page.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__BookPageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__PageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     book<T extends BookDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BookDefaultArgs<ExtArgs>>): Prisma__BookClient<$Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -6764,431 +6739,430 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the BookPage model
+   * Fields of the Page model
    */
-  interface BookPageFieldRefs {
-    readonly id: FieldRef<"BookPage", 'String'>
-    readonly bookId: FieldRef<"BookPage", 'String'>
-    readonly pageNumber: FieldRef<"BookPage", 'Int'>
-    readonly text: FieldRef<"BookPage", 'String'>
-    readonly sceneDescription: FieldRef<"BookPage", 'String'>
-    readonly imageUrl: FieldRef<"BookPage", 'String'>
-    readonly imageKey: FieldRef<"BookPage", 'String'>
-    readonly backgroundImageUrl: FieldRef<"BookPage", 'String'>
-    readonly backgroundImageKey: FieldRef<"BookPage", 'String'>
-    readonly createdAt: FieldRef<"BookPage", 'DateTime'>
-    readonly updatedAt: FieldRef<"BookPage", 'DateTime'>
+  interface PageFieldRefs {
+    readonly id: FieldRef<"Page", 'String'>
+    readonly bookId: FieldRef<"Page", 'String'>
+    readonly pageNumber: FieldRef<"Page", 'Int'>
+    readonly text: FieldRef<"Page", 'String'>
+    readonly sceneDescription: FieldRef<"Page", 'String'>
+    readonly imageUrl: FieldRef<"Page", 'String'>
+    readonly backgroundImageUrl: FieldRef<"Page", 'String'>
+    readonly replicatePredictionId: FieldRef<"Page", 'String'>
+    readonly createdAt: FieldRef<"Page", 'DateTime'>
+    readonly updatedAt: FieldRef<"Page", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * BookPage findUnique
+   * Page findUnique
    */
-  export type BookPageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter, which BookPage to fetch.
+     * Filter, which Page to fetch.
      */
-    where: BookPageWhereUniqueInput
+    where: PageWhereUniqueInput
   }
 
   /**
-   * BookPage findUniqueOrThrow
+   * Page findUniqueOrThrow
    */
-  export type BookPageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter, which BookPage to fetch.
+     * Filter, which Page to fetch.
      */
-    where: BookPageWhereUniqueInput
+    where: PageWhereUniqueInput
   }
 
   /**
-   * BookPage findFirst
+   * Page findFirst
    */
-  export type BookPageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter, which BookPage to fetch.
+     * Filter, which Page to fetch.
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of BookPages to fetch.
+     * Determine the order of Pages to fetch.
      */
-    orderBy?: BookPageOrderByWithRelationInput | BookPageOrderByWithRelationInput[]
+    orderBy?: PageOrderByWithRelationInput | PageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for BookPages.
+     * Sets the position for searching for Pages.
      */
-    cursor?: BookPageWhereUniqueInput
+    cursor?: PageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` BookPages from the position of the cursor.
+     * Take `±n` Pages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` BookPages.
+     * Skip the first `n` Pages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of BookPages.
+     * Filter by unique combinations of Pages.
      */
-    distinct?: BookPageScalarFieldEnum | BookPageScalarFieldEnum[]
+    distinct?: PageScalarFieldEnum | PageScalarFieldEnum[]
   }
 
   /**
-   * BookPage findFirstOrThrow
+   * Page findFirstOrThrow
    */
-  export type BookPageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter, which BookPage to fetch.
+     * Filter, which Page to fetch.
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of BookPages to fetch.
+     * Determine the order of Pages to fetch.
      */
-    orderBy?: BookPageOrderByWithRelationInput | BookPageOrderByWithRelationInput[]
+    orderBy?: PageOrderByWithRelationInput | PageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for BookPages.
+     * Sets the position for searching for Pages.
      */
-    cursor?: BookPageWhereUniqueInput
+    cursor?: PageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` BookPages from the position of the cursor.
+     * Take `±n` Pages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` BookPages.
+     * Skip the first `n` Pages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of BookPages.
+     * Filter by unique combinations of Pages.
      */
-    distinct?: BookPageScalarFieldEnum | BookPageScalarFieldEnum[]
+    distinct?: PageScalarFieldEnum | PageScalarFieldEnum[]
   }
 
   /**
-   * BookPage findMany
+   * Page findMany
    */
-  export type BookPageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter, which BookPages to fetch.
+     * Filter, which Pages to fetch.
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of BookPages to fetch.
+     * Determine the order of Pages to fetch.
      */
-    orderBy?: BookPageOrderByWithRelationInput | BookPageOrderByWithRelationInput[]
+    orderBy?: PageOrderByWithRelationInput | PageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing BookPages.
+     * Sets the position for listing Pages.
      */
-    cursor?: BookPageWhereUniqueInput
+    cursor?: PageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` BookPages from the position of the cursor.
+     * Take `±n` Pages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` BookPages.
+     * Skip the first `n` Pages.
      */
     skip?: number
-    distinct?: BookPageScalarFieldEnum | BookPageScalarFieldEnum[]
+    distinct?: PageScalarFieldEnum | PageScalarFieldEnum[]
   }
 
   /**
-   * BookPage create
+   * Page create
    */
-  export type BookPageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * The data needed to create a BookPage.
+     * The data needed to create a Page.
      */
-    data: XOR<BookPageCreateInput, BookPageUncheckedCreateInput>
+    data: XOR<PageCreateInput, PageUncheckedCreateInput>
   }
 
   /**
-   * BookPage createMany
+   * Page createMany
    */
-  export type BookPageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many BookPages.
+     * The data used to create many Pages.
      */
-    data: BookPageCreateManyInput | BookPageCreateManyInput[]
+    data: PageCreateManyInput | PageCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * BookPage createManyAndReturn
+   * Page createManyAndReturn
    */
-  export type BookPageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelectCreateManyAndReturn<ExtArgs> | null
+    select?: PageSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
-     * The data used to create many BookPages.
+     * The data used to create many Pages.
      */
-    data: BookPageCreateManyInput | BookPageCreateManyInput[]
+    data: PageCreateManyInput | PageCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: PageIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * BookPage update
+   * Page update
    */
-  export type BookPageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * The data needed to update a BookPage.
+     * The data needed to update a Page.
      */
-    data: XOR<BookPageUpdateInput, BookPageUncheckedUpdateInput>
+    data: XOR<PageUpdateInput, PageUncheckedUpdateInput>
     /**
-     * Choose, which BookPage to update.
+     * Choose, which Page to update.
      */
-    where: BookPageWhereUniqueInput
+    where: PageWhereUniqueInput
   }
 
   /**
-   * BookPage updateMany
+   * Page updateMany
    */
-  export type BookPageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update BookPages.
+     * The data used to update Pages.
      */
-    data: XOR<BookPageUpdateManyMutationInput, BookPageUncheckedUpdateManyInput>
+    data: XOR<PageUpdateManyMutationInput, PageUncheckedUpdateManyInput>
     /**
-     * Filter which BookPages to update
+     * Filter which Pages to update
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
-     * Limit how many BookPages to update.
+     * Limit how many Pages to update.
      */
     limit?: number
   }
 
   /**
-   * BookPage updateManyAndReturn
+   * Page updateManyAndReturn
    */
-  export type BookPageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: PageSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
-     * The data used to update BookPages.
+     * The data used to update Pages.
      */
-    data: XOR<BookPageUpdateManyMutationInput, BookPageUncheckedUpdateManyInput>
+    data: XOR<PageUpdateManyMutationInput, PageUncheckedUpdateManyInput>
     /**
-     * Filter which BookPages to update
+     * Filter which Pages to update
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
-     * Limit how many BookPages to update.
+     * Limit how many Pages to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: PageIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * BookPage upsert
+   * Page upsert
    */
-  export type BookPageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * The filter to search for the BookPage to update in case it exists.
+     * The filter to search for the Page to update in case it exists.
      */
-    where: BookPageWhereUniqueInput
+    where: PageWhereUniqueInput
     /**
-     * In case the BookPage found by the `where` argument doesn't exist, create a new BookPage with this data.
+     * In case the Page found by the `where` argument doesn't exist, create a new Page with this data.
      */
-    create: XOR<BookPageCreateInput, BookPageUncheckedCreateInput>
+    create: XOR<PageCreateInput, PageUncheckedCreateInput>
     /**
-     * In case the BookPage was found with the provided `where` argument, update it with this data.
+     * In case the Page was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<BookPageUpdateInput, BookPageUncheckedUpdateInput>
+    update: XOR<PageUpdateInput, PageUncheckedUpdateInput>
   }
 
   /**
-   * BookPage delete
+   * Page delete
    */
-  export type BookPageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
     /**
-     * Filter which BookPage to delete.
+     * Filter which Page to delete.
      */
-    where: BookPageWhereUniqueInput
+    where: PageWhereUniqueInput
   }
 
   /**
-   * BookPage deleteMany
+   * Page deleteMany
    */
-  export type BookPageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which BookPages to delete
+     * Filter which Pages to delete
      */
-    where?: BookPageWhereInput
+    where?: PageWhereInput
     /**
-     * Limit how many BookPages to delete.
+     * Limit how many Pages to delete.
      */
     limit?: number
   }
 
   /**
-   * BookPage without action
+   * Page without action
    */
-  export type BookPageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BookPage
+     * Select specific fields to fetch from the Page
      */
-    select?: BookPageSelect<ExtArgs> | null
+    select?: PageSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the BookPage
+     * Omit specific fields from the Page
      */
-    omit?: BookPageOmit<ExtArgs> | null
+    omit?: PageOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BookPageInclude<ExtArgs> | null
+    include?: PageInclude<ExtArgs> | null
   }
 
 
@@ -7226,10 +7200,10 @@ export namespace Prisma {
     userId: 'userId',
     childInputId: 'childInputId',
     genreId: 'genreId',
-    title: 'title',
     status: 'status',
-    pdfUrl: 'pdfUrl',
     illustrationStyle: 'illustrationStyle',
+    characterReferenceUrl: 'characterReferenceUrl',
+    pdfUrl: 'pdfUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7256,34 +7230,30 @@ export namespace Prisma {
     id: 'id',
     nameUz: 'nameUz',
     nameRu: 'nameRu',
-    descriptionUz: 'descriptionUz',
-    descriptionRu: 'descriptionRu',
-    promptTemplate: 'promptTemplate',
-    iconEmoji: 'iconEmoji',
-    isActive: 'isActive',
+    nameEn: 'nameEn',
+    description: 'description',
+    iconName: 'iconName',
     sortOrder: 'sortOrder',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    isActive: 'isActive'
   };
 
   export type GenreScalarFieldEnum = (typeof GenreScalarFieldEnum)[keyof typeof GenreScalarFieldEnum]
 
 
-  export const BookPageScalarFieldEnum: {
+  export const PageScalarFieldEnum: {
     id: 'id',
     bookId: 'bookId',
     pageNumber: 'pageNumber',
     text: 'text',
     sceneDescription: 'sceneDescription',
     imageUrl: 'imageUrl',
-    imageKey: 'imageKey',
     backgroundImageUrl: 'backgroundImageUrl',
-    backgroundImageKey: 'backgroundImageKey',
+    replicatePredictionId: 'replicatePredictionId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type BookPageScalarFieldEnum = (typeof BookPageScalarFieldEnum)[keyof typeof BookPageScalarFieldEnum]
+  export type PageScalarFieldEnum = (typeof PageScalarFieldEnum)[keyof typeof PageScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7382,6 +7352,20 @@ export namespace Prisma {
    * Reference to a field of type 'BookStatus[]'
    */
   export type ListEnumBookStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'IllustrationStyle'
+   */
+  export type EnumIllustrationStyleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IllustrationStyle'>
+    
+
+
+  /**
+   * Reference to a field of type 'IllustrationStyle[]'
+   */
+  export type ListEnumIllustrationStyleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IllustrationStyle[]'>
     
 
 
@@ -7494,15 +7478,15 @@ export namespace Prisma {
     userId?: StringFilter<"Book"> | string
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
-    title?: StringNullableFilter<"Book"> | string | null
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
+    characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
-    illustrationStyle?: StringNullableFilter<"Book"> | string | null
     createdAt?: DateTimeFilter<"Book"> | Date | string
     updatedAt?: DateTimeFilter<"Book"> | Date | string
     childInput?: XOR<ChildInputScalarRelationFilter, ChildInputWhereInput>
     genre?: XOR<GenreScalarRelationFilter, GenreWhereInput>
-    pages?: BookPageListRelationFilter
+    pages?: PageListRelationFilter
     generationJob?: XOR<GenerationJobNullableScalarRelationFilter, GenerationJobWhereInput> | null
   }
 
@@ -7511,15 +7495,15 @@ export namespace Prisma {
     userId?: SortOrder
     childInputId?: SortOrder
     genreId?: SortOrder
-    title?: SortOrderInput | SortOrder
     status?: SortOrder
+    illustrationStyle?: SortOrder
+    characterReferenceUrl?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
-    illustrationStyle?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     childInput?: ChildInputOrderByWithRelationInput
     genre?: GenreOrderByWithRelationInput
-    pages?: BookPageOrderByRelationAggregateInput
+    pages?: PageOrderByRelationAggregateInput
     generationJob?: GenerationJobOrderByWithRelationInput
   }
 
@@ -7531,15 +7515,15 @@ export namespace Prisma {
     userId?: StringFilter<"Book"> | string
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
-    title?: StringNullableFilter<"Book"> | string | null
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
+    characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
-    illustrationStyle?: StringNullableFilter<"Book"> | string | null
     createdAt?: DateTimeFilter<"Book"> | Date | string
     updatedAt?: DateTimeFilter<"Book"> | Date | string
     childInput?: XOR<ChildInputScalarRelationFilter, ChildInputWhereInput>
     genre?: XOR<GenreScalarRelationFilter, GenreWhereInput>
-    pages?: BookPageListRelationFilter
+    pages?: PageListRelationFilter
     generationJob?: XOR<GenerationJobNullableScalarRelationFilter, GenerationJobWhereInput> | null
   }, "id">
 
@@ -7548,10 +7532,10 @@ export namespace Prisma {
     userId?: SortOrder
     childInputId?: SortOrder
     genreId?: SortOrder
-    title?: SortOrderInput | SortOrder
     status?: SortOrder
+    illustrationStyle?: SortOrder
+    characterReferenceUrl?: SortOrderInput | SortOrder
     pdfUrl?: SortOrderInput | SortOrder
-    illustrationStyle?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BookCountOrderByAggregateInput
@@ -7567,10 +7551,10 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Book"> | string
     childInputId?: StringWithAggregatesFilter<"Book"> | string
     genreId?: StringWithAggregatesFilter<"Book"> | string
-    title?: StringNullableWithAggregatesFilter<"Book"> | string | null
     status?: EnumBookStatusWithAggregatesFilter<"Book"> | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleWithAggregatesFilter<"Book"> | $Enums.IllustrationStyle
+    characterReferenceUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
     pdfUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
-    illustrationStyle?: StringNullableWithAggregatesFilter<"Book"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Book"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Book"> | Date | string
   }
@@ -7658,63 +7642,51 @@ export namespace Prisma {
     NOT?: GenreWhereInput | GenreWhereInput[]
     id?: StringFilter<"Genre"> | string
     nameUz?: StringFilter<"Genre"> | string
-    nameRu?: StringNullableFilter<"Genre"> | string | null
-    descriptionUz?: StringNullableFilter<"Genre"> | string | null
-    descriptionRu?: StringNullableFilter<"Genre"> | string | null
-    promptTemplate?: StringFilter<"Genre"> | string
-    iconEmoji?: StringNullableFilter<"Genre"> | string | null
-    isActive?: BoolFilter<"Genre"> | boolean
+    nameRu?: StringFilter<"Genre"> | string
+    nameEn?: StringFilter<"Genre"> | string
+    description?: StringFilter<"Genre"> | string
+    iconName?: StringFilter<"Genre"> | string
     sortOrder?: IntFilter<"Genre"> | number
-    createdAt?: DateTimeFilter<"Genre"> | Date | string
-    updatedAt?: DateTimeFilter<"Genre"> | Date | string
+    isActive?: BoolFilter<"Genre"> | boolean
     books?: BookListRelationFilter
   }
 
   export type GenreOrderByWithRelationInput = {
     id?: SortOrder
     nameUz?: SortOrder
-    nameRu?: SortOrderInput | SortOrder
-    descriptionUz?: SortOrderInput | SortOrder
-    descriptionRu?: SortOrderInput | SortOrder
-    promptTemplate?: SortOrder
-    iconEmoji?: SortOrderInput | SortOrder
-    isActive?: SortOrder
+    nameRu?: SortOrder
+    nameEn?: SortOrder
+    description?: SortOrder
+    iconName?: SortOrder
     sortOrder?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    isActive?: SortOrder
     books?: BookOrderByRelationAggregateInput
   }
 
   export type GenreWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    nameUz?: string
     AND?: GenreWhereInput | GenreWhereInput[]
     OR?: GenreWhereInput[]
     NOT?: GenreWhereInput | GenreWhereInput[]
-    nameUz?: StringFilter<"Genre"> | string
-    nameRu?: StringNullableFilter<"Genre"> | string | null
-    descriptionUz?: StringNullableFilter<"Genre"> | string | null
-    descriptionRu?: StringNullableFilter<"Genre"> | string | null
-    promptTemplate?: StringFilter<"Genre"> | string
-    iconEmoji?: StringNullableFilter<"Genre"> | string | null
-    isActive?: BoolFilter<"Genre"> | boolean
+    nameRu?: StringFilter<"Genre"> | string
+    nameEn?: StringFilter<"Genre"> | string
+    description?: StringFilter<"Genre"> | string
+    iconName?: StringFilter<"Genre"> | string
     sortOrder?: IntFilter<"Genre"> | number
-    createdAt?: DateTimeFilter<"Genre"> | Date | string
-    updatedAt?: DateTimeFilter<"Genre"> | Date | string
+    isActive?: BoolFilter<"Genre"> | boolean
     books?: BookListRelationFilter
-  }, "id">
+  }, "id" | "nameUz">
 
   export type GenreOrderByWithAggregationInput = {
     id?: SortOrder
     nameUz?: SortOrder
-    nameRu?: SortOrderInput | SortOrder
-    descriptionUz?: SortOrderInput | SortOrder
-    descriptionRu?: SortOrderInput | SortOrder
-    promptTemplate?: SortOrder
-    iconEmoji?: SortOrderInput | SortOrder
-    isActive?: SortOrder
+    nameRu?: SortOrder
+    nameEn?: SortOrder
+    description?: SortOrder
+    iconName?: SortOrder
     sortOrder?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    isActive?: SortOrder
     _count?: GenreCountOrderByAggregateInput
     _avg?: GenreAvgOrderByAggregateInput
     _max?: GenreMaxOrderByAggregateInput
@@ -7728,103 +7700,95 @@ export namespace Prisma {
     NOT?: GenreScalarWhereWithAggregatesInput | GenreScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Genre"> | string
     nameUz?: StringWithAggregatesFilter<"Genre"> | string
-    nameRu?: StringNullableWithAggregatesFilter<"Genre"> | string | null
-    descriptionUz?: StringNullableWithAggregatesFilter<"Genre"> | string | null
-    descriptionRu?: StringNullableWithAggregatesFilter<"Genre"> | string | null
-    promptTemplate?: StringWithAggregatesFilter<"Genre"> | string
-    iconEmoji?: StringNullableWithAggregatesFilter<"Genre"> | string | null
-    isActive?: BoolWithAggregatesFilter<"Genre"> | boolean
+    nameRu?: StringWithAggregatesFilter<"Genre"> | string
+    nameEn?: StringWithAggregatesFilter<"Genre"> | string
+    description?: StringWithAggregatesFilter<"Genre"> | string
+    iconName?: StringWithAggregatesFilter<"Genre"> | string
     sortOrder?: IntWithAggregatesFilter<"Genre"> | number
-    createdAt?: DateTimeWithAggregatesFilter<"Genre"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Genre"> | Date | string
+    isActive?: BoolWithAggregatesFilter<"Genre"> | boolean
   }
 
-  export type BookPageWhereInput = {
-    AND?: BookPageWhereInput | BookPageWhereInput[]
-    OR?: BookPageWhereInput[]
-    NOT?: BookPageWhereInput | BookPageWhereInput[]
-    id?: StringFilter<"BookPage"> | string
-    bookId?: StringFilter<"BookPage"> | string
-    pageNumber?: IntFilter<"BookPage"> | number
-    text?: StringFilter<"BookPage"> | string
-    sceneDescription?: StringNullableFilter<"BookPage"> | string | null
-    imageUrl?: StringNullableFilter<"BookPage"> | string | null
-    imageKey?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageUrl?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageKey?: StringNullableFilter<"BookPage"> | string | null
-    createdAt?: DateTimeFilter<"BookPage"> | Date | string
-    updatedAt?: DateTimeFilter<"BookPage"> | Date | string
+  export type PageWhereInput = {
+    AND?: PageWhereInput | PageWhereInput[]
+    OR?: PageWhereInput[]
+    NOT?: PageWhereInput | PageWhereInput[]
+    id?: StringFilter<"Page"> | string
+    bookId?: StringFilter<"Page"> | string
+    pageNumber?: IntFilter<"Page"> | number
+    text?: StringFilter<"Page"> | string
+    sceneDescription?: StringFilter<"Page"> | string
+    imageUrl?: StringNullableFilter<"Page"> | string | null
+    backgroundImageUrl?: StringNullableFilter<"Page"> | string | null
+    replicatePredictionId?: StringNullableFilter<"Page"> | string | null
+    createdAt?: DateTimeFilter<"Page"> | Date | string
+    updatedAt?: DateTimeFilter<"Page"> | Date | string
     book?: XOR<BookScalarRelationFilter, BookWhereInput>
   }
 
-  export type BookPageOrderByWithRelationInput = {
+  export type PageOrderByWithRelationInput = {
     id?: SortOrder
     bookId?: SortOrder
     pageNumber?: SortOrder
     text?: SortOrder
-    sceneDescription?: SortOrderInput | SortOrder
+    sceneDescription?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
-    imageKey?: SortOrderInput | SortOrder
     backgroundImageUrl?: SortOrderInput | SortOrder
-    backgroundImageKey?: SortOrderInput | SortOrder
+    replicatePredictionId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     book?: BookOrderByWithRelationInput
   }
 
-  export type BookPageWhereUniqueInput = Prisma.AtLeast<{
+  export type PageWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    bookId_pageNumber?: BookPageBookIdPageNumberCompoundUniqueInput
-    AND?: BookPageWhereInput | BookPageWhereInput[]
-    OR?: BookPageWhereInput[]
-    NOT?: BookPageWhereInput | BookPageWhereInput[]
-    bookId?: StringFilter<"BookPage"> | string
-    pageNumber?: IntFilter<"BookPage"> | number
-    text?: StringFilter<"BookPage"> | string
-    sceneDescription?: StringNullableFilter<"BookPage"> | string | null
-    imageUrl?: StringNullableFilter<"BookPage"> | string | null
-    imageKey?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageUrl?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageKey?: StringNullableFilter<"BookPage"> | string | null
-    createdAt?: DateTimeFilter<"BookPage"> | Date | string
-    updatedAt?: DateTimeFilter<"BookPage"> | Date | string
+    bookId_pageNumber?: PageBookIdPageNumberCompoundUniqueInput
+    AND?: PageWhereInput | PageWhereInput[]
+    OR?: PageWhereInput[]
+    NOT?: PageWhereInput | PageWhereInput[]
+    bookId?: StringFilter<"Page"> | string
+    pageNumber?: IntFilter<"Page"> | number
+    text?: StringFilter<"Page"> | string
+    sceneDescription?: StringFilter<"Page"> | string
+    imageUrl?: StringNullableFilter<"Page"> | string | null
+    backgroundImageUrl?: StringNullableFilter<"Page"> | string | null
+    replicatePredictionId?: StringNullableFilter<"Page"> | string | null
+    createdAt?: DateTimeFilter<"Page"> | Date | string
+    updatedAt?: DateTimeFilter<"Page"> | Date | string
     book?: XOR<BookScalarRelationFilter, BookWhereInput>
   }, "id" | "bookId_pageNumber">
 
-  export type BookPageOrderByWithAggregationInput = {
+  export type PageOrderByWithAggregationInput = {
     id?: SortOrder
     bookId?: SortOrder
     pageNumber?: SortOrder
     text?: SortOrder
-    sceneDescription?: SortOrderInput | SortOrder
+    sceneDescription?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
-    imageKey?: SortOrderInput | SortOrder
     backgroundImageUrl?: SortOrderInput | SortOrder
-    backgroundImageKey?: SortOrderInput | SortOrder
+    replicatePredictionId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: BookPageCountOrderByAggregateInput
-    _avg?: BookPageAvgOrderByAggregateInput
-    _max?: BookPageMaxOrderByAggregateInput
-    _min?: BookPageMinOrderByAggregateInput
-    _sum?: BookPageSumOrderByAggregateInput
+    _count?: PageCountOrderByAggregateInput
+    _avg?: PageAvgOrderByAggregateInput
+    _max?: PageMaxOrderByAggregateInput
+    _min?: PageMinOrderByAggregateInput
+    _sum?: PageSumOrderByAggregateInput
   }
 
-  export type BookPageScalarWhereWithAggregatesInput = {
-    AND?: BookPageScalarWhereWithAggregatesInput | BookPageScalarWhereWithAggregatesInput[]
-    OR?: BookPageScalarWhereWithAggregatesInput[]
-    NOT?: BookPageScalarWhereWithAggregatesInput | BookPageScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"BookPage"> | string
-    bookId?: StringWithAggregatesFilter<"BookPage"> | string
-    pageNumber?: IntWithAggregatesFilter<"BookPage"> | number
-    text?: StringWithAggregatesFilter<"BookPage"> | string
-    sceneDescription?: StringNullableWithAggregatesFilter<"BookPage"> | string | null
-    imageUrl?: StringNullableWithAggregatesFilter<"BookPage"> | string | null
-    imageKey?: StringNullableWithAggregatesFilter<"BookPage"> | string | null
-    backgroundImageUrl?: StringNullableWithAggregatesFilter<"BookPage"> | string | null
-    backgroundImageKey?: StringNullableWithAggregatesFilter<"BookPage"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"BookPage"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"BookPage"> | Date | string
+  export type PageScalarWhereWithAggregatesInput = {
+    AND?: PageScalarWhereWithAggregatesInput | PageScalarWhereWithAggregatesInput[]
+    OR?: PageScalarWhereWithAggregatesInput[]
+    NOT?: PageScalarWhereWithAggregatesInput | PageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Page"> | string
+    bookId?: StringWithAggregatesFilter<"Page"> | string
+    pageNumber?: IntWithAggregatesFilter<"Page"> | number
+    text?: StringWithAggregatesFilter<"Page"> | string
+    sceneDescription?: StringWithAggregatesFilter<"Page"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"Page"> | string | null
+    backgroundImageUrl?: StringNullableWithAggregatesFilter<"Page"> | string | null
+    replicatePredictionId?: StringNullableWithAggregatesFilter<"Page"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Page"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Page"> | Date | string
   }
 
   export type GenerationJobCreateInput = {
@@ -7913,15 +7877,15 @@ export namespace Prisma {
   export type BookCreateInput = {
     id?: string
     userId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     childInput: ChildInputCreateNestedOneWithoutBooksInput
     genre: GenreCreateNestedOneWithoutBooksInput
-    pages?: BookPageCreateNestedManyWithoutBookInput
+    pages?: PageCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobCreateNestedOneWithoutBookInput
   }
 
@@ -7930,28 +7894,28 @@ export namespace Prisma {
     userId: string
     childInputId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    pages?: BookPageUncheckedCreateNestedManyWithoutBookInput
+    pages?: PageUncheckedCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobUncheckedCreateNestedOneWithoutBookInput
   }
 
   export type BookUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     childInput?: ChildInputUpdateOneRequiredWithoutBooksNestedInput
     genre?: GenreUpdateOneRequiredWithoutBooksNestedInput
-    pages?: BookPageUpdateManyWithoutBookNestedInput
+    pages?: PageUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUpdateOneWithoutBookNestedInput
   }
 
@@ -7960,13 +7924,13 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pages?: BookPageUncheckedUpdateManyWithoutBookNestedInput
+    pages?: PageUncheckedUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUncheckedUpdateOneWithoutBookNestedInput
   }
 
@@ -7975,10 +7939,10 @@ export namespace Prisma {
     userId: string
     childInputId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7986,10 +7950,10 @@ export namespace Prisma {
   export type BookUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7999,10 +7963,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8098,198 +8062,170 @@ export namespace Prisma {
   export type GenreCreateInput = {
     id?: string
     nameUz: string
-    nameRu?: string | null
-    descriptionUz?: string | null
-    descriptionRu?: string | null
-    promptTemplate: string
-    iconEmoji?: string | null
-    isActive?: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    isActive?: boolean
     books?: BookCreateNestedManyWithoutGenreInput
   }
 
   export type GenreUncheckedCreateInput = {
     id?: string
     nameUz: string
-    nameRu?: string | null
-    descriptionUz?: string | null
-    descriptionRu?: string | null
-    promptTemplate: string
-    iconEmoji?: string | null
-    isActive?: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    isActive?: boolean
     books?: BookUncheckedCreateNestedManyWithoutGenreInput
   }
 
   export type GenreUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     books?: BookUpdateManyWithoutGenreNestedInput
   }
 
   export type GenreUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     books?: BookUncheckedUpdateManyWithoutGenreNestedInput
   }
 
   export type GenreCreateManyInput = {
     id?: string
     nameUz: string
-    nameRu?: string | null
-    descriptionUz?: string | null
-    descriptionRu?: string | null
-    promptTemplate: string
-    iconEmoji?: string | null
-    isActive?: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    isActive?: boolean
   }
 
   export type GenreUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type GenreUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type BookPageCreateInput = {
+  export type PageCreateInput = {
     id?: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     book: BookCreateNestedOneWithoutPagesInput
   }
 
-  export type BookPageUncheckedCreateInput = {
+  export type PageUncheckedCreateInput = {
     id?: string
     bookId: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BookPageUpdateInput = {
+  export type PageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     book?: BookUpdateOneRequiredWithoutPagesNestedInput
   }
 
-  export type BookPageUncheckedUpdateInput = {
+  export type PageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     bookId?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BookPageCreateManyInput = {
+  export type PageCreateManyInput = {
     id?: string
     bookId: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BookPageUpdateManyMutationInput = {
+  export type PageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BookPageUncheckedUpdateManyInput = {
+  export type PageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     bookId?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8517,6 +8453,13 @@ export namespace Prisma {
     not?: NestedEnumBookStatusFilter<$PrismaModel> | $Enums.BookStatus
   }
 
+  export type EnumIllustrationStyleFilter<$PrismaModel = never> = {
+    equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
+    in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    not?: NestedEnumIllustrationStyleFilter<$PrismaModel> | $Enums.IllustrationStyle
+  }
+
   export type ChildInputScalarRelationFilter = {
     is?: ChildInputWhereInput
     isNot?: ChildInputWhereInput
@@ -8527,10 +8470,10 @@ export namespace Prisma {
     isNot?: GenreWhereInput
   }
 
-  export type BookPageListRelationFilter = {
-    every?: BookPageWhereInput
-    some?: BookPageWhereInput
-    none?: BookPageWhereInput
+  export type PageListRelationFilter = {
+    every?: PageWhereInput
+    some?: PageWhereInput
+    none?: PageWhereInput
   }
 
   export type GenerationJobNullableScalarRelationFilter = {
@@ -8538,7 +8481,7 @@ export namespace Prisma {
     isNot?: GenerationJobWhereInput | null
   }
 
-  export type BookPageOrderByRelationAggregateInput = {
+  export type PageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -8547,10 +8490,10 @@ export namespace Prisma {
     userId?: SortOrder
     childInputId?: SortOrder
     genreId?: SortOrder
-    title?: SortOrder
     status?: SortOrder
-    pdfUrl?: SortOrder
     illustrationStyle?: SortOrder
+    characterReferenceUrl?: SortOrder
+    pdfUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8560,10 +8503,10 @@ export namespace Prisma {
     userId?: SortOrder
     childInputId?: SortOrder
     genreId?: SortOrder
-    title?: SortOrder
     status?: SortOrder
-    pdfUrl?: SortOrder
     illustrationStyle?: SortOrder
+    characterReferenceUrl?: SortOrder
+    pdfUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8573,10 +8516,10 @@ export namespace Prisma {
     userId?: SortOrder
     childInputId?: SortOrder
     genreId?: SortOrder
-    title?: SortOrder
     status?: SortOrder
-    pdfUrl?: SortOrder
     illustrationStyle?: SortOrder
+    characterReferenceUrl?: SortOrder
+    pdfUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8589,6 +8532,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBookStatusFilter<$PrismaModel>
     _max?: NestedEnumBookStatusFilter<$PrismaModel>
+  }
+
+  export type EnumIllustrationStyleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
+    in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    not?: NestedEnumIllustrationStyleWithAggregatesFilter<$PrismaModel> | $Enums.IllustrationStyle
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIllustrationStyleFilter<$PrismaModel>
+    _max?: NestedEnumIllustrationStyleFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -8681,14 +8634,11 @@ export namespace Prisma {
     id?: SortOrder
     nameUz?: SortOrder
     nameRu?: SortOrder
-    descriptionUz?: SortOrder
-    descriptionRu?: SortOrder
-    promptTemplate?: SortOrder
-    iconEmoji?: SortOrder
-    isActive?: SortOrder
+    nameEn?: SortOrder
+    description?: SortOrder
+    iconName?: SortOrder
     sortOrder?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    isActive?: SortOrder
   }
 
   export type GenreAvgOrderByAggregateInput = {
@@ -8699,28 +8649,22 @@ export namespace Prisma {
     id?: SortOrder
     nameUz?: SortOrder
     nameRu?: SortOrder
-    descriptionUz?: SortOrder
-    descriptionRu?: SortOrder
-    promptTemplate?: SortOrder
-    iconEmoji?: SortOrder
-    isActive?: SortOrder
+    nameEn?: SortOrder
+    description?: SortOrder
+    iconName?: SortOrder
     sortOrder?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    isActive?: SortOrder
   }
 
   export type GenreMinOrderByAggregateInput = {
     id?: SortOrder
     nameUz?: SortOrder
     nameRu?: SortOrder
-    descriptionUz?: SortOrder
-    descriptionRu?: SortOrder
-    promptTemplate?: SortOrder
-    iconEmoji?: SortOrder
-    isActive?: SortOrder
+    nameEn?: SortOrder
+    description?: SortOrder
+    iconName?: SortOrder
     sortOrder?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    isActive?: SortOrder
   }
 
   export type GenreSumOrderByAggregateInput = {
@@ -8735,58 +8679,55 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type BookPageBookIdPageNumberCompoundUniqueInput = {
+  export type PageBookIdPageNumberCompoundUniqueInput = {
     bookId: string
     pageNumber: number
   }
 
-  export type BookPageCountOrderByAggregateInput = {
+  export type PageCountOrderByAggregateInput = {
     id?: SortOrder
     bookId?: SortOrder
     pageNumber?: SortOrder
     text?: SortOrder
     sceneDescription?: SortOrder
     imageUrl?: SortOrder
-    imageKey?: SortOrder
     backgroundImageUrl?: SortOrder
-    backgroundImageKey?: SortOrder
+    replicatePredictionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type BookPageAvgOrderByAggregateInput = {
+  export type PageAvgOrderByAggregateInput = {
     pageNumber?: SortOrder
   }
 
-  export type BookPageMaxOrderByAggregateInput = {
+  export type PageMaxOrderByAggregateInput = {
     id?: SortOrder
     bookId?: SortOrder
     pageNumber?: SortOrder
     text?: SortOrder
     sceneDescription?: SortOrder
     imageUrl?: SortOrder
-    imageKey?: SortOrder
     backgroundImageUrl?: SortOrder
-    backgroundImageKey?: SortOrder
+    replicatePredictionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type BookPageMinOrderByAggregateInput = {
+  export type PageMinOrderByAggregateInput = {
     id?: SortOrder
     bookId?: SortOrder
     pageNumber?: SortOrder
     text?: SortOrder
     sceneDescription?: SortOrder
     imageUrl?: SortOrder
-    imageKey?: SortOrder
     backgroundImageUrl?: SortOrder
-    backgroundImageKey?: SortOrder
+    replicatePredictionId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type BookPageSumOrderByAggregateInput = {
+  export type PageSumOrderByAggregateInput = {
     pageNumber?: SortOrder
   }
 
@@ -8844,11 +8785,11 @@ export namespace Prisma {
     connect?: GenreWhereUniqueInput
   }
 
-  export type BookPageCreateNestedManyWithoutBookInput = {
-    create?: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput> | BookPageCreateWithoutBookInput[] | BookPageUncheckedCreateWithoutBookInput[]
-    connectOrCreate?: BookPageCreateOrConnectWithoutBookInput | BookPageCreateOrConnectWithoutBookInput[]
-    createMany?: BookPageCreateManyBookInputEnvelope
-    connect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
+  export type PageCreateNestedManyWithoutBookInput = {
+    create?: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput> | PageCreateWithoutBookInput[] | PageUncheckedCreateWithoutBookInput[]
+    connectOrCreate?: PageCreateOrConnectWithoutBookInput | PageCreateOrConnectWithoutBookInput[]
+    createMany?: PageCreateManyBookInputEnvelope
+    connect?: PageWhereUniqueInput | PageWhereUniqueInput[]
   }
 
   export type GenerationJobCreateNestedOneWithoutBookInput = {
@@ -8857,11 +8798,11 @@ export namespace Prisma {
     connect?: GenerationJobWhereUniqueInput
   }
 
-  export type BookPageUncheckedCreateNestedManyWithoutBookInput = {
-    create?: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput> | BookPageCreateWithoutBookInput[] | BookPageUncheckedCreateWithoutBookInput[]
-    connectOrCreate?: BookPageCreateOrConnectWithoutBookInput | BookPageCreateOrConnectWithoutBookInput[]
-    createMany?: BookPageCreateManyBookInputEnvelope
-    connect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
+  export type PageUncheckedCreateNestedManyWithoutBookInput = {
+    create?: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput> | PageCreateWithoutBookInput[] | PageUncheckedCreateWithoutBookInput[]
+    connectOrCreate?: PageCreateOrConnectWithoutBookInput | PageCreateOrConnectWithoutBookInput[]
+    createMany?: PageCreateManyBookInputEnvelope
+    connect?: PageWhereUniqueInput | PageWhereUniqueInput[]
   }
 
   export type GenerationJobUncheckedCreateNestedOneWithoutBookInput = {
@@ -8872,6 +8813,10 @@ export namespace Prisma {
 
   export type EnumBookStatusFieldUpdateOperationsInput = {
     set?: $Enums.BookStatus
+  }
+
+  export type EnumIllustrationStyleFieldUpdateOperationsInput = {
+    set?: $Enums.IllustrationStyle
   }
 
   export type ChildInputUpdateOneRequiredWithoutBooksNestedInput = {
@@ -8890,18 +8835,18 @@ export namespace Prisma {
     update?: XOR<XOR<GenreUpdateToOneWithWhereWithoutBooksInput, GenreUpdateWithoutBooksInput>, GenreUncheckedUpdateWithoutBooksInput>
   }
 
-  export type BookPageUpdateManyWithoutBookNestedInput = {
-    create?: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput> | BookPageCreateWithoutBookInput[] | BookPageUncheckedCreateWithoutBookInput[]
-    connectOrCreate?: BookPageCreateOrConnectWithoutBookInput | BookPageCreateOrConnectWithoutBookInput[]
-    upsert?: BookPageUpsertWithWhereUniqueWithoutBookInput | BookPageUpsertWithWhereUniqueWithoutBookInput[]
-    createMany?: BookPageCreateManyBookInputEnvelope
-    set?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    disconnect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    delete?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    connect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    update?: BookPageUpdateWithWhereUniqueWithoutBookInput | BookPageUpdateWithWhereUniqueWithoutBookInput[]
-    updateMany?: BookPageUpdateManyWithWhereWithoutBookInput | BookPageUpdateManyWithWhereWithoutBookInput[]
-    deleteMany?: BookPageScalarWhereInput | BookPageScalarWhereInput[]
+  export type PageUpdateManyWithoutBookNestedInput = {
+    create?: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput> | PageCreateWithoutBookInput[] | PageUncheckedCreateWithoutBookInput[]
+    connectOrCreate?: PageCreateOrConnectWithoutBookInput | PageCreateOrConnectWithoutBookInput[]
+    upsert?: PageUpsertWithWhereUniqueWithoutBookInput | PageUpsertWithWhereUniqueWithoutBookInput[]
+    createMany?: PageCreateManyBookInputEnvelope
+    set?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    disconnect?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    delete?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    connect?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    update?: PageUpdateWithWhereUniqueWithoutBookInput | PageUpdateWithWhereUniqueWithoutBookInput[]
+    updateMany?: PageUpdateManyWithWhereWithoutBookInput | PageUpdateManyWithWhereWithoutBookInput[]
+    deleteMany?: PageScalarWhereInput | PageScalarWhereInput[]
   }
 
   export type GenerationJobUpdateOneWithoutBookNestedInput = {
@@ -8914,18 +8859,18 @@ export namespace Prisma {
     update?: XOR<XOR<GenerationJobUpdateToOneWithWhereWithoutBookInput, GenerationJobUpdateWithoutBookInput>, GenerationJobUncheckedUpdateWithoutBookInput>
   }
 
-  export type BookPageUncheckedUpdateManyWithoutBookNestedInput = {
-    create?: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput> | BookPageCreateWithoutBookInput[] | BookPageUncheckedCreateWithoutBookInput[]
-    connectOrCreate?: BookPageCreateOrConnectWithoutBookInput | BookPageCreateOrConnectWithoutBookInput[]
-    upsert?: BookPageUpsertWithWhereUniqueWithoutBookInput | BookPageUpsertWithWhereUniqueWithoutBookInput[]
-    createMany?: BookPageCreateManyBookInputEnvelope
-    set?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    disconnect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    delete?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    connect?: BookPageWhereUniqueInput | BookPageWhereUniqueInput[]
-    update?: BookPageUpdateWithWhereUniqueWithoutBookInput | BookPageUpdateWithWhereUniqueWithoutBookInput[]
-    updateMany?: BookPageUpdateManyWithWhereWithoutBookInput | BookPageUpdateManyWithWhereWithoutBookInput[]
-    deleteMany?: BookPageScalarWhereInput | BookPageScalarWhereInput[]
+  export type PageUncheckedUpdateManyWithoutBookNestedInput = {
+    create?: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput> | PageCreateWithoutBookInput[] | PageUncheckedCreateWithoutBookInput[]
+    connectOrCreate?: PageCreateOrConnectWithoutBookInput | PageCreateOrConnectWithoutBookInput[]
+    upsert?: PageUpsertWithWhereUniqueWithoutBookInput | PageUpsertWithWhereUniqueWithoutBookInput[]
+    createMany?: PageCreateManyBookInputEnvelope
+    set?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    disconnect?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    delete?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    connect?: PageWhereUniqueInput | PageWhereUniqueInput[]
+    update?: PageUpdateWithWhereUniqueWithoutBookInput | PageUpdateWithWhereUniqueWithoutBookInput[]
+    updateMany?: PageUpdateManyWithWhereWithoutBookInput | PageUpdateManyWithWhereWithoutBookInput[]
+    deleteMany?: PageScalarWhereInput | PageScalarWhereInput[]
   }
 
   export type GenerationJobUncheckedUpdateOneWithoutBookNestedInput = {
@@ -9233,6 +9178,13 @@ export namespace Prisma {
     not?: NestedEnumBookStatusFilter<$PrismaModel> | $Enums.BookStatus
   }
 
+  export type NestedEnumIllustrationStyleFilter<$PrismaModel = never> = {
+    equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
+    in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    not?: NestedEnumIllustrationStyleFilter<$PrismaModel> | $Enums.IllustrationStyle
+  }
+
   export type NestedEnumBookStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.BookStatus | EnumBookStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BookStatus[] | ListEnumBookStatusFieldRefInput<$PrismaModel>
@@ -9241,6 +9193,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBookStatusFilter<$PrismaModel>
     _max?: NestedEnumBookStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumIllustrationStyleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IllustrationStyle | EnumIllustrationStyleFieldRefInput<$PrismaModel>
+    in?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IllustrationStyle[] | ListEnumIllustrationStyleFieldRefInput<$PrismaModel>
+    not?: NestedEnumIllustrationStyleWithAggregatesFilter<$PrismaModel> | $Enums.IllustrationStyle
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIllustrationStyleFilter<$PrismaModel>
+    _max?: NestedEnumIllustrationStyleFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -9286,15 +9248,15 @@ export namespace Prisma {
   export type BookCreateWithoutGenerationJobInput = {
     id?: string
     userId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     childInput: ChildInputCreateNestedOneWithoutBooksInput
     genre: GenreCreateNestedOneWithoutBooksInput
-    pages?: BookPageCreateNestedManyWithoutBookInput
+    pages?: PageCreateNestedManyWithoutBookInput
   }
 
   export type BookUncheckedCreateWithoutGenerationJobInput = {
@@ -9302,13 +9264,13 @@ export namespace Prisma {
     userId: string
     childInputId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    pages?: BookPageUncheckedCreateNestedManyWithoutBookInput
+    pages?: PageUncheckedCreateNestedManyWithoutBookInput
   }
 
   export type BookCreateOrConnectWithoutGenerationJobInput = {
@@ -9330,15 +9292,15 @@ export namespace Prisma {
   export type BookUpdateWithoutGenerationJobInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     childInput?: ChildInputUpdateOneRequiredWithoutBooksNestedInput
     genre?: GenreUpdateOneRequiredWithoutBooksNestedInput
-    pages?: BookPageUpdateManyWithoutBookNestedInput
+    pages?: PageUpdateManyWithoutBookNestedInput
   }
 
   export type BookUncheckedUpdateWithoutGenerationJobInput = {
@@ -9346,13 +9308,13 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pages?: BookPageUncheckedUpdateManyWithoutBookNestedInput
+    pages?: PageUncheckedUpdateManyWithoutBookNestedInput
   }
 
   export type ChildInputCreateWithoutBooksInput = {
@@ -9387,29 +9349,23 @@ export namespace Prisma {
   export type GenreCreateWithoutBooksInput = {
     id?: string
     nameUz: string
-    nameRu?: string | null
-    descriptionUz?: string | null
-    descriptionRu?: string | null
-    promptTemplate: string
-    iconEmoji?: string | null
-    isActive?: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    isActive?: boolean
   }
 
   export type GenreUncheckedCreateWithoutBooksInput = {
     id?: string
     nameUz: string
-    nameRu?: string | null
-    descriptionUz?: string | null
-    descriptionRu?: string | null
-    promptTemplate: string
-    iconEmoji?: string | null
-    isActive?: boolean
+    nameRu: string
+    nameEn: string
+    description: string
+    iconName: string
     sortOrder?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    isActive?: boolean
   }
 
   export type GenreCreateOrConnectWithoutBooksInput = {
@@ -9417,39 +9373,37 @@ export namespace Prisma {
     create: XOR<GenreCreateWithoutBooksInput, GenreUncheckedCreateWithoutBooksInput>
   }
 
-  export type BookPageCreateWithoutBookInput = {
+  export type PageCreateWithoutBookInput = {
     id?: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BookPageUncheckedCreateWithoutBookInput = {
+  export type PageUncheckedCreateWithoutBookInput = {
     id?: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BookPageCreateOrConnectWithoutBookInput = {
-    where: BookPageWhereUniqueInput
-    create: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput>
+  export type PageCreateOrConnectWithoutBookInput = {
+    where: PageWhereUniqueInput
+    create: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput>
   }
 
-  export type BookPageCreateManyBookInputEnvelope = {
-    data: BookPageCreateManyBookInput | BookPageCreateManyBookInput[]
+  export type PageCreateManyBookInputEnvelope = {
+    data: PageCreateManyBookInput | PageCreateManyBookInput[]
     skipDuplicates?: boolean
   }
 
@@ -9529,62 +9483,55 @@ export namespace Prisma {
   export type GenreUpdateWithoutBooksInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type GenreUncheckedUpdateWithoutBooksInput = {
     id?: StringFieldUpdateOperationsInput | string
     nameUz?: StringFieldUpdateOperationsInput | string
-    nameRu?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionUz?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionRu?: NullableStringFieldUpdateOperationsInput | string | null
-    promptTemplate?: StringFieldUpdateOperationsInput | string
-    iconEmoji?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
+    nameRu?: StringFieldUpdateOperationsInput | string
+    nameEn?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    iconName?: StringFieldUpdateOperationsInput | string
     sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type BookPageUpsertWithWhereUniqueWithoutBookInput = {
-    where: BookPageWhereUniqueInput
-    update: XOR<BookPageUpdateWithoutBookInput, BookPageUncheckedUpdateWithoutBookInput>
-    create: XOR<BookPageCreateWithoutBookInput, BookPageUncheckedCreateWithoutBookInput>
+  export type PageUpsertWithWhereUniqueWithoutBookInput = {
+    where: PageWhereUniqueInput
+    update: XOR<PageUpdateWithoutBookInput, PageUncheckedUpdateWithoutBookInput>
+    create: XOR<PageCreateWithoutBookInput, PageUncheckedCreateWithoutBookInput>
   }
 
-  export type BookPageUpdateWithWhereUniqueWithoutBookInput = {
-    where: BookPageWhereUniqueInput
-    data: XOR<BookPageUpdateWithoutBookInput, BookPageUncheckedUpdateWithoutBookInput>
+  export type PageUpdateWithWhereUniqueWithoutBookInput = {
+    where: PageWhereUniqueInput
+    data: XOR<PageUpdateWithoutBookInput, PageUncheckedUpdateWithoutBookInput>
   }
 
-  export type BookPageUpdateManyWithWhereWithoutBookInput = {
-    where: BookPageScalarWhereInput
-    data: XOR<BookPageUpdateManyMutationInput, BookPageUncheckedUpdateManyWithoutBookInput>
+  export type PageUpdateManyWithWhereWithoutBookInput = {
+    where: PageScalarWhereInput
+    data: XOR<PageUpdateManyMutationInput, PageUncheckedUpdateManyWithoutBookInput>
   }
 
-  export type BookPageScalarWhereInput = {
-    AND?: BookPageScalarWhereInput | BookPageScalarWhereInput[]
-    OR?: BookPageScalarWhereInput[]
-    NOT?: BookPageScalarWhereInput | BookPageScalarWhereInput[]
-    id?: StringFilter<"BookPage"> | string
-    bookId?: StringFilter<"BookPage"> | string
-    pageNumber?: IntFilter<"BookPage"> | number
-    text?: StringFilter<"BookPage"> | string
-    sceneDescription?: StringNullableFilter<"BookPage"> | string | null
-    imageUrl?: StringNullableFilter<"BookPage"> | string | null
-    imageKey?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageUrl?: StringNullableFilter<"BookPage"> | string | null
-    backgroundImageKey?: StringNullableFilter<"BookPage"> | string | null
-    createdAt?: DateTimeFilter<"BookPage"> | Date | string
-    updatedAt?: DateTimeFilter<"BookPage"> | Date | string
+  export type PageScalarWhereInput = {
+    AND?: PageScalarWhereInput | PageScalarWhereInput[]
+    OR?: PageScalarWhereInput[]
+    NOT?: PageScalarWhereInput | PageScalarWhereInput[]
+    id?: StringFilter<"Page"> | string
+    bookId?: StringFilter<"Page"> | string
+    pageNumber?: IntFilter<"Page"> | number
+    text?: StringFilter<"Page"> | string
+    sceneDescription?: StringFilter<"Page"> | string
+    imageUrl?: StringNullableFilter<"Page"> | string | null
+    backgroundImageUrl?: StringNullableFilter<"Page"> | string | null
+    replicatePredictionId?: StringNullableFilter<"Page"> | string | null
+    createdAt?: DateTimeFilter<"Page"> | Date | string
+    updatedAt?: DateTimeFilter<"Page"> | Date | string
   }
 
   export type GenerationJobUpsertWithoutBookInput = {
@@ -9623,14 +9570,14 @@ export namespace Prisma {
   export type BookCreateWithoutChildInputInput = {
     id?: string
     userId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     genre: GenreCreateNestedOneWithoutBooksInput
-    pages?: BookPageCreateNestedManyWithoutBookInput
+    pages?: PageCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobCreateNestedOneWithoutBookInput
   }
 
@@ -9638,13 +9585,13 @@ export namespace Prisma {
     id?: string
     userId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    pages?: BookPageUncheckedCreateNestedManyWithoutBookInput
+    pages?: PageUncheckedCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobUncheckedCreateNestedOneWithoutBookInput
   }
 
@@ -9682,10 +9629,10 @@ export namespace Prisma {
     userId?: StringFilter<"Book"> | string
     childInputId?: StringFilter<"Book"> | string
     genreId?: StringFilter<"Book"> | string
-    title?: StringNullableFilter<"Book"> | string | null
     status?: EnumBookStatusFilter<"Book"> | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFilter<"Book"> | $Enums.IllustrationStyle
+    characterReferenceUrl?: StringNullableFilter<"Book"> | string | null
     pdfUrl?: StringNullableFilter<"Book"> | string | null
-    illustrationStyle?: StringNullableFilter<"Book"> | string | null
     createdAt?: DateTimeFilter<"Book"> | Date | string
     updatedAt?: DateTimeFilter<"Book"> | Date | string
   }
@@ -9693,14 +9640,14 @@ export namespace Prisma {
   export type BookCreateWithoutGenreInput = {
     id?: string
     userId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     childInput: ChildInputCreateNestedOneWithoutBooksInput
-    pages?: BookPageCreateNestedManyWithoutBookInput
+    pages?: PageCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobCreateNestedOneWithoutBookInput
   }
 
@@ -9708,13 +9655,13 @@ export namespace Prisma {
     id?: string
     userId: string
     childInputId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    pages?: BookPageUncheckedCreateNestedManyWithoutBookInput
+    pages?: PageUncheckedCreateNestedManyWithoutBookInput
     generationJob?: GenerationJobUncheckedCreateNestedOneWithoutBookInput
   }
 
@@ -9747,10 +9694,10 @@ export namespace Prisma {
   export type BookCreateWithoutPagesInput = {
     id?: string
     userId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     childInput: ChildInputCreateNestedOneWithoutBooksInput
@@ -9763,10 +9710,10 @@ export namespace Prisma {
     userId: string
     childInputId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     generationJob?: GenerationJobUncheckedCreateNestedOneWithoutBookInput
@@ -9791,10 +9738,10 @@ export namespace Prisma {
   export type BookUpdateWithoutPagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     childInput?: ChildInputUpdateOneRequiredWithoutBooksNestedInput
@@ -9807,63 +9754,59 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     generationJob?: GenerationJobUncheckedUpdateOneWithoutBookNestedInput
   }
 
-  export type BookPageCreateManyBookInput = {
+  export type PageCreateManyBookInput = {
     id?: string
     pageNumber: number
     text: string
-    sceneDescription?: string | null
+    sceneDescription: string
     imageUrl?: string | null
-    imageKey?: string | null
     backgroundImageUrl?: string | null
-    backgroundImageKey?: string | null
+    replicatePredictionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type BookPageUpdateWithoutBookInput = {
+  export type PageUpdateWithoutBookInput = {
     id?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BookPageUncheckedUpdateWithoutBookInput = {
+  export type PageUncheckedUpdateWithoutBookInput = {
     id?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type BookPageUncheckedUpdateManyWithoutBookInput = {
+  export type PageUncheckedUpdateManyWithoutBookInput = {
     id?: StringFieldUpdateOperationsInput | string
     pageNumber?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
-    sceneDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    sceneDescription?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    imageKey?: NullableStringFieldUpdateOperationsInput | string | null
     backgroundImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    backgroundImageKey?: NullableStringFieldUpdateOperationsInput | string | null
+    replicatePredictionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9872,10 +9815,10 @@ export namespace Prisma {
     id?: string
     userId: string
     genreId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9883,14 +9826,14 @@ export namespace Prisma {
   export type BookUpdateWithoutChildInputInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     genre?: GenreUpdateOneRequiredWithoutBooksNestedInput
-    pages?: BookPageUpdateManyWithoutBookNestedInput
+    pages?: PageUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUpdateOneWithoutBookNestedInput
   }
 
@@ -9898,13 +9841,13 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pages?: BookPageUncheckedUpdateManyWithoutBookNestedInput
+    pages?: PageUncheckedUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUncheckedUpdateOneWithoutBookNestedInput
   }
 
@@ -9912,10 +9855,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     genreId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9924,10 +9867,10 @@ export namespace Prisma {
     id?: string
     userId: string
     childInputId: string
-    title?: string | null
     status?: $Enums.BookStatus
+    illustrationStyle?: $Enums.IllustrationStyle
+    characterReferenceUrl?: string | null
     pdfUrl?: string | null
-    illustrationStyle?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9935,14 +9878,14 @@ export namespace Prisma {
   export type BookUpdateWithoutGenreInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     childInput?: ChildInputUpdateOneRequiredWithoutBooksNestedInput
-    pages?: BookPageUpdateManyWithoutBookNestedInput
+    pages?: PageUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUpdateOneWithoutBookNestedInput
   }
 
@@ -9950,13 +9893,13 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pages?: BookPageUncheckedUpdateManyWithoutBookNestedInput
+    pages?: PageUncheckedUpdateManyWithoutBookNestedInput
     generationJob?: GenerationJobUncheckedUpdateOneWithoutBookNestedInput
   }
 
@@ -9964,10 +9907,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     childInputId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBookStatusFieldUpdateOperationsInput | $Enums.BookStatus
+    illustrationStyle?: EnumIllustrationStyleFieldUpdateOperationsInput | $Enums.IllustrationStyle
+    characterReferenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    illustrationStyle?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

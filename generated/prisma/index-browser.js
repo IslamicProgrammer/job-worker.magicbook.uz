@@ -138,10 +138,10 @@ exports.Prisma.BookScalarFieldEnum = {
   userId: 'userId',
   childInputId: 'childInputId',
   genreId: 'genreId',
-  title: 'title',
   status: 'status',
-  pdfUrl: 'pdfUrl',
   illustrationStyle: 'illustrationStyle',
+  characterReferenceUrl: 'characterReferenceUrl',
+  pdfUrl: 'pdfUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -162,26 +162,22 @@ exports.Prisma.GenreScalarFieldEnum = {
   id: 'id',
   nameUz: 'nameUz',
   nameRu: 'nameRu',
-  descriptionUz: 'descriptionUz',
-  descriptionRu: 'descriptionRu',
-  promptTemplate: 'promptTemplate',
-  iconEmoji: 'iconEmoji',
-  isActive: 'isActive',
+  nameEn: 'nameEn',
+  description: 'description',
+  iconName: 'iconName',
   sortOrder: 'sortOrder',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  isActive: 'isActive'
 };
 
-exports.Prisma.BookPageScalarFieldEnum = {
+exports.Prisma.PageScalarFieldEnum = {
   id: 'id',
   bookId: 'bookId',
   pageNumber: 'pageNumber',
   text: 'text',
   sceneDescription: 'sceneDescription',
   imageUrl: 'imageUrl',
-  imageKey: 'imageKey',
   backgroundImageUrl: 'backgroundImageUrl',
-  backgroundImageKey: 'backgroundImageKey',
+  replicatePredictionId: 'replicatePredictionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -210,10 +206,29 @@ exports.GenerationJobStatus = exports.$Enums.GenerationJobStatus = {
 };
 
 exports.BookStatus = exports.$Enums.BookStatus = {
-  PENDING: 'PENDING',
-  GENERATING: 'GENERATING',
+  PREVIEW_GENERATING: 'PREVIEW_GENERATING',
+  PREVIEW_READY: 'PREVIEW_READY',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETING: 'COMPLETING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED'
+};
+
+exports.IllustrationStyle = exports.$Enums.IllustrationStyle = {
+  ANIMATION_3D: 'ANIMATION_3D',
+  FANTASY_STORYBOOK: 'FANTASY_STORYBOOK',
+  SEMI_REALISTIC: 'SEMI_REALISTIC',
+  GEOMETRIC: 'GEOMETRIC',
+  WATERCOLOR: 'WATERCOLOR',
+  GOUACHE: 'GOUACHE',
+  PICTURE_BOOK: 'PICTURE_BOOK',
+  BLOCK_WORLD: 'BLOCK_WORLD',
+  SOFT_ANIME: 'SOFT_ANIME',
+  COLLAGE: 'COLLAGE',
+  CLAY_ANIMATION: 'CLAY_ANIMATION',
+  KAWAII: 'KAWAII',
+  COMIC_BOOK: 'COMIC_BOOK',
+  STICKER_ART: 'STICKER_ART'
 };
 
 exports.Prisma.ModelName = {
@@ -221,7 +236,7 @@ exports.Prisma.ModelName = {
   Book: 'Book',
   ChildInput: 'ChildInput',
   Genre: 'Genre',
-  BookPage: 'BookPage'
+  Page: 'Page'
 };
 
 /**

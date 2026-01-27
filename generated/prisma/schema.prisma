@@ -1,5 +1,6 @@
 // Minimal schema for job-worker
 // Only includes models needed for job processing
+// IMPORTANT: This must match the main frontend schema exactly!
 
 generator client {
   provider = "prisma-client-js"
@@ -21,6 +22,35 @@ enum GenerationJobStatus {
   FAILED
 }
 
+enum BookStatus {
+  PREVIEW_GENERATING
+  PREVIEW_READY
+  IN_PROGRESS
+  COMPLETING
+  COMPLETED
+  FAILED
+}
+
+enum IllustrationStyle {
+  // Main 3 styles (recommended)
+  ANIMATION_3D
+  FANTASY_STORYBOOK
+  SEMI_REALISTIC
+
+  // Additional styles (legacy)
+  GEOMETRIC
+  WATERCOLOR
+  GOUACHE
+  PICTURE_BOOK
+  BLOCK_WORLD
+  SOFT_ANIME
+  COLLAGE
+  CLAY_ANIMATION
+  KAWAII
+  COMIC_BOOK
+  STICKER_ART
+}
+
 model GenerationJob {
   id           String              @id @default(cuid())
   bookId       String              @unique
@@ -38,73 +68,74 @@ model GenerationJob {
 }
 
 model Book {
-  id                String     @id @default(cuid())
-  userId            String
-  childInputId      String
-  genreId           String
-  title             String?
-  status            BookStatus @default(PENDING)
-  pdfUrl            String?
-  illustrationStyle String?
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id           String     @id @default(cuid())
+  userId       String
+  childInputId String
+  genreId      String
+  status       BookStatus @default(PREVIEW_GENERATING)
+
+  // Customization
+  illustrationStyle IllustrationStyle @default(ANIMATION_3D)
+
+  // Character reference
+  characterReferenceUrl String?
+
+  // PDF
+  pdfUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   childInput    ChildInput     @relation(fields: [childInputId], references: [id])
   genre         Genre          @relation(fields: [genreId], references: [id])
-  pages         BookPage[]
+  pages         Page[]
   generationJob GenerationJob?
 
   @@index([userId])
   @@index([status])
 }
 
-enum BookStatus {
-  PENDING
-  GENERATING
-  COMPLETED
-  FAILED
-}
-
 model ChildInput {
-  id        String   @id @default(cuid())
-  name      String
-  age       Int?
-  gender    String?
-  photoUrl  String
-  photoKey  String
-  userId    String
+  id       String  @id @default(cuid())
+  name     String
+  age      Int?
+  gender   String?
+  photoUrl String
+  photoKey String
+  userId   String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  books     Book[]
+
+  books Book[]
 }
 
 model Genre {
-  id             String   @id @default(cuid())
-  nameUz         String
-  nameRu         String?
-  descriptionUz  String?
-  descriptionRu  String?
-  promptTemplate String   @db.Text
-  iconEmoji      String?
-  isActive       Boolean  @default(true)
-  sortOrder      Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  books          Book[]
+  id          String  @id @default(cuid())
+  nameUz      String  @unique
+  nameRu      String
+  nameEn      String
+  description String
+  iconName    String
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  books Book[]
+
+  @@index([isActive, sortOrder])
 }
 
-model BookPage {
-  id                 String   @id @default(cuid())
-  bookId             String
-  pageNumber         Int
-  text               String   @db.Text
-  sceneDescription   String?  @db.Text
-  imageUrl           String?
-  imageKey           String?
-  backgroundImageUrl String?
-  backgroundImageKey String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+model Page {
+  id                    String   @id @default(cuid())
+  bookId                String
+  pageNumber            Int
+  text                  String   @db.Text
+  sceneDescription      String   @db.Text
+  imageUrl              String?
+  backgroundImageUrl    String?
+  replicatePredictionId String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 

@@ -110,10 +110,10 @@ exports.Prisma.BookScalarFieldEnum = {
   userId: 'userId',
   childInputId: 'childInputId',
   genreId: 'genreId',
-  title: 'title',
   status: 'status',
-  pdfUrl: 'pdfUrl',
   illustrationStyle: 'illustrationStyle',
+  characterReferenceUrl: 'characterReferenceUrl',
+  pdfUrl: 'pdfUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -134,26 +134,22 @@ exports.Prisma.GenreScalarFieldEnum = {
   id: 'id',
   nameUz: 'nameUz',
   nameRu: 'nameRu',
-  descriptionUz: 'descriptionUz',
-  descriptionRu: 'descriptionRu',
-  promptTemplate: 'promptTemplate',
-  iconEmoji: 'iconEmoji',
-  isActive: 'isActive',
+  nameEn: 'nameEn',
+  description: 'description',
+  iconName: 'iconName',
   sortOrder: 'sortOrder',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  isActive: 'isActive'
 };
 
-exports.Prisma.BookPageScalarFieldEnum = {
+exports.Prisma.PageScalarFieldEnum = {
   id: 'id',
   bookId: 'bookId',
   pageNumber: 'pageNumber',
   text: 'text',
   sceneDescription: 'sceneDescription',
   imageUrl: 'imageUrl',
-  imageKey: 'imageKey',
   backgroundImageUrl: 'backgroundImageUrl',
-  backgroundImageKey: 'backgroundImageKey',
+  replicatePredictionId: 'replicatePredictionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -182,10 +178,29 @@ exports.GenerationJobStatus = exports.$Enums.GenerationJobStatus = {
 };
 
 exports.BookStatus = exports.$Enums.BookStatus = {
-  PENDING: 'PENDING',
-  GENERATING: 'GENERATING',
+  PREVIEW_GENERATING: 'PREVIEW_GENERATING',
+  PREVIEW_READY: 'PREVIEW_READY',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETING: 'COMPLETING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED'
+};
+
+exports.IllustrationStyle = exports.$Enums.IllustrationStyle = {
+  ANIMATION_3D: 'ANIMATION_3D',
+  FANTASY_STORYBOOK: 'FANTASY_STORYBOOK',
+  SEMI_REALISTIC: 'SEMI_REALISTIC',
+  GEOMETRIC: 'GEOMETRIC',
+  WATERCOLOR: 'WATERCOLOR',
+  GOUACHE: 'GOUACHE',
+  PICTURE_BOOK: 'PICTURE_BOOK',
+  BLOCK_WORLD: 'BLOCK_WORLD',
+  SOFT_ANIME: 'SOFT_ANIME',
+  COLLAGE: 'COLLAGE',
+  CLAY_ANIMATION: 'CLAY_ANIMATION',
+  KAWAII: 'KAWAII',
+  COMIC_BOOK: 'COMIC_BOOK',
+  STICKER_ART: 'STICKER_ART'
 };
 
 exports.Prisma.ModelName = {
@@ -193,7 +208,7 @@ exports.Prisma.ModelName = {
   Book: 'Book',
   ChildInput: 'ChildInput',
   Genre: 'Genre',
-  BookPage: 'BookPage'
+  Page: 'Page'
 };
 /**
  * Create the Client
@@ -243,13 +258,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// Minimal schema for job-worker\n// Only includes models needed for job processing\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nenum GenerationJobStatus {\n  PENDING\n  GENERATING_STORY\n  GENERATING_IMAGES\n  ASSEMBLING_PDF\n  COMPLETED\n  FAILED\n}\n\nmodel GenerationJob {\n  id           String              @id @default(cuid())\n  bookId       String              @unique\n  status       GenerationJobStatus @default(PENDING)\n  progress     Int                 @default(0)\n  errorMessage String?             @db.Text\n  retryCount   Int                 @default(0)\n  createdAt    DateTime            @default(now())\n  updatedAt    DateTime            @updatedAt\n  completedAt  DateTime?\n\n  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)\n\n  @@index([status, createdAt])\n}\n\nmodel Book {\n  id                String     @id @default(cuid())\n  userId            String\n  childInputId      String\n  genreId           String\n  title             String?\n  status            BookStatus @default(PENDING)\n  pdfUrl            String?\n  illustrationStyle String?\n  createdAt         DateTime   @default(now())\n  updatedAt         DateTime   @updatedAt\n\n  childInput    ChildInput     @relation(fields: [childInputId], references: [id])\n  genre         Genre          @relation(fields: [genreId], references: [id])\n  pages         BookPage[]\n  generationJob GenerationJob?\n\n  @@index([userId])\n  @@index([status])\n}\n\nenum BookStatus {\n  PENDING\n  GENERATING\n  COMPLETED\n  FAILED\n}\n\nmodel ChildInput {\n  id        String   @id @default(cuid())\n  name      String\n  age       Int?\n  gender    String?\n  photoUrl  String\n  photoKey  String\n  userId    String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  books     Book[]\n}\n\nmodel Genre {\n  id             String   @id @default(cuid())\n  nameUz         String\n  nameRu         String?\n  descriptionUz  String?\n  descriptionRu  String?\n  promptTemplate String   @db.Text\n  iconEmoji      String?\n  isActive       Boolean  @default(true)\n  sortOrder      Int      @default(0)\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n  books          Book[]\n}\n\nmodel BookPage {\n  id                 String   @id @default(cuid())\n  bookId             String\n  pageNumber         Int\n  text               String   @db.Text\n  sceneDescription   String?  @db.Text\n  imageUrl           String?\n  imageKey           String?\n  backgroundImageUrl String?\n  backgroundImageKey String?\n  createdAt          DateTime @default(now())\n  updatedAt          DateTime @updatedAt\n\n  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)\n\n  @@unique([bookId, pageNumber])\n  @@index([bookId, pageNumber])\n}\n",
-  "inlineSchemaHash": "2c33a494e964dd3b3efe3ba1474a023d3d8ab9aeafe14837280b333c066105f2",
+  "inlineSchema": "// Minimal schema for job-worker\n// Only includes models needed for job processing\n// IMPORTANT: This must match the main frontend schema exactly!\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nenum GenerationJobStatus {\n  PENDING\n  GENERATING_STORY\n  GENERATING_IMAGES\n  ASSEMBLING_PDF\n  COMPLETED\n  FAILED\n}\n\nenum BookStatus {\n  PREVIEW_GENERATING\n  PREVIEW_READY\n  IN_PROGRESS\n  COMPLETING\n  COMPLETED\n  FAILED\n}\n\nenum IllustrationStyle {\n  // Main 3 styles (recommended)\n  ANIMATION_3D\n  FANTASY_STORYBOOK\n  SEMI_REALISTIC\n\n  // Additional styles (legacy)\n  GEOMETRIC\n  WATERCOLOR\n  GOUACHE\n  PICTURE_BOOK\n  BLOCK_WORLD\n  SOFT_ANIME\n  COLLAGE\n  CLAY_ANIMATION\n  KAWAII\n  COMIC_BOOK\n  STICKER_ART\n}\n\nmodel GenerationJob {\n  id           String              @id @default(cuid())\n  bookId       String              @unique\n  status       GenerationJobStatus @default(PENDING)\n  progress     Int                 @default(0)\n  errorMessage String?             @db.Text\n  retryCount   Int                 @default(0)\n  createdAt    DateTime            @default(now())\n  updatedAt    DateTime            @updatedAt\n  completedAt  DateTime?\n\n  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)\n\n  @@index([status, createdAt])\n}\n\nmodel Book {\n  id           String     @id @default(cuid())\n  userId       String\n  childInputId String\n  genreId      String\n  status       BookStatus @default(PREVIEW_GENERATING)\n\n  // Customization\n  illustrationStyle IllustrationStyle @default(ANIMATION_3D)\n\n  // Character reference\n  characterReferenceUrl String?\n\n  // PDF\n  pdfUrl String?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  childInput    ChildInput     @relation(fields: [childInputId], references: [id])\n  genre         Genre          @relation(fields: [genreId], references: [id])\n  pages         Page[]\n  generationJob GenerationJob?\n\n  @@index([userId])\n  @@index([status])\n}\n\nmodel ChildInput {\n  id       String  @id @default(cuid())\n  name     String\n  age      Int?\n  gender   String?\n  photoUrl String\n  photoKey String\n  userId   String\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  books Book[]\n}\n\nmodel Genre {\n  id          String  @id @default(cuid())\n  nameUz      String  @unique\n  nameRu      String\n  nameEn      String\n  description String\n  iconName    String\n  sortOrder   Int     @default(0)\n  isActive    Boolean @default(true)\n\n  books Book[]\n\n  @@index([isActive, sortOrder])\n}\n\nmodel Page {\n  id                    String   @id @default(cuid())\n  bookId                String\n  pageNumber            Int\n  text                  String   @db.Text\n  sceneDescription      String   @db.Text\n  imageUrl              String?\n  backgroundImageUrl    String?\n  replicatePredictionId String?\n  createdAt             DateTime @default(now())\n  updatedAt             DateTime @updatedAt\n\n  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)\n\n  @@unique([bookId, pageNumber])\n  @@index([bookId, pageNumber])\n}\n",
+  "inlineSchemaHash": "5fec3439c6f0caf700a93476ca3e032d1a22ed520a66955d8e370816de97b272",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"GenerationJob\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bookId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"GenerationJobStatus\"},{\"name\":\"progress\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"retryCount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"book\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToGenerationJob\"}],\"dbName\":null},\"Book\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"childInputId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"genreId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"BookStatus\"},{\"name\":\"pdfUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"illustrationStyle\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"childInput\",\"kind\":\"object\",\"type\":\"ChildInput\",\"relationName\":\"BookToChildInput\"},{\"name\":\"genre\",\"kind\":\"object\",\"type\":\"Genre\",\"relationName\":\"BookToGenre\"},{\"name\":\"pages\",\"kind\":\"object\",\"type\":\"BookPage\",\"relationName\":\"BookToBookPage\"},{\"name\":\"generationJob\",\"kind\":\"object\",\"type\":\"GenerationJob\",\"relationName\":\"BookToGenerationJob\"}],\"dbName\":null},\"ChildInput\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"age\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"gender\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"photoUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"photoKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"books\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToChildInput\"}],\"dbName\":null},\"Genre\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nameUz\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nameRu\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descriptionUz\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"descriptionRu\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"promptTemplate\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"iconEmoji\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"sortOrder\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"books\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToGenre\"}],\"dbName\":null},\"BookPage\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bookId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pageNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sceneDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"backgroundImageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"backgroundImageKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"book\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToBookPage\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"GenerationJob\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bookId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"GenerationJobStatus\"},{\"name\":\"progress\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"retryCount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"completedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"book\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToGenerationJob\"}],\"dbName\":null},\"Book\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"childInputId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"genreId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"BookStatus\"},{\"name\":\"illustrationStyle\",\"kind\":\"enum\",\"type\":\"IllustrationStyle\"},{\"name\":\"characterReferenceUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pdfUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"childInput\",\"kind\":\"object\",\"type\":\"ChildInput\",\"relationName\":\"BookToChildInput\"},{\"name\":\"genre\",\"kind\":\"object\",\"type\":\"Genre\",\"relationName\":\"BookToGenre\"},{\"name\":\"pages\",\"kind\":\"object\",\"type\":\"Page\",\"relationName\":\"BookToPage\"},{\"name\":\"generationJob\",\"kind\":\"object\",\"type\":\"GenerationJob\",\"relationName\":\"BookToGenerationJob\"}],\"dbName\":null},\"ChildInput\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"age\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"gender\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"photoUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"photoKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"books\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToChildInput\"}],\"dbName\":null},\"Genre\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nameUz\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nameRu\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nameEn\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"iconName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sortOrder\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"books\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToGenre\"}],\"dbName\":null},\"Page\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bookId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pageNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"text\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sceneDescription\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"backgroundImageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"replicatePredictionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"book\",\"kind\":\"object\",\"type\":\"Book\",\"relationName\":\"BookToPage\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
