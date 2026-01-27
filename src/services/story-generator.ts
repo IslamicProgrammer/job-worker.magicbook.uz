@@ -313,6 +313,9 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
 
       const responseText = await callGemini(prompt);
 
+      // Log first 200 chars for debugging
+      console.log(`[Story Generator] Response preview: ${responseText.substring(0, 200)}`);
+
       // Clean response
       let cleaned = responseText.trim();
       if (cleaned.startsWith("```json")) {
@@ -326,17 +329,19 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
         .replace(/,(\s*[\]}])/g, "$1") // Remove trailing commas
         .replace(/,\s*,/g, ","); // Remove double commas
 
-      // Clean control characters that break JSON parsing
-      // Replace unescaped control characters inside strings
-      cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (char) => {
-        switch (char) {
-          case '\n': return '\\n';
-          case '\r': return '\\r';
-          case '\t': return '\\t';
-          case '\b': return '\\b';
-          case '\f': return '\\f';
-          default: return ''; // Remove other control characters
-        }
+      // Clean control characters ONLY inside JSON string values
+      // This regex finds string values and cleans control chars within them
+      cleaned = cleaned.replace(/"([^"\\]|\\.)*"/g, (match) => {
+        // Inside string values: escape newlines and remove other control chars
+        let result = match;
+        // Replace actual newlines/carriage returns with escaped versions
+        result = result.replace(/\r\n/g, '\\n');
+        result = result.replace(/\n/g, '\\n');
+        result = result.replace(/\r/g, '\\n');
+        result = result.replace(/\t/g, ' ');
+        // Remove other problematic control characters
+        result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+        return result;
       });
 
       const story = JSON.parse(cleaned) as GeneratedStory;
