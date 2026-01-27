@@ -254,6 +254,38 @@ QUYIDAGILARNI HECH QACHON YOZMANG:
 - "Yillar o'tdi", "vaqt o'tdi", "kattaydi" - TAQIQLANGAN!
 - "Nabiralarga aytib berdi", "bolalarga o'rgatdi" - TAQIQLANGAN!
 
+★★★ DINIY VA XUDOLAR MAVZULARI - MUTLAQO TAQIQLANGAN! ★★★
+HECH QACHON YOZMANG - bu bolalar kitobi!
+- Xudolar: Zevs, Apollon, Afrodita, Poseydon, Ares, Hera, Afina va boshqa yunon xudolari - TAQIQLANGAN!
+- Rim xudolari: Yupiter, Mars, Venera, Neptun - TAQIQLANGAN!
+- Misr xudolari: Ra, Ozirus, Izida, Anubis - TAQIQLANGAN!
+- Viking xudolari: Odin, Tor, Loki, Freya - TAQIQLANGAN!
+- HECH QANDAY xudo, iloh, ma'buda, tangri eslatmasi bo'lmasin!
+- Diniy marosimlar, qurbonliklar, ibodatxonalardagi diniy faoliyat - TAQIQLANGAN!
+- Afsonalar va mifologiya o'rniga FAQAT madaniyat, san'at, arxitektura, sport, fan, kashfiyotlar haqida yozing!
+
+Qadimgi Yunoniston uchun TO'G'RI mavzular:
+- Olimpiya o'yinlari, sport musobaqalari
+- Arxitektura: ustunlar, teatrlar, stadionlar
+- San'at: haykaltaroshlik, kulolchilik, mozaika
+- Matematika va fan: Pifagor, Arximed
+- Falsafa va bilim: maktablar, kutubxonalar
+- Kundalik hayot: bozorlar, hunarmandchilik
+
+Qadimgi Misr uchun TO'G'RI mavzular:
+- Piramidalar va arxitektura
+- Nil daryosi va dehqonchilik
+- Yozuv (iyerogliflar) va qog'oz (papirus)
+- San'at va haykaltaroshlik
+- Kundalik hayot va hunarmandchilik
+
+Qadimgi Rim uchun TO'G'RI mavzular:
+- Yo'llar, ko'priklar, akveduklar
+- Kolizey va sport o'yinlari (gladiatorlarsiz)
+- Hammomlar va arxitektura
+- Qonunlar va boshqaruv
+- Hunarmandchilik va savdo
+
 HIKOYA YAKUNLASH QOIDASI:
 - Hikoya oxirida ${childName} HALI HAM ${ageContext} BOLA!
 - Yakuniy sahifada: ${childName} o'z sarguzashtidan XURSAND, lekin U HALI BOLA!
