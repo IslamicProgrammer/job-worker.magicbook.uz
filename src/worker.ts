@@ -226,7 +226,7 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
     );
 
     // Update page with image URL
-    await prisma.bookPage.update({
+    await prisma.page.update({
       where: { id: page.id },
       data: { imageUrl: result.imageUrl },
     });
@@ -239,7 +239,7 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
   await updateProgress(job.id, "ASSEMBLING_PDF", 85, "Generating PDF...");
 
   // Get updated pages with image URLs
-  const updatedPages = await prisma.bookPage.findMany({
+  const updatedPages = await prisma.page.findMany({
     where: { bookId: book.id },
     orderBy: { pageNumber: "asc" },
   });
