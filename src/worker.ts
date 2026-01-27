@@ -12,6 +12,7 @@ import {
 } from "./services/illustration-generator.js";
 import { uploadPDF } from "./lib/r2-upload.js";
 import { generateSimplePDF } from "./services/pdf/simple-pdf-generator.js";
+import { generateStory, createPageRecords } from "./services/story-generator.js";
 
 const prisma = new PrismaClient();
 
@@ -173,8 +174,41 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
 
   console.log(`[Worker] Generating book for ${childInput.name} (${genre.nameUz})`);
 
-  // Step 1: Generate character reference
-  await updateProgress(job.id, "GENERATING_STORY", 5, "Generating character reference...");
+  // Step 1: Generate story if no pages exist
+  let pages = book.pages;
+
+  if (pages.length === 0) {
+    console.log(`[Worker] No pages found - generating story...`);
+    await updateProgress(job.id, "GENERATING_STORY", 5, "Generating story...");
+
+    const story = await generateStory({
+      childName: childInput.name,
+      childAge: childInput.age,
+      childGender: childInput.gender,
+      genreName: genre.nameUz,
+      genreDescription: genre.description,
+      illustrationStyle: book.illustrationStyle ?? "ANIMATION_3D",
+    });
+
+    console.log(`[Worker] Story generated: "${story.title}" with ${story.pages.length} pages`);
+
+    // Create page records in database
+    const pageRecords = createPageRecords(book.id, story);
+    await prisma.page.createMany({
+      data: pageRecords,
+    });
+
+    console.log(`[Worker] Created ${pageRecords.length} page records`);
+
+    // Fetch the newly created pages
+    pages = await prisma.page.findMany({
+      where: { bookId: book.id },
+      orderBy: { pageNumber: "asc" },
+    });
+  }
+
+  // Step 2: Generate character reference
+  await updateProgress(job.id, "GENERATING_STORY", 15, "Generating character reference...");
 
   const charRef = await generateCharacterReference(
     {
@@ -188,15 +222,21 @@ async function processBookGeneration(job: Awaited<ReturnType<typeof getJobWithDe
 
   console.log(`[Worker] Character reference: ${charRef.imageUrl}`);
 
-  // Step 2: Generate illustrations for each page
-  await updateProgress(job.id, "GENERATING_IMAGES", 10, "Generating illustrations...");
+  // Save character reference URL to book
+  await prisma.book.update({
+    where: { id: book.id },
+    data: { characterReferenceUrl: charRef.imageUrl },
+  });
+
+  // Step 3: Generate illustrations for each page
+  await updateProgress(job.id, "GENERATING_IMAGES", 20, "Generating illustrations...");
 
   let previousPageUrl: string | undefined;
-  const totalPages = book.pages.length;
+  const totalPages = pages.length;
 
-  for (let i = 0; i < book.pages.length; i++) {
-    const page = book.pages[i]!;
-    const progress = 10 + Math.round((i / totalPages) * 70); // 10-80%
+  for (let i = 0; i < pages.length; i++) {
+    const page = pages[i]!;
+    const progress = 20 + Math.round((i / totalPages) * 60); // 20-80%
 
     console.log(`[Worker] Generating page ${page.pageNumber} (${i + 1}/${totalPages})`);
 
