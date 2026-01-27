@@ -1,6 +1,7 @@
 /**
  * Story Generator for Job Worker
  * Generates personalized stories using Gemini AI
+ * Full version with detailed prompts for quality stories
  */
 
 import { env } from "../lib/env.js";
@@ -41,7 +42,7 @@ async function callGemini(prompt: string): Promise<string> {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.9,
-        maxOutputTokens: 15000,
+        maxOutputTokens: 30000,
         responseMimeType: "application/json",
       },
     }),
@@ -63,63 +64,245 @@ async function callGemini(prompt: string): Promise<string> {
 }
 
 /**
- * Get art style description
+ * Get art style description for scene descriptions
  */
-function getArtStyleDescription(style: string): string {
+function getArtStyleDescription(illustrationStyle: string): string {
   const styles: Record<string, string> = {
-    ANIMATION_3D: "Disney/Pixar 3D cartoon style, vibrant colors",
-    FANTASY_STORYBOOK: "Hand-drawn fantasy storybook illustration style",
-    SEMI_REALISTIC: "Semi-realistic cartoon style, natural proportions",
-    WATERCOLOR: "Soft watercolor illustration style",
-    PICTURE_BOOK: "Classic children's picture book style",
+    ANIMATION_3D: "Disney/Pixar 3D cartoon style, vibrant colors, expressive characters",
+    FANTASY_STORYBOOK: "Hand-drawn fantasy storybook illustration, watercolor aesthetic, magical atmosphere",
+    SEMI_REALISTIC: "Semi-realistic portrait illustration, natural proportions, warm lighting",
+    WATERCOLOR: "Soft watercolor illustration style, gentle colors, artistic brushstrokes",
+    PICTURE_BOOK: "Classic children's picture book style, traditional illustration",
+    GOUACHE: "Gouache painting style, thick paint texture, rich colors",
+    KAWAII: "Kawaii cute style, adorable characters, pastel colors, chibi proportions",
+    COMIC_BOOK: "Comic book style, bold lines, dynamic panels, action-focused",
+    SOFT_ANIME: "Soft anime/manga style, large expressive eyes, gentle shading",
+    CLAY_ANIMATION: "Clay animation style, plasticine texture, stop-motion look",
+    GEOMETRIC: "Geometric art style, simple shapes, modern minimalist",
+    BLOCK_WORLD: "Block world style like Minecraft, cubic shapes, pixelated",
+    COLLAGE: "Paper collage style, cut paper textures, layered artwork",
+    STICKER_ART: "Sticker art style, flat colors, bold outlines, playful",
   };
-  return styles[style] ?? "Disney/Pixar 3D cartoon style";
+  return styles[illustrationStyle] ?? "Disney/Pixar 3D cartoon style";
 }
 
 /**
- * Generate story using Gemini
+ * Get age-appropriate story guidance
+ */
+function getAgeGuidance(ageCategory: string): string {
+  switch (ageCategory) {
+    case "AGE_0_2":
+      return "YOSH: 0-2 yosh - Juda oddiy jumlalar, takrorlanuvchi ritm, sodda tasvirlar";
+    case "AGE_3_5":
+      return "YOSH: 3-5 yosh - Oddiy jumlalar, hayajonli voqealar, rang-barang tasvirlar";
+    case "AGE_6_9":
+      return "YOSH: 6-9 yosh - O'rtacha jumlalar, qiziqarli syujet, hayotiy tajribalar";
+    case "AGE_10_PLUS":
+      return "YOSH: 10+ yosh - Murakkab jumlalar, chuqur syujet, hayotiy darslar";
+    default:
+      return "";
+  }
+}
+
+/**
+ * Get theme-specific guidance
+ */
+function getThemeGuidance(theme: string): string {
+  switch (theme) {
+    case "EDUCATIONAL":
+      return "MAVZU: Ta'limiy - O'rgatuvchi, foydali ma'lumotlar, yangi bilimlar";
+    case "FAIRY_TALES":
+      return "MAVZU: Ertaklar - Mo'jizaviy, fantastik, klassik ertak uslubi";
+    case "ADVENTURE":
+      return "MAVZU: Sarguzasht - Sayohat, kashfiyotlar, hayajonli voqealar";
+    case "ACTIVITIES":
+      return "MAVZU: Faoliyatlar - O'yin, sport, san'at, yaratish jarayoni";
+    case "WORLDS":
+      return "MAVZU: Dunyolar - Maxsus dunyo, noyob muhit va atmosfera";
+    case "STORIES":
+      return "MAVZU: Hikoyalar - Hayot tajribalari, haqiqiy hayotga yaqin";
+    case "HOLIDAYS":
+      return "MAVZU: Bayramlar - Bayram kayfiyati, an'analar, oilaviy birlik";
+    case "FAMILY":
+      return "MAVZU: Oila - Oilaviy munosabatlar, birlik va g'amxo'rlik";
+    default:
+      return "";
+  }
+}
+
+/**
+ * Get subject/world-specific guidance
+ */
+function getSubjectGuidance(subject: string): string {
+  const uzbekSubjects: Record<string, string> = {
+    SAMARKAND_HISTORY: "HIKOYA OLAMI: Samarqand tarixi - Registon, Amir Temur, arxitektura",
+    BUKHARA_TALES: "HIKOYA OLAMI: Buxoro ertaklari - Qadimiy shahar, sharq ertaklari",
+    KHIVA_LEGENDS: "HIKOYA OLAMI: Xiva afsonalari - Ichan-Qal'a, qadimiy qal'a",
+    SILK_ROAD_ADVENTURE: "HIKOYA OLAMI: Buyuk Ipak yo'li - Savdogarlar, sayohat",
+    UZBEK_CUISINE: "HIKOYA OLAMI: O'zbek taomlari - Osh, somsa, lag'mon",
+    NAVRUZ_CELEBRATION: "HIKOYA OLAMI: Navro'z bayrami - Bahor, an'analar",
+    UZBEK_FAIRY_TALES: "HIKOYA OLAMI: O'zbek xalq ertaklari - Milliy ertaklar",
+    AMIR_TEMUR_ERA: "HIKOYA OLAMI: Amir Temur davri - Buyuk davlat",
+    TASHKENT_MODERN: "HIKOYA OLAMI: Zamonaviy Toshkent - Poytaxt shahri",
+    FERGANA_VALLEY: "HIKOYA OLAMI: Farg'ona vodiysi - Mevali vodiy",
+    DESERT_KYZYLKUM: "HIKOYA OLAMI: Qizilqum cho'li - Cho'l sarguzashtlari",
+    MOUNTAIN_TIEN_SHAN: "HIKOYA OLAMI: Tyan-Shan tog'lari - Baland tog'lar",
+  };
+
+  if (uzbekSubjects[subject]) {
+    return uzbekSubjects[subject];
+  }
+
+  const genericSubjects: Record<string, string> = {
+    IN_THE_JUNGLE: "HIKOYA OLAMI: Junglida",
+    THE_SAVANNA: "HIKOYA OLAMI: Savannada",
+    DEEP_IN_THE_OCEAN: "HIKOYA OLAMI: Okean tubida",
+    AT_THE_NORTH_POLE: "HIKOYA OLAMI: Shimoliy qutbda",
+    CANDY_LAND: "HIKOYA OLAMI: Shirinliklar olami",
+    MAGICAL_FOREST: "HIKOYA OLAMI: Sehrli o'rmon",
+    FAIRY_KINGDOM: "HIKOYA OLAMI: Parilar shohligi",
+    THE_MIDDLE_AGES: "HIKOYA OLAMI: O'rta asrlar",
+    THE_PREHISTORIC_AGE: "HIKOYA OLAMI: Dinozavrlar davri",
+    THE_WILD_WEST: "HIKOYA OLAMI: Yovvoyi G'arb",
+    THE_VIKINGS: "HIKOYA OLAMI: Vikinglar",
+    ANCIENT_EGYPT: "HIKOYA OLAMI: Qadimgi Misr (faqat madaniyat va arxitektura)",
+    ANCIENT_GREECE: "HIKOYA OLAMI: Qadimgi Yunoniston (faqat madaniyat, sport, san'at)",
+    ANCIENT_ROME: "HIKOYA OLAMI: Qadimgi Rim (faqat madaniyat va arxitektura)",
+    ARABIAN_NIGHTS_1001: "HIKOYA OLAMI: 1001 kecha",
+    IN_SPACE: "HIKOYA OLAMI: Kosmosda",
+    IN_THE_FUTURE: "HIKOYA OLAMI: Kelajakda",
+    ON_MARS: "HIKOYA OLAMI: Marsda",
+  };
+
+  return genericSubjects[subject] ?? "";
+}
+
+/**
+ * Generate story using Gemini with full detailed prompt
  */
 export async function generateStory(input: StoryGenerationInput): Promise<GeneratedStory> {
-  const { childName, childAge, childGender, genreName, genreDescription, illustrationStyle } = input;
+  const {
+    childName,
+    childAge,
+    childGender,
+    genreName,
+    genreDescription,
+    ageCategory,
+    theme,
+    subject,
+    illustrationStyle,
+  } = input;
 
   const ageContext = childAge ? `${childAge} yoshli` : "kichkina";
   const genderContext = childGender === "girl" ? "qiz bola" : childGender === "boy" ? "o'g'il bola" : "bola";
   const artStyle = getArtStyleDescription(illustrationStyle ?? "ANIMATION_3D");
-  const totalPages = 11; // 1 cover + 10 story pages
+  const totalPages = 20; // 1 cover + 19 story pages
+  const storyPages = totalPages - 1;
 
   console.log(`[Story Generator] Generating story for ${childName} (${totalPages} pages)`);
 
-  const prompt = `Sen professional bolalar kitoblari yozuvchisissan. ${childName} uchun ${genreName} janrida qiziqarli hikoya yarat.
+  // Build customization context
+  const ageGuidance = ageCategory ? getAgeGuidance(ageCategory) : "";
+  const themeGuidance = theme ? getThemeGuidance(theme) : "";
+  const subjectGuidance = subject ? getSubjectGuidance(subject) : "";
 
-Talablar:
-- O'zbek tilida
-- Bola: ${childName} (${ageContext} ${genderContext})
-- Janr: ${genreName} (${genreDescription})
-- Jami ${totalPages} sahifa (muqova + 10 hikoya)
-- Har sahifa 100-150 so'z
-- Ijobiy xulosa
+  const customizationContext = [ageGuidance, themeGuidance, subjectGuidance]
+    .filter((g) => g.length > 0)
+    .join("\n\n");
 
-MUHIM: ${childName} butun hikoya davomida BIR XIL YOSHDA qoladi!
+  const prompt = `Sen professional bolalar kitoblari yozuvchisissan. Sening vazifang ${ageContext} bolalar uchun qiziqarli va ta'limiy hikoyalar yaratish.
 
-JSON formatda javob ber:
+${childName} uchun ${genreName} janrida qiziqarli hikoya yarat.
+
+MUHIM: Har bir hikoya NOYOB va IJODIY bo'lishi kerak! Umumiy mavzularni (olma, maktab, hayvonlar bog'i) takrorlamang. Fantaziyangizdan foydalaning!
+${customizationContext ? `\n${customizationContext}\n` : ""}
+Hikoya quyidagi talablarga javob berishi kerak:
+1. O'zbek tilida yozilgan bo'lsin
+2. Bola ismi: ${childName} (${genderContext})
+3. Janr: ${genreName} (${genreDescription})
+4. Jami ${totalPages} sahifa (muqova + ${storyPages} sahifa hikoya)
+5. ★★★ JUDA MUHIM - HAR BIR SAHIFA KAMIDA 300-400 SO'Z ★★★
+   - Har bir sahifa UZUN va TO'LIQ bo'lishi kerak
+   - TAKRORLAMANG - har bir jumla yangi ma'lumot berishi kerak
+   - Bitta fikrni bir marta ayting, keyin davom eting
+6. Har bir sahifa 3-4 PARAGRAFGA bo'lingan bo'lsin
+7. Hikoya bolaning yoshiga mos bo'lsin
+8. Hikoya ijobiy xulosa bilan tugasin
+9. To'g'ri jinsga mos olmoshlardan foydalaning
+10. Hikoyada boshlanish, o'rtalik, va yakunlovchi qismlar aniq bo'lsin
+
+MUHIM - HAR SAHIFADA VOQEALAR:
+- Har bir sahifa ALOHIDA VOQEA yoki HARAKAT bo'lishi kerak
+- Faqat tasvirlab qolmang - NIMA BO'LYAPTI, NIMA SODIR BO'LADI?
+- Har sahifada: yangi kashfiyot, yangi tanishuv, yangi muammo, yangi yechim
+- Dialoglar, his-tuyg'ular, harakatlar - barchasini qo'shing
+- Hikoya dinamik va qiziqarli bo'lsin - statik tasvirlardan qoching
+
+★★★ BOLANING YOSHI HECH QACHON O'ZGARMAYDI - MUTLAQO TAQIQLANGAN! ★★★
+JUDA MUHIM - YOSH BO'YICHA QOIDALAR:
+- ${childName} butun hikoya davomida BIR XIL YOSHDA qoladi - ${ageContext}!
+- Hikoya faqat BIR KUN yoki BIR HAFTA ichida sodir bo'ladi - yillar o'tmaydi
+- ${childName} HECH QACHON katta bo'lib, keksa bo'lmaydi, qariyb qolmaydi
+- ${childName} HECH QACHON voyaga yetmaydi, kattalashmaydi
+- Hikoya oxirida ${childName} boshqa yoshlarga hikoya aytmaydi - u o'zi hali yoshdir!
+- Bu BITTA SARGUZASHT - umr bo'yi hikoya EMAS!
+
+★★★ TAQIQLANGAN SO'ZLAR VA TUSHUNCHALAR ★★★
+QUYIDAGILARNI HECH QACHON YOZMANG:
+- "Oqsoqol" - TAQIQLANGAN! Bola oqsoqol bo'lmaydi!
+- "Keksa", "qarigan", "katta bo'lib" - TAQIQLANGAN!
+- "Yillar o'tdi", "vaqt o'tdi", "kattaydi" - TAQIQLANGAN!
+- "Nabiralarga aytib berdi", "bolalarga o'rgatdi" - TAQIQLANGAN!
+
+HIKOYA YAKUNLASH QOIDASI:
+- Hikoya oxirida ${childName} HALI HAM ${ageContext} BOLA!
+- Yakuniy sahifada: ${childName} o'z sarguzashtidan XURSAND, lekin U HALI BOLA!
+- TO'G'RI yakun: "${childName} juda xursand edi va ertaga yangi sarguzashtlar kutayotganini bilardi"
+
+★★★ O'ZBEK TILIDA TO'G'RI YOZISH ★★★
+- Grammatik xatolar YO'Q - professional kitob kabi yozing
+- Har bir jumla BOSH HARF bilan boshlanishi kerak
+- Har bir jumla NUQTA bilan tugashi kerak
+
+PROFESSIONAL KITOB FORMATI:
+- Matn 3-4 paragraflarga bo'lingan
+- Har bir paragraf KAMIDA 3-5 jumladan iborat (UZUN paragraflar)
+- Dialoglar alohida paragrafda
+- MUHIM: Paragraflar orasida \\n\\n ishlatish
+
+★★★ TITLE (SARLAVHA) QOIDALARI ★★★
+- Title FAQAT O'ZBEK TILIDA (maksimum 2-3 so'z)
+- INGLIZ TILIDA so'z ishlatish TAQIQLANGAN!
+
+JUDA MUHIM - sceneDescription FAQAT INGLIZ TILIDA!
+- "text" maydoni: O'zbek tilida hikoya matni
+- "sceneDescription" maydoni: FAQAT INGLIZ TILIDA rasm tavsifi
+
+MUHIM: Javobni qat'iy quyidagi JSON formatda ber:
 {
-  "title": "Sarlavha (2 so'z)",
+  "title": "Qisqa Sarlavha",
   "pages": [
     {
       "pageNumber": 0,
-      "text": "Sarlavha",
-      "sceneDescription": "COVER: ${childName} as main character. ${artStyle}. NO TEXT."
+      "text": "Hikoya sarlavhasi",
+      "sceneDescription": "COVER PAGE: ${childName} as the main character. ${artStyle}. NO TEXT ON IMAGE."
     },
     {
       "pageNumber": 1,
-      "text": "Hikoya matni...",
-      "sceneDescription": "STORY PAGE 1: Scene description in ENGLISH. ${artStyle}. NO TEXT."
+      "text": "[300-400 SO'Z - 3-4 paragraf]\\n\\nVoqeaning boshlanishi haqida batafsil yozing...\\n\\n${childName}ning fikrlari va his-tuyg'ulari...\\n\\nBirinchi harakatlar va natijalar...",
+      "sceneDescription": "STORY PAGE 1: ${childName} in opening scene. ${artStyle}. NO TEXT ON IMAGE."
+    },
+    {
+      "pageNumber": 2,
+      "text": "[300-400 SO'Z - 3-4 paragraf]\\n\\nHikoya davomi...",
+      "sceneDescription": "STORY PAGE 2: Scene description in ENGLISH. ${artStyle}. NO TEXT ON IMAGE."
     }
-    // ... pages 2-10
   ]
 }
 
-MUHIM: sceneDescription FAQAT INGLIZ TILIDA!`;
+Generate all ${totalPages} pages (0 to ${storyPages}).
+
+IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
 
   const MAX_RETRIES = 3;
   let lastError: Error | null = null;
@@ -138,11 +321,24 @@ MUHIM: sceneDescription FAQAT INGLIZ TILIDA!`;
         cleaned = cleaned.replace(/^```\s*/, "").replace(/\s*```$/, "");
       }
 
+      // Fix common JSON issues
+      cleaned = cleaned
+        .replace(/,(\s*[\]}])/g, "$1") // Remove trailing commas
+        .replace(/,\s*,/g, ","); // Remove double commas
+
       const story = JSON.parse(cleaned) as GeneratedStory;
 
       // Validate
-      if (!story.title || !story.pages || story.pages.length < 3) {
-        throw new Error(`Invalid story: ${story.pages?.length ?? 0} pages`);
+      if (!story.title || !story.pages || story.pages.length < 5) {
+        throw new Error(`Invalid story: ${story.pages?.length ?? 0} pages (minimum 5 required)`);
+      }
+
+      // Log page word counts
+      for (const page of story.pages) {
+        if (page.pageNumber > 0) {
+          const wordCount = page.text.trim().split(/\s+/).length;
+          console.log(`[Story Generator] Page ${page.pageNumber}: ${wordCount} words`);
+        }
       }
 
       console.log(`[Story Generator] Generated: "${story.title}" with ${story.pages.length} pages`);
