@@ -326,6 +326,19 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
         .replace(/,(\s*[\]}])/g, "$1") // Remove trailing commas
         .replace(/,\s*,/g, ","); // Remove double commas
 
+      // Clean control characters that break JSON parsing
+      // Replace unescaped control characters inside strings
+      cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (char) => {
+        switch (char) {
+          case '\n': return '\\n';
+          case '\r': return '\\r';
+          case '\t': return '\\t';
+          case '\b': return '\\b';
+          case '\f': return '\\f';
+          default: return ''; // Remove other control characters
+        }
+      });
+
       const story = JSON.parse(cleaned) as GeneratedStory;
 
       // Validate
