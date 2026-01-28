@@ -378,22 +378,71 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
         .replace(/,(\s*[\]}])/g, "$1") // Remove trailing commas
         .replace(/,\s*,/g, ","); // Remove double commas
 
-      // Clean control characters ONLY inside JSON string values
-      // This regex finds string values and cleans control chars within them
-      cleaned = cleaned.replace(/"([^"\\]|\\.)*"/g, (match) => {
-        // Inside string values: escape newlines and remove other control chars
-        let result = match;
-        // Replace actual newlines/carriage returns with escaped versions
-        result = result.replace(/\r\n/g, '\\n');
-        result = result.replace(/\n/g, '\\n');
-        result = result.replace(/\r/g, '\\n');
-        result = result.replace(/\t/g, ' ');
-        // Remove other problematic control characters
-        result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-        return result;
-      });
+      // More robust string cleaning - handle each character
+      let inString = false;
+      let escaped = false;
+      let result = '';
 
-      const story = JSON.parse(cleaned) as GeneratedStory;
+      for (let i = 0; i < cleaned.length; i++) {
+        const char = cleaned[i]!;
+        const code = char.charCodeAt(0);
+
+        if (escaped) {
+          result += char;
+          escaped = false;
+          continue;
+        }
+
+        if (char === '\\' && inString) {
+          escaped = true;
+          result += char;
+          continue;
+        }
+
+        if (char === '"') {
+          inString = !inString;
+          result += char;
+          continue;
+        }
+
+        if (inString) {
+          // Inside a string - handle special characters
+          if (char === '\n') {
+            result += '\\n';
+          } else if (char === '\r') {
+            result += '\\n';
+          } else if (char === '\t') {
+            result += ' ';
+          } else if (code < 32 || code === 127) {
+            // Skip control characters
+          } else {
+            result += char;
+          }
+        } else {
+          // Outside string - keep as is
+          result += char;
+        }
+      }
+
+      cleaned = result;
+
+      // Try to parse, if fails log the problematic area
+      let story: GeneratedStory;
+      try {
+        story = JSON.parse(cleaned) as GeneratedStory;
+      } catch (parseError) {
+        const errorMsg = parseError instanceof Error ? parseError.message : String(parseError);
+        // Extract position from error message
+        const posMatch = errorMsg.match(/position\s+(\d+)/i);
+        if (posMatch) {
+          const pos = parseInt(posMatch[1]!, 10);
+          const start = Math.max(0, pos - 50);
+          const end = Math.min(cleaned.length, pos + 50);
+          console.error(`[Story Generator] JSON error at position ${pos}:`);
+          console.error(`[Story Generator] Context: ...${cleaned.substring(start, end)}...`);
+        }
+        throw parseError;
+      }
 
       // Validate structure
       if (!story.title || !story.pages || story.pages.length < 5) {
