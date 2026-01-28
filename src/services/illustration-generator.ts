@@ -180,7 +180,7 @@ async function callGeminiDirectly(params: {
 }): Promise<any> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${params.model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-  // Build request body
+  // Build request body with generation config for image output
   const requestBody = {
     contents: [
       {
@@ -194,6 +194,10 @@ async function callGeminiDirectly(params: {
         }),
       },
     ],
+    generationConfig: {
+      responseModalities: ["IMAGE", "TEXT"],
+      temperature: 1.0,
+    },
   };
 
   console.log(`[Gemini Direct] Calling API: ${params.model}`);
@@ -765,11 +769,28 @@ Parents must look at this and immediately recognize their child.`,
 
     // Extract image from response (direct API format)
     if (!response.candidates || response.candidates.length === 0) {
+      // Check for prompt feedback (content blocked)
+      if (response.promptFeedback) {
+        console.error("[Character Reference] Prompt blocked:", JSON.stringify(response.promptFeedback));
+        throw new Error(`Content blocked: ${response.promptFeedback.blockReason || "Unknown reason"}`);
+      }
+      console.error("[Character Reference] No candidates. Full response:", JSON.stringify(response).substring(0, 1000));
       throw new Error("No candidates in Gemini response");
     }
 
     const candidate = response.candidates[0];
+
+    // Check if generation was blocked by safety filters
+    if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
+      console.error("[Character Reference] Generation issue:", candidate.finishReason);
+      if (candidate.safetyRatings) {
+        console.error("[Character Reference] Safety ratings:", JSON.stringify(candidate.safetyRatings));
+      }
+      throw new Error(`Generation issue: ${candidate.finishReason}`);
+    }
+
     if (!candidate?.content?.parts) {
+      console.error("[Character Reference] No parts in candidate:", JSON.stringify(candidate).substring(0, 1000));
       throw new Error("No candidate data in Gemini response");
     }
 
@@ -786,6 +807,8 @@ Parents must look at this and immediately recognize their child.`,
     }
 
     if (!imageBuffer) {
+      // Log what parts we did receive
+      console.error("[Character Reference] No image in parts:", JSON.stringify(candidate.content.parts.map((p: Record<string, unknown>) => Object.keys(p))));
       throw new Error("No image data in Gemini response");
     }
 
@@ -1545,11 +1568,28 @@ WHAT TO AVOID:
 
     // Extract image from response (direct API format)
     if (!response.candidates || response.candidates.length === 0) {
+      // Check for prompt feedback (content blocked)
+      if (response.promptFeedback) {
+        console.error("[Illustration Generator] Prompt blocked:", JSON.stringify(response.promptFeedback));
+        throw new Error(`Content blocked: ${response.promptFeedback.blockReason || "Unknown reason"}`);
+      }
+      console.error("[Illustration Generator] No candidates. Full response:", JSON.stringify(response).substring(0, 1000));
       throw new Error("No candidates in Gemini response");
     }
 
     const candidate = response.candidates[0];
+
+    // Check if generation was blocked by safety filters
+    if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
+      console.error("[Illustration Generator] Generation issue:", candidate.finishReason);
+      if (candidate.safetyRatings) {
+        console.error("[Illustration Generator] Safety ratings:", JSON.stringify(candidate.safetyRatings));
+      }
+      throw new Error(`Generation issue: ${candidate.finishReason}`);
+    }
+
     if (!candidate?.content?.parts) {
+      console.error("[Illustration Generator] No parts in candidate:", JSON.stringify(candidate).substring(0, 1000));
       throw new Error("No candidate data in Gemini response");
     }
 
@@ -1566,6 +1606,8 @@ WHAT TO AVOID:
     }
 
     if (!imageBuffer) {
+      // Log what parts we did receive
+      console.error("[Illustration Generator] No image in parts:", JSON.stringify(candidate.content.parts.map((p: Record<string, unknown>) => Object.keys(p))));
       throw new Error("No image data in Gemini response");
     }
 
