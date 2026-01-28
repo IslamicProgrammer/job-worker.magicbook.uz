@@ -77,23 +77,14 @@ function formatCoverTitle(rawTitle: string, childName: string): string {
   // Split into words
   const words = title.split(/\s+/).filter(w => w.length > 0);
 
-  // If more than 2 words, truncate or use default
+  // If more than 2 words, always take first 2 (preserve AI's variety)
   if (words.length > 2) {
-    console.log(`[Cover Title] Too many words (${words.length}) in "${title}"`);
-
-    // Check if first word is child name
-    if (words[0]?.toLowerCase() === childName.toLowerCase()) {
-      // Take first 2 words
-      title = words.slice(0, 2).join(" ");
-      console.log(`[Cover Title] Truncated to: "${title}"`);
-    } else {
-      // Use default format
-      title = `${childName} Sarguzashti`;
-      console.log(`[Cover Title] Using default: "${title}"`);
-    }
+    console.log(`[Cover Title] Too many words (${words.length}) in "${title}", taking first 2`);
+    title = words.slice(0, 2).join(" ");
+    console.log(`[Cover Title] Truncated to: "${title}"`);
   }
 
-  // Ensure title includes child name
+  // Only use default if child name is completely missing
   if (!title.toLowerCase().includes(childName.toLowerCase())) {
     console.log(`[Cover Title] Missing child name in "${title}"`);
     title = `${childName} Sarguzashti`;

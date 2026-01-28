@@ -451,15 +451,10 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
 
       // Validate title format (should be 2 words, include child name)
       const titleWords = story.title.trim().split(/\s+/);
-      if (titleWords.length > 3) {
-        console.warn(`[Story Generator] Title too long: "${story.title}" (${titleWords.length} words), truncating...`);
-        // Try to fix: take first 2 words or create standard format
-        if (titleWords[0]?.toLowerCase() === childName.toLowerCase() ||
-            titleWords.includes(childName)) {
-          story.title = `${childName} Sarguzashti`;
-        } else {
-          story.title = titleWords.slice(0, 2).join(" ");
-        }
+      if (titleWords.length > 2) {
+        console.warn(`[Story Generator] Title too long: "${story.title}" (${titleWords.length} words), truncating to 2 words...`);
+        // Take first 2 words - preserve the AI's choice
+        story.title = titleWords.slice(0, 2).join(" ");
         console.log(`[Story Generator] Fixed title: "${story.title}"`);
       }
 
