@@ -33,7 +33,7 @@ export interface StoryGenerationInput {
  * Call Gemini API directly
  */
 async function callGemini(prompt: string): Promise<string> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${env.GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -302,9 +302,26 @@ PROFESSIONAL KITOB FORMATI:
 - Dialoglar alohida paragrafda
 - MUHIM: Paragraflar orasida \\n\\n ishlatish
 
-★★★ TITLE (SARLAVHA) QOIDALARI ★★★
-- Title FAQAT O'ZBEK TILIDA (maksimum 2-3 so'z)
-- INGLIZ TILIDA so'z ishlatish TAQIQLANGAN!
+★★★ TITLE (SARLAVHA) QOIDALARI - JUDA MUHIM! ★★★
+QATTIY QOIDALAR - BUZILSA XATO!
+1. Title FAQAT 2 SO'ZDAN iborat bo'lishi SHART!
+2. Birinchi so'z: ${childName} (bolaning ismi)
+3. Ikkinchi so'z: Sarguzashti, Sayohati, Sehrli, Mo'jizasi, Kashfiyoti, Dunyosi, va hokazo
+4. TO'G'RI YOZUV - imlo xatosiz!
+5. INGLIZ TILIDA so'z ishlatish MUTLAQO TAQIQLANGAN!
+
+TO'G'RI MISOLLAR:
+- "${childName} Sarguzashti"
+- "${childName} Sayohati"
+- "${childName} Mo'jizasi"
+- "${childName} Kashfiyoti"
+- "${childName} Dunyosi"
+
+NOTO'G'RI MISOLLAR (TAQIQLANGAN):
+- "The Adventures of ${childName}" - INGLIZCHA! XATO!
+- "${childName}'s Journey" - INGLIZCHA! XATO!
+- "${childName} va Sehrli O'rmon Sarguzashti" - 4+ so'z! XATO!
+- "Sehrli Hikoya" - bola ismi yo'q! XATO!
 
 JUDA MUHIM - sceneDescription FAQAT INGLIZ TILIDA!
 - "text" maydoni: O'zbek tilida hikoya matni
@@ -378,9 +395,31 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
 
       const story = JSON.parse(cleaned) as GeneratedStory;
 
-      // Validate
+      // Validate structure
       if (!story.title || !story.pages || story.pages.length < 5) {
         throw new Error(`Invalid story: ${story.pages?.length ?? 0} pages (minimum 5 required)`);
+      }
+
+      // Validate title format (should be 2 words, include child name)
+      const titleWords = story.title.trim().split(/\s+/);
+      if (titleWords.length > 3) {
+        console.warn(`[Story Generator] Title too long: "${story.title}" (${titleWords.length} words), truncating...`);
+        // Try to fix: take first 2 words or create standard format
+        if (titleWords[0]?.toLowerCase() === childName.toLowerCase() ||
+            titleWords.includes(childName)) {
+          story.title = `${childName} Sarguzashti`;
+        } else {
+          story.title = titleWords.slice(0, 2).join(" ");
+        }
+        console.log(`[Story Generator] Fixed title: "${story.title}"`);
+      }
+
+      // Check for English words in title
+      const englishPattern = /\b(the|of|and|in|on|at|to|for|with|adventure|journey|story|magic|world)\b/i;
+      if (englishPattern.test(story.title)) {
+        console.warn(`[Story Generator] English words in title: "${story.title}", fixing...`);
+        story.title = `${childName} Sarguzashti`;
+        console.log(`[Story Generator] Fixed title: "${story.title}"`);
       }
 
       // Log page word counts

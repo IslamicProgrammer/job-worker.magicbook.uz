@@ -2,11 +2,106 @@ import sharp from "sharp";
 import { env } from "../lib/env.js";
 import { uploadPageImage, uploadBackgroundImage } from "../lib/r2-upload.js";
 
+// Retry configuration for network operations
+const FETCH_MAX_RETRIES = 3;
+const FETCH_INITIAL_DELAY_MS = 1000;
+
+/**
+ * Fetch with retry for downloading images
+ */
+async function fetchWithRetry(url: string, operationName: string): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= FETCH_MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return response;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      const errorMessage = lastError.message;
+
+      // Check if error is retryable
+      const isRetryable =
+        errorMessage.includes("EPIPE") ||
+        errorMessage.includes("ECONNRESET") ||
+        errorMessage.includes("ETIMEDOUT") ||
+        errorMessage.includes("ENOTFOUND") ||
+        errorMessage.includes("EAI_AGAIN") ||
+        errorMessage.includes("socket hang up") ||
+        errorMessage.includes("network") ||
+        errorMessage.includes("timeout") ||
+        errorMessage.includes("fetch failed");
+
+      if (!isRetryable || attempt === FETCH_MAX_RETRIES) {
+        console.error(
+          `[Fetch Retry] ${operationName} failed after ${attempt} attempt(s):`,
+          errorMessage
+        );
+        throw lastError;
+      }
+
+      const delay = FETCH_INITIAL_DELAY_MS * Math.pow(2, attempt - 1);
+      console.warn(
+        `[Fetch Retry] ${operationName} failed (attempt ${attempt}/${FETCH_MAX_RETRIES}): ${errorMessage}. Retrying in ${delay}ms...`
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError;
+}
+
 // Portrait page dimensions for children's book
 // Single page = 8" wide × 10" tall at 300 DPI for print quality
 const IMAGE_WIDTH = 2400;  // 8 inches × 300 DPI
 const IMAGE_HEIGHT = 3000; // 10 inches × 300 DPI
 // Aspect ratio: 4:5 (0.8:1) - standard portrait book page
+
+/**
+ * Format cover title to ensure it's max 2 words, in Uzbek, includes child name
+ */
+function formatCoverTitle(rawTitle: string, childName: string): string {
+  // Clean the title
+  let title = rawTitle.trim();
+
+  // Check for English words and replace with Uzbek
+  const englishPattern = /\b(the|of|and|in|on|at|to|for|with|adventure|journey|story|magic|world|adventures)\b/i;
+  if (englishPattern.test(title)) {
+    console.log(`[Cover Title] English detected in "${title}", using default`);
+    return `${childName} Sarguzashti`;
+  }
+
+  // Split into words
+  const words = title.split(/\s+/).filter(w => w.length > 0);
+
+  // If more than 2 words, truncate or use default
+  if (words.length > 2) {
+    console.log(`[Cover Title] Too many words (${words.length}) in "${title}"`);
+
+    // Check if first word is child name
+    if (words[0]?.toLowerCase() === childName.toLowerCase()) {
+      // Take first 2 words
+      title = words.slice(0, 2).join(" ");
+      console.log(`[Cover Title] Truncated to: "${title}"`);
+    } else {
+      // Use default format
+      title = `${childName} Sarguzashti`;
+      console.log(`[Cover Title] Using default: "${title}"`);
+    }
+  }
+
+  // Ensure title includes child name
+  if (!title.toLowerCase().includes(childName.toLowerCase())) {
+    console.log(`[Cover Title] Missing child name in "${title}"`);
+    title = `${childName} Sarguzashti`;
+    console.log(`[Cover Title] Using default: "${title}"`);
+  }
+
+  return title;
+}
 
 export interface IllustrationInput {
   sceneDescription: string;
@@ -167,9 +262,8 @@ async function callGeminiDirectly(params: {
 /**
  * Get title style instructions based on story theme/subject
  */
-function getTitleStyleInstructions(sceneDescription: string, storyText: string): string {
+function getTitleStyleInstructions(sceneDescription: string, _storyText: string): string {
   const desc = sceneDescription.toLowerCase();
-  const title = storyText.toLowerCase();
 
   // Jungle/Forest themes
   if (desc.includes('jungle') || desc.includes('forest') || desc.includes('tree')) {
@@ -597,8 +691,8 @@ Hair color, face shape, and facial features MUST be IDENTICAL to the reference p
   console.log(`[Character Reference] Generating character for ${childName}`);
 
   try {
-    // Fetch child photo and convert to base64
-    const photoResponse = await fetch(childPhotoUrl);
+    // Fetch child photo and convert to base64 (with retry)
+    const photoResponse = await fetchWithRetry(childPhotoUrl, "Child photo for character reference");
     const photoBuffer = await photoResponse.arrayBuffer();
     const photoBase64 = Buffer.from(photoBuffer).toString("base64");
 
@@ -762,19 +856,33 @@ export async function generateIllustration(
   const genderNote = childGender ? ` (${childGender === "boy" ? "boy" : childGender === "girl" ? "girl" : "child"})` : "";
 
   // Individual portrait page layout based on page type
+  // For cover, ensure title is max 2 words
+  const coverTitle = pageType === "cover" ? formatCoverTitle(storyText, childName) : storyText;
+
   const textInstruction =
     pageType === "cover"
       ? `PROFESSIONAL BOOK COVER LAYOUT:
 ★ This is the COVER of a professional children's book ★
 
-TITLE TEXT (MOST IMPORTANT):
-- TITLE: "${storyText}"
-- Render title text at the TOP in LARGE, BOLD lettering
-- Title styling that matches the story theme:
-${getTitleStyleInstructions(sceneDescription, storyText)}
+★★★ TITLE TEXT - CRITICAL RULES ★★★
+TITLE: "${coverTitle}"
+
+MANDATORY TITLE REQUIREMENTS:
+1. Render EXACTLY these words: "${coverTitle}" - NO changes, NO additions!
+2. Title must be ONLY 2 WORDS - do NOT add extra words!
+3. CORRECT SPELLING - copy the title EXACTLY as shown above!
+4. NO ENGLISH WORDS - title is in Uzbek language!
+5. Position at TOP of cover in LARGE, BOLD, READABLE lettering
+
+TITLE STYLING:
+${getTitleStyleInstructions(sceneDescription, coverTitle)}
 - Make title VERY prominent and easily readable
-- Add subtle shadows/outlines to make text pop
+- Add subtle shadows/outlines to make text pop against background
 - Title should be the FIRST thing people notice
+- Professional children's book cover typography
+
+⚠️ WARNING: Do NOT write anything other than "${coverTitle}"!
+⚠️ Do NOT add subtitles, author names, or extra text!
 
 CHARACTER COMPOSITION:
 - Main character positioned prominently in center/lower area
@@ -1104,8 +1212,8 @@ IMPORTANT: Portrait page format (4:5 aspect ratio, 2400×3000px). ${pageType ===
   console.log(`[Illustration Generator] Prompt: ${enhancedPrompt.substring(0, 200)}...`);
 
   try {
-    // Fetch child photo for reference
-    const photoResponse = await fetch(input.childPhotoUrl);
+    // Fetch child photo for reference (with retry)
+    const photoResponse = await fetchWithRetry(input.childPhotoUrl, "Child photo for illustration");
     const photoBuffer = await photoResponse.arrayBuffer();
     const photoBase64 = Buffer.from(photoBuffer).toString("base64");
     const photoMimeType = input.childPhotoUrl.toLowerCase().includes('.png')
@@ -1348,7 +1456,7 @@ WHAT TO AVOID:
     // This prevents "drift" where character changes across pages
     if (characterReferenceUrl) {
       console.log(`[Illustration Generator] Using CHARACTER REFERENCE (master): ${characterReferenceUrl}`);
-      const charRefResponse = await fetch(characterReferenceUrl);
+      const charRefResponse = await fetchWithRetry(characterReferenceUrl, "Character reference");
       const charRefBuffer = await charRefResponse.arrayBuffer();
       const charRefBase64 = Buffer.from(charRefBuffer).toString("base64");
       const charRefMimeType = characterReferenceUrl.toLowerCase().includes('.png')
@@ -1366,7 +1474,7 @@ WHAT TO AVOID:
     // ALSO include previous page for scene/style continuity (but NOT as primary character reference)
     if (previousPageUrl) {
       console.log(`[Illustration Generator] Also using previous page for scene continuity: ${previousPageUrl}`);
-      const prevPageResponse = await fetch(previousPageUrl);
+      const prevPageResponse = await fetchWithRetry(previousPageUrl, "Previous page");
       const prevPageBuffer = await prevPageResponse.arrayBuffer();
       const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
       const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')

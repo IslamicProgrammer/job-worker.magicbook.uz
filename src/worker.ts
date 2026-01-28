@@ -19,9 +19,70 @@ const prisma = new PrismaClient();
 // Configuration
 const POLL_INTERVAL_MS = 5000; // Check for new jobs every 5 seconds
 const MAX_RETRIES = 3;
+const STUCK_JOB_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes - jobs older than this are considered stuck
 
 let isProcessing = false;
 let shouldStop = false;
+
+/**
+ * Recover stuck jobs on startup
+ * Jobs that were left in intermediate states (GENERATING_STORY, GENERATING_IMAGES, ASSEMBLING_PDF)
+ * from a previous crash are reset to PENDING for retry
+ */
+async function recoverStuckJobs(): Promise<void> {
+  const stuckTimeout = new Date(Date.now() - STUCK_JOB_TIMEOUT_MS);
+
+  // Find jobs stuck in intermediate states
+  const stuckJobs = await prisma.generationJob.findMany({
+    where: {
+      status: {
+        in: ["GENERATING_STORY", "GENERATING_IMAGES", "ASSEMBLING_PDF"],
+      },
+      updatedAt: {
+        lt: stuckTimeout, // Only reset jobs that have been stuck for a while
+      },
+    },
+  });
+
+  if (stuckJobs.length === 0) {
+    console.log("[Worker] No stuck jobs found");
+    return;
+  }
+
+  console.log(`[Worker] Found ${stuckJobs.length} stuck job(s), recovering...`);
+
+  for (const job of stuckJobs) {
+    const newRetryCount = job.retryCount + 1;
+
+    if (newRetryCount < MAX_RETRIES) {
+      // Reset to PENDING for retry
+      await prisma.generationJob.update({
+        where: { id: job.id },
+        data: {
+          status: "PENDING",
+          retryCount: newRetryCount,
+          errorMessage: `Recovered from stuck state (${job.status}). Retry ${newRetryCount}/${MAX_RETRIES}`,
+        },
+      });
+      console.log(`[Worker] Recovered job ${job.id} (retry ${newRetryCount}/${MAX_RETRIES})`);
+    } else {
+      // Max retries exceeded, mark as failed
+      await prisma.generationJob.update({
+        where: { id: job.id },
+        data: {
+          status: "FAILED",
+          retryCount: newRetryCount,
+          errorMessage: `Job stuck in ${job.status} state, max retries exceeded`,
+        },
+      });
+      await prisma.book.update({
+        where: { id: job.bookId },
+        data: { status: "FAILED" },
+      });
+      console.log(`[Worker] Job ${job.id} marked as FAILED (max retries exceeded)`);
+    }
+  }
+}
 
 /**
  * Main worker loop - polls DB for pending jobs
@@ -34,10 +95,22 @@ export async function startWorker(): Promise<void> {
 ╚═══════════════════════════════════════════════════╝
   `);
 
+  // Recover any stuck jobs from previous crashes
+  await recoverStuckJobs();
+
+  let lastRecoveryCheck = Date.now();
+  const RECOVERY_CHECK_INTERVAL_MS = 5 * 60 * 1000; // Check for stuck jobs every 5 minutes
+
   while (!shouldStop) {
     try {
       if (!isProcessing) {
         await processNextJob();
+      }
+
+      // Periodically check for stuck jobs (every 5 minutes)
+      if (Date.now() - lastRecoveryCheck > RECOVERY_CHECK_INTERVAL_MS) {
+        await recoverStuckJobs();
+        lastRecoveryCheck = Date.now();
       }
     } catch (error) {
       console.error("[Worker] Polling error:", error);

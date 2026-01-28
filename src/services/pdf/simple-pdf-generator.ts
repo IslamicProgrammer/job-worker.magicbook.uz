@@ -21,6 +21,10 @@ interface PageData {
 const PAGE_WIDTH = 576;  // 8 inches
 const PAGE_HEIGHT = 720; // 10 inches
 
+// Retry configuration for network operations
+const DOWNLOAD_MAX_RETRIES = 3;
+const DOWNLOAD_INITIAL_DELAY_MS = 1000;
+
 // Colors
 const PRIMARY_COLOR = rgb(0.4, 0.2, 0.6); // Purple
 const SECONDARY_COLOR = rgb(0.82, 0.41, 0.12); // Orange/brown
@@ -30,16 +34,61 @@ const CREAM_BG = rgb(0.98, 0.97, 0.95);
 const WARM_PEACH = rgb(1.0, 0.88, 0.7);
 
 /**
- * Download image and return as buffer
+ * Sleep helper
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Download image and return as buffer (with retry logic)
  */
 async function downloadImage(url: string): Promise<Buffer> {
   console.log(`[PDF] Downloading: ${url.substring(0, 60)}...`);
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to download image: ${response.status}`);
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= DOWNLOAD_MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to download image: ${response.status}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      const errorMessage = lastError.message;
+
+      // Check if error is retryable
+      const isRetryable =
+        errorMessage.includes("EPIPE") ||
+        errorMessage.includes("ECONNRESET") ||
+        errorMessage.includes("ETIMEDOUT") ||
+        errorMessage.includes("ENOTFOUND") ||
+        errorMessage.includes("EAI_AGAIN") ||
+        errorMessage.includes("socket hang up") ||
+        errorMessage.includes("network") ||
+        errorMessage.includes("timeout") ||
+        errorMessage.includes("fetch failed");
+
+      if (!isRetryable || attempt === DOWNLOAD_MAX_RETRIES) {
+        console.error(
+          `[PDF] Image download failed after ${attempt} attempt(s):`,
+          errorMessage
+        );
+        throw lastError;
+      }
+
+      const delay = DOWNLOAD_INITIAL_DELAY_MS * Math.pow(2, attempt - 1);
+      console.warn(
+        `[PDF] Download failed (attempt ${attempt}/${DOWNLOAD_MAX_RETRIES}): ${errorMessage}. Retrying in ${delay}ms...`
+      );
+      await sleep(delay);
+    }
   }
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+
+  throw lastError!;
 }
 
 /**
