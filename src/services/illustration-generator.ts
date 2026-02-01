@@ -1377,10 +1377,63 @@ FINAL REMINDER:
 This is NOT "Image 1 without the character"
 This IS "What you see when you look TO THE RIGHT → from Image 1's viewpoint"
 Think: PANORAMIC PHOTOGRAPHY - one continuous wide scene split into two frames`;
+    } else if (characterReferenceUrl && previousPageUrl) {
+      // CHARACTER PAGE with BOTH references - most common case for pages 2+
+      promptText = `★★★ THREE REFERENCE IMAGES - READ CAREFULLY ★★★
+
+IMAGE 1 (CHARACTER REFERENCE - MASTER): This is the MASTER character reference.
+Copy this character's appearance with 100% accuracy. This is your PRIMARY source for the character.
+
+IMAGE 2 (PREVIOUS PAGE): Shows the previous page for art style and scene continuity.
+Use this for style consistency, NOT for character appearance.
+
+IMAGE 3 (ORIGINAL PHOTO): The child's original photo for verification.
+
+★★★ CRITICAL: CHARACTER FROM IMAGE 1 ONLY ★★★
+- The character in IMAGE 1 is the MASTER REFERENCE
+- Copy the character from IMAGE 1 EXACTLY - same face, hair, body, everything
+- Do NOT use IMAGE 2 for character appearance (only for art style)
+- The character must look IDENTICAL to IMAGE 1 on EVERY page
+
+★★★ CHARACTER AGE - NEVER CHANGES ★★★
+- The character's AGE must stay EXACTLY the same as in IMAGE 1
+- Do NOT make the character look older or younger
+- Same child, same age, same appearance throughout the ENTIRE book
+- If IMAGE 1 shows a 5-year-old, EVERY page must show a 5-year-old
+
+★★★ HAIR LENGTH - CRITICAL ★★★
+- Hair length from IMAGE 1 must be EXACTLY the same
+- If shoulder-length in IMAGE 1, it MUST be shoulder-length here
+- Do NOT make hair longer or shorter
+
+${enhancedPrompt}
+
+WHAT MUST MATCH IMAGE 1 EXACTLY:
+- Face shape, proportions, chin, jawline
+- Hair color, style, length, texture
+- Eye shape and color
+- Skin tone
+- Body proportions
+- CHARACTER AGE (same child, same age!)
+
+WHAT TO MATCH FROM IMAGE 2:
+- Art style and rendering technique
+- Color palette and lighting style
+- Scene atmosphere
+
+ONLY THESE CAN CHANGE:
+- Pose and body position
+- Facial expression
+- Position in scene`;
     } else if (previousPageUrl) {
       // CHARACTER PAGE: Only previous page available (no character reference)
       promptText = `PREVIOUS PAGE REFERENCE: The first image shows the character from the previous page.
 CHILD PHOTO: The second image is the original photo for additional reference.
+
+★★★ CHARACTER AGE - NEVER CHANGES ★★★
+- The character's AGE must stay EXACTLY the same as previous page
+- Do NOT make the character look older or younger
+- Same child, same age throughout the ENTIRE book
 
 ${enhancedPrompt}
 
@@ -1390,6 +1443,7 @@ CRITICAL REQUIREMENTS:
 - 3D CGI CARTOON style (Pixar/Disney quality) - SAME style as previous page
 - Use the PREVIOUS PAGE as reference - character must look IDENTICAL
 - Character must look the SAME as on the previous page (same face, hair, features, proportions)
+- CHARACTER AGE must stay the SAME - do not age the character!
 - Only change: pose, expression, position for this new scene
 - SAME 3D art style on every page - consistent CGI look throughout
 - Leave clear space in middle/center for text overlay
@@ -1406,6 +1460,11 @@ WHAT TO AVOID:
       promptText = `CHARACTER REFERENCE IMAGE: The first image shows the EXACT character to use in this scene.
 CHILD PHOTO: The second image is the original photo for additional reference.
 
+★★★ CHARACTER AGE - NEVER CHANGES ★★★
+- The character's AGE must stay EXACTLY the same as in the reference
+- Do NOT make the character look older or younger
+- Same child, same age throughout the ENTIRE book
+
 ${enhancedPrompt}
 
 CRITICAL REQUIREMENTS:
@@ -1414,6 +1473,7 @@ CRITICAL REQUIREMENTS:
 - 3D CGI CARTOON style (Pixar/Disney quality) on EVERY page
 - Use the CHARACTER REFERENCE image - recreate that EXACT character in this scene
 - Character must look IDENTICAL to the reference (same face, hair, features, proportions)
+- CHARACTER AGE must stay the SAME - do not age the character!
 - DO NOT change the character's appearance, hair, or features
 - SAME 3D art style on every page - consistent CGI look throughout
 - Leave clear space in middle/center for text overlay
@@ -1423,6 +1483,7 @@ CRITICAL REQUIREMENTS:
 WHAT TO AVOID:
 - Different art styles (2D flat, realistic, photographic) - ONLY 3D CGI
 - Changing the character's appearance from the reference
+- Making the character look OLDER or YOUNGER
 - Random animals, creatures, or objects not in the scene description
 - Cluttered, busy compositions
 - Text or words in the illustration`;
@@ -1452,28 +1513,14 @@ WHAT TO AVOID:
 
     contents.push({ text: promptText });
 
-    // IMPORTANT: Use EITHER previousPageUrl OR characterReferenceUrl (not both)
-    // This matches the frontend's approach and prevents AI confusion from too many references
-    // If previous page is provided, add it first (for sequential consistency)
-    if (previousPageUrl) {
-      console.log(`[Illustration Generator] Using previous page as reference: ${previousPageUrl}`);
-      const prevPageResponse = await fetchWithRetry(previousPageUrl, "Previous page");
-      const prevPageBuffer = await prevPageResponse.arrayBuffer();
-      const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
-      const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')
-        ? 'image/png'
-        : 'image/jpeg';
+    // CRITICAL FOR CONSISTENCY: Always include character reference as MASTER
+    // For multi-page books, character drift happens if we only use previous page
+    // Character reference = MASTER anchor for character appearance
+    // Previous page = scene/style continuity only
 
-      contents.push({
-        inlineData: {
-          mimeType: prevPageMimeType,
-          data: prevPageBase64,
-        },
-      });
-    }
-    // Otherwise, if character reference is provided, add it
-    else if (characterReferenceUrl) {
-      console.log(`[Illustration Generator] Using character reference: ${characterReferenceUrl}`);
+    // ALWAYS add character reference first (master reference prevents drift)
+    if (characterReferenceUrl) {
+      console.log(`[Illustration Generator] Adding CHARACTER REFERENCE (master): ${characterReferenceUrl}`);
       const charRefResponse = await fetchWithRetry(characterReferenceUrl, "Character reference");
       const charRefBuffer = await charRefResponse.arrayBuffer();
       const charRefBase64 = Buffer.from(charRefBuffer).toString("base64");
@@ -1489,7 +1536,25 @@ WHAT TO AVOID:
       });
     }
 
-    // Add child photo
+    // ALSO add previous page for scene/style continuity (not for character)
+    if (previousPageUrl) {
+      console.log(`[Illustration Generator] Adding previous page (scene continuity): ${previousPageUrl}`);
+      const prevPageResponse = await fetchWithRetry(previousPageUrl, "Previous page");
+      const prevPageBuffer = await prevPageResponse.arrayBuffer();
+      const prevPageBase64 = Buffer.from(prevPageBuffer).toString("base64");
+      const prevPageMimeType = previousPageUrl.toLowerCase().includes('.png')
+        ? 'image/png'
+        : 'image/jpeg';
+
+      contents.push({
+        inlineData: {
+          mimeType: prevPageMimeType,
+          data: prevPageBase64,
+        },
+      });
+    }
+
+    // Add child photo as final reference
     contents.push({
       inlineData: {
         mimeType: photoMimeType,
