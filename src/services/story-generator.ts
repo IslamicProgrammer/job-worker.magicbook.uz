@@ -286,6 +286,26 @@ Qadimgi Rim uchun TO'G'RI mavzular:
 - Qonunlar va boshqaruv
 - Hunarmandchilik va savdo
 
+★★★ ROMANTIK VA KATTALAR UCHUN MAVZULAR - MUTLAQO TAQIQLANGAN! ★★★
+Bu BOLALAR kitobi! Quyidagilarni HECH QACHON yozmang:
+- Sevgi hikoyalari, ishqiy munosabatlar - TAQIQLANGAN!
+- O'pish, quchoqlashish (romantik ma'noda) - TAQIQLANGAN!
+- Bo'sa, labdan o'pish - TAQIQLANGAN!
+- Sevishganlar, oshiq-ma'shuq, juftlik - TAQIQLANGAN!
+- Turmush qurish, nikoh, kelin-kuyov - TAQIQLANGAN!
+- 18+ mazmun, kattalar uchun mavzular - TAQIQLANGAN!
+- Zo'ravonlik, qo'rqinchli sahnalar - TAQIQLANGAN!
+- Ichkilik, chekish, giyohvand moddalar - TAQIQLANGAN!
+
+FAQAT BOLALAR UCHUN MOS MAVZULAR:
+- Do'stlik va hamkorlik
+- Oilaviy muhabbat (ota-ona, aka-uka, opa-singil)
+- Sarguzashtlar va kashfiyotlar
+- O'rganish va bilim olish
+- Yaxshilik qilish va yordam berish
+- Tabiat va hayvonlar
+- O'yin va quvonch
+
 HIKOYA YAKUNLASH QOIDASI:
 - Hikoya oxirida ${childName} HALI HAM ${ageContext} BOLA!
 - Yakuniy sahifada: ${childName} o'z sarguzashtidan XURSAND, lekin U HALI BOLA!
