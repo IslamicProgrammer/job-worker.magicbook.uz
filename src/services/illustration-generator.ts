@@ -1498,7 +1498,7 @@ WHAT TO AVOID:
     });
 
     // Generate with Gemini (with retry logic + direct API)
-    let response;
+    let imageBuffer: Buffer | null = null;
     let lastError: Error | null = null;
     const MAX_RETRIES = 3;
 
@@ -1507,24 +1507,68 @@ WHAT TO AVOID:
         console.log(`[Illustration Generator] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
         // Use direct API call with JSON sanitization
-        response = await callGeminiDirectly({
+        const response = await callGeminiDirectly({
           model: "gemini-2.5-flash-image",
           contents: contents,
         });
 
-        // Success - break out of retry loop
         console.log(`[Illustration Generator] Gemini API call successful`);
+
+        // Validate response - if invalid, throw to trigger retry
+        if (!response.candidates || response.candidates.length === 0) {
+          if (response.promptFeedback) {
+            console.error("[Illustration Generator] Prompt blocked:", JSON.stringify(response.promptFeedback));
+            throw new Error(`Content blocked: ${response.promptFeedback.blockReason || "Unknown reason"}`);
+          }
+          console.error("[Illustration Generator] No candidates. Full response:", JSON.stringify(response).substring(0, 1000));
+          throw new Error("No candidates in Gemini response");
+        }
+
+        const candidate = response.candidates[0];
+
+        // Check if generation was blocked or had issues - retry for "OTHER"
+        if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
+          console.error("[Illustration Generator] Generation issue:", candidate.finishReason);
+          if (candidate.safetyRatings) {
+            console.error("[Illustration Generator] Safety ratings:", JSON.stringify(candidate.safetyRatings));
+          }
+          // "OTHER" is often transient - retry it
+          if (candidate.finishReason === "OTHER") {
+            throw new Error(`Generation issue: OTHER (transient, will retry)`);
+          }
+          // Other issues like SAFETY are not retryable
+          throw new Error(`Generation blocked: ${candidate.finishReason}`);
+        }
+
+        if (!candidate?.content?.parts) {
+          console.error("[Illustration Generator] No parts in candidate:", JSON.stringify(candidate).substring(0, 1000));
+          throw new Error("No candidate data in Gemini response");
+        }
+
+        // Extract image data
+        for (const part of candidate.content.parts) {
+          const inlineData = part.inline_data || part.inlineData;
+          if (inlineData?.data) {
+            imageBuffer = Buffer.from(inlineData.data, "base64");
+            console.log(`[Illustration Generator] Image generated successfully (${imageBuffer.length} bytes)`);
+            break;
+          }
+        }
+
+        if (!imageBuffer) {
+          console.error("[Illustration Generator] No image in parts:", JSON.stringify(candidate.content.parts.map((p: Record<string, unknown>) => Object.keys(p))));
+          throw new Error("No image data in Gemini response");
+        }
+
+        // Success - break out of retry loop
         break;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         console.error(`[Illustration Generator] Gemini API attempt ${attempt + 1} failed:`, lastError.message);
 
-        // Log full error for debugging
-        if (lastError.message.includes('parse') || lastError.message.includes('JSON') || lastError.message.includes('control character')) {
-          console.error(`[Illustration Generator] JSON/parsing error details:`, {
-            message: lastError.message,
-            stack: lastError.stack,
-          });
+        // Content blocked errors are not retryable
+        if (lastError.message.includes('Content blocked') || lastError.message.includes('Generation blocked')) {
+          throw lastError;
         }
 
         // If this is the last attempt, throw the error
@@ -1539,53 +1583,8 @@ WHAT TO AVOID:
       }
     }
 
-    if (!response) {
-      throw new Error(`Failed to get response from Gemini after ${MAX_RETRIES} attempts`);
-    }
-
-    // Extract image from response (direct API format)
-    if (!response.candidates || response.candidates.length === 0) {
-      // Check for prompt feedback (content blocked)
-      if (response.promptFeedback) {
-        console.error("[Illustration Generator] Prompt blocked:", JSON.stringify(response.promptFeedback));
-        throw new Error(`Content blocked: ${response.promptFeedback.blockReason || "Unknown reason"}`);
-      }
-      console.error("[Illustration Generator] No candidates. Full response:", JSON.stringify(response).substring(0, 1000));
-      throw new Error("No candidates in Gemini response");
-    }
-
-    const candidate = response.candidates[0];
-
-    // Check if generation was blocked by safety filters
-    if (candidate.finishReason && candidate.finishReason !== "STOP" && candidate.finishReason !== "MAX_TOKENS") {
-      console.error("[Illustration Generator] Generation issue:", candidate.finishReason);
-      if (candidate.safetyRatings) {
-        console.error("[Illustration Generator] Safety ratings:", JSON.stringify(candidate.safetyRatings));
-      }
-      throw new Error(`Generation issue: ${candidate.finishReason}`);
-    }
-
-    if (!candidate?.content?.parts) {
-      console.error("[Illustration Generator] No parts in candidate:", JSON.stringify(candidate).substring(0, 1000));
-      throw new Error("No candidate data in Gemini response");
-    }
-
-    let imageBuffer: Buffer | null = null;
-
-    // Direct API uses snake_case: inline_data instead of inlineData
-    for (const part of candidate.content.parts) {
-      const inlineData = part.inline_data || part.inlineData;
-      if (inlineData?.data) {
-        imageBuffer = Buffer.from(inlineData.data, "base64");
-        console.log(`[Illustration Generator] Image generated successfully (${imageBuffer.length} bytes)`);
-        break;
-      }
-    }
-
     if (!imageBuffer) {
-      // Log what parts we did receive
-      console.error("[Illustration Generator] No image in parts:", JSON.stringify(candidate.content.parts.map((p: Record<string, unknown>) => Object.keys(p))));
-      throw new Error("No image data in Gemini response");
+      throw new Error(`Failed to generate image after ${MAX_RETRIES} attempts`);
     }
 
     // Resize image to exact dimensions (2400x3000)
