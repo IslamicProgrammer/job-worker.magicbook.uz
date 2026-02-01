@@ -619,9 +619,16 @@ STEP 2: Identify EXACT hair style and texture:
 - Volume: flat, voluminous, medium?
 - COPY THE EXACT TEXTURE from photo!
 
-STEP 3: Match hair LENGTH precisely:
+★ STEP 3: Match hair LENGTH precisely - THIS IS CRITICAL! ★
 - Shoulder-length, long, short, bob, pixie cut?
-- Where does it fall? (ears, shoulders, mid-back, waist?)
+- WHERE EXACTLY does it fall? MEASURE CAREFULLY:
+  → EARS = very short
+  → CHIN = short bob
+  → SHOULDERS = medium length
+  → MID-BACK = long
+  → WAIST = very long
+- This hair length MUST stay EXACTLY the same on EVERY page!
+- Hair length changing = character not recognizable = FAILED!
 - Measure the length in the photo - MATCH IT EXACTLY!
 
 STEP 4: Match hair STYLE:
@@ -1042,14 +1049,38 @@ FINAL OUTPUT:
 - NO character visible
 - Professional children's book background illustration`
       : previousPageUrl
-      ? `CRITICAL - USE PREVIOUS PAGE AS REFERENCE FOR CHARACTER:
+      ? `★★★ CRITICAL - USE PREVIOUS PAGE AS REFERENCE FOR CHARACTER ★★★
 You have been provided with the PREVIOUS PAGE image showing the EXACT character to use.
-- Study the character from the previous page carefully
+
+ABSOLUTE REQUIREMENTS - DO NOT CHANGE:
+- Study the character from the previous page VERY carefully
 - Match EVERY detail from the previous page: face, hair, body, proportions, features
 - The character MUST look IDENTICAL to how they appeared on the previous page
-- Keep consistent: face, hair style, hair color, body type, all features
-- Only change: pose, expression, position in the new scene
-- Maintain visual continuity - this is the SAME character, just a new scene`
+
+★★★ HAIR LENGTH - MOST IMPORTANT! ★★★
+- MEASURE the hair length in the previous page image!
+- If hair reaches SHOULDERS → it MUST reach SHOULDERS in your image!
+- If hair reaches WAIST → it MUST reach WAIST in your image!
+- If hair is SHORT (above ears) → it MUST be SHORT in your image!
+- DO NOT make hair longer or shorter - EXACT SAME LENGTH!
+- Hair length changing = FAILED illustration!
+
+KEEP EXACTLY THE SAME:
+- Face shape, chin, jawline
+- Hair COLOR (exact shade - don't lighten or darken!)
+- Hair STYLE (how it's parted, bangs, etc.)
+- Hair LENGTH (where does it fall? - MEASURE IT!)
+- Hair TEXTURE (straight, wavy, curly - don't change!)
+- Eye shape and color
+- Skin tone
+- Body proportions
+
+ONLY THESE CAN CHANGE:
+- Pose and body position (to fit the new scene)
+- Facial expression (to show emotion)
+- Position in scene
+
+This is the SAME character - maintain visual continuity!`
       : characterReferenceUrl
       ? `★★★ CRITICAL - USE CHARACTER REFERENCE IMAGE ★★★
 You have been provided with a CHARACTER REFERENCE image showing the EXACT character to use.
@@ -1069,14 +1100,17 @@ STUDY the reference's face shape:
 - What are the cheekbones like? (high, low, prominent, subtle)
 - MATCH EVERY PROPORTION EXACTLY in your generation!
 
-★★★ HAIR MATCHING - CRITICAL ★★★
+★★★ HAIR MATCHING - CRITICAL (ESPECIALLY LENGTH!) ★★★
 STUDY the reference's hair carefully:
 - EXACT hair color: What shade? (Don't guess - LOOK!)
 - EXACT hair texture: Straight, wavy, curly, coily?
-- EXACT hair length: Where does it fall?
+- ★ EXACT hair LENGTH: MEASURE where it falls! ★
+  → Does it reach EARS? SHOULDERS? MID-BACK? WAIST?
+  → Hair length MUST be IDENTICAL - don't make it longer or shorter!
+  → If hair is at shoulders in reference, it MUST be at shoulders in your image!
 - EXACT hair style: How is it parted? Any bangs? How does it frame face?
 - EXACT hair volume: Thick, thin, medium?
-- COPY EVERY HAIR DETAIL EXACTLY!
+- COPY EVERY HAIR DETAIL EXACTLY - especially LENGTH!
 
 WHAT MUST STAY EXACTLY THE SAME:
 - Face shape and proportions (EXACTLY as in reference - measure it!)
@@ -1130,12 +1164,14 @@ STEP 2: Match face shape EXACTLY:
 - Cheekbones MUST match EXACTLY
 - Every parent MUST immediately say "That's my child's face!"
 
-★★★ HAIR - #2 PRIORITY ★★★
+★★★ HAIR - #2 PRIORITY (LENGTH IS CRITICAL!) ★★★
 STEP 1: Identify EXACT hair details from photo:
 - EXACT color: black, dark brown, medium brown, light brown, blonde, red?
 - EXACT shade (don't guess - LOOK at the photo!)
 - EXACT texture: straight, wavy, curly, coily?
-- EXACT length: where does it fall? (ears, shoulders, back, waist?)
+- ★ EXACT LENGTH - MEASURE CAREFULLY! ★
+  → Where does it fall? EARS? CHIN? SHOULDERS? MID-BACK? WAIST?
+  → This is CRITICAL - hair length changing = FAILED illustration!
 - EXACT style: parted? bangs? how does it frame the face?
 - EXACT volume: thick, thin, medium?
 - EXACT hairline shape
@@ -1143,7 +1179,10 @@ STEP 1: Identify EXACT hair details from photo:
 STEP 2: Match hair EXACTLY:
 - Color: EXACT SAME shade (DO NOT lighten or darken!)
 - Texture: EXACT SAME (straight stays straight, curly stays curly!)
-- Length: EXACT SAME (measure it!)
+- ★ LENGTH: EXACT SAME - if shoulder-length, MUST be shoulder-length! ★
+  → DO NOT make hair longer than in photo!
+  → DO NOT make hair shorter than in photo!
+  → Hair length must be IDENTICAL on EVERY page!
 - Style: EXACT SAME (part, bangs, everything!)
 - DO NOT "improve" or change ANYTHING about the hair!
 
