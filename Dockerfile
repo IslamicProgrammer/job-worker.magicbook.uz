@@ -1,7 +1,7 @@
 # Use Debian Bullseye for sharp compatibility
 FROM node:20-bullseye-slim
 
-# Install system dependencies for sharp
+# System dependencies for sharp + Infisical CLI install.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libvips-dev \
@@ -9,6 +9,11 @@ RUN apt-get update && \
     python3 \
     ca-certificates \
     curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# ponytail: CLI installed in-image (not host bind-mount) because Dokploy builds pure Dockerfiles.
+RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
+    && apt-get update && apt-get install -y infisical \
     && rm -rf /var/lib/apt/lists/*
 
 # Force sharp to use its own prebuilt binaries
@@ -30,7 +35,8 @@ COPY . .
 RUN npm run build
 
 ENV NODE_ENV=production
-
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+# strip CRLF in case the file was checked out on Windows, then run via Infisical.
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
