@@ -33,7 +33,7 @@ export interface StoryGenerationInput {
  * Call Gemini API directly
  */
 async function callGemini(prompt: string): Promise<string> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -44,6 +44,8 @@ async function callGemini(prompt: string): Promise<string> {
         temperature: 0.9,
         maxOutputTokens: 30000,
         responseMimeType: "application/json",
+        // Disable "thinking" so 2.5-flash responds quickly with deterministic JSON
+        thinkingConfig: { thinkingBudget: 0 },
       },
     }),
   });
@@ -254,6 +256,19 @@ QUYIDAGILARNI HECH QACHON YOZMANG:
 - "Yillar o'tdi", "vaqt o'tdi", "kattaydi" - TAQIQLANGAN!
 - "Nabiralarga aytib berdi", "bolalarga o'rgatdi" - TAQIQLANGAN!
 
+★★★ O'LIM VA KASALLIK - MUTLAQO TAQIQLANGAN! ★★★
+Bu bolalar kitobi! Hech qanday qayg'uli mavzular bo'lmasin!
+- "O'lim", "o'ldi", "vafot", "halok" - MUTLAQO TAQIQLANGAN!
+- "O'lim to'shagi", "so'nggi nafas", "oxirgi kun" - MUTLAQO TAQIQLANGAN!
+- "Kasalxona", "og'ir kasal", "o'limchan" - TAQIQLANGAN!
+- "Xayr-xo'sh", "vidolashuv", "mangulik" - TAQIQLANGAN!
+- "Qabriston", "dafn", "motam" - MUTLAQO TAQIQLANGAN!
+- "Jannat", "farishtalar olib ketdi" - TAQIQLANGAN!
+- Hech qanday personaj o'lmasligi kerak - hatto yomon personajlar ham!
+- Ota-onalar, bobolar, buvalar - hech kim o'lmasligi kerak!
+- Hayvonlar ham o'lmasligi kerak!
+- Hikoya FAQAT XURSANDCHILIK va SARGUZASHT haqida bo'lsin!
+
 ★★★ DINIY VA XUDOLAR MAVZULARI - MUTLAQO TAQIQLANGAN! ★★★
 HECH QACHON YOZMANG - bu bolalar kitobi!
 - Xudolar: Zevs, Apollon, Afrodita, Poseydon, Ares, Hera, Afina va boshqa yunon xudolari - TAQIQLANGAN!
@@ -310,6 +325,8 @@ HIKOYA YAKUNLASH QOIDASI:
 - Hikoya oxirida ${childName} HALI HAM ${ageContext} BOLA!
 - Yakuniy sahifada: ${childName} o'z sarguzashtidan XURSAND, lekin U HALI BOLA!
 - TO'G'RI yakun: "${childName} juda xursand edi va ertaga yangi sarguzashtlar kutayotganini bilardi"
+- NOTO'G'RI yakun: ${childName} keksayib, o'lim to'shagida - MUTLAQO TAQIQLANGAN!
+- Hikoya BAXTLI yakun bilan tugashi SHART - qayg'u, o'lim, vidolashuv YO'Q!
 
 ★★★ O'ZBEK TILIDA TO'G'RI YOZISH ★★★
 - Grammatik xatolar YO'Q - professional kitob kabi yozing
@@ -322,26 +339,29 @@ PROFESSIONAL KITOB FORMATI:
 - Dialoglar alohida paragrafda
 - MUHIM: Paragraflar orasida \\n\\n ishlatish
 
-★★★ TITLE (SARLAVHA) QOIDALARI - JUDA MUHIM! ★★★
-QATTIY QOIDALAR - BUZILSA XATO!
-1. Title FAQAT 2 SO'ZDAN iborat bo'lishi SHART!
-2. Birinchi so'z: ${childName} (bolaning ismi)
-3. Ikkinchi so'z: Sarguzashti, Sayohati, Sehrli, Mo'jizasi, Kashfiyoti, Dunyosi, va hokazo
-4. TO'G'RI YOZUV - imlo xatosiz!
+★★★ TITLE (SARLAVHA) QOIDALARI ★★★
+QOIDALAR:
+1. Title FAQAT O'ZBEK TILIDA bo'lishi SHART!
+2. Title 2-4 so'zdan iborat bo'lishi mumkin
+3. Title hikoya mavzusiga mos va QIZIQARLI bo'lishi kerak!
+4. ${childName} ismini titlega qo'shish SHART EMAS - mavzuga qarab qo'shing
 5. INGLIZ TILIDA so'z ishlatish MUTLAQO TAQIQLANGAN!
+6. Title UNIQUE va KREATIV bo'lishi kerak - har bir kitob uchun BOSHQACHA!
 
-TO'G'RI MISOLLAR:
-- "${childName} Sarguzashti"
-- "${childName} Sayohati"
-- "${childName} Mo'jizasi"
-- "${childName} Kashfiyoti"
-- "${childName} Dunyosi"
+YAXSHI MISOLLAR (hikoya mavzusiga qarab):
+- "Sehrli O'rmon Siri" (o'rmon haqida hikoya)
+- "${childName} va Uchuvchi Gilam" (sehrli gilam haqida)
+- "Koinotga Sayohat" (kosmos haqida)
+- "Dengiz Osti Dunyosi" (okean haqida)
+- "${childName}ning Ajoyib Kuni" (kundalik sarguzasht)
+- "Qor Malikasining Sovg'asi" (qish haqida)
+- "Samarqand Sirlari" (tarixiy hikoya)
+- "Shijoatli Bahadir" (jasurlik haqida)
 
 NOTO'G'RI MISOLLAR (TAQIQLANGAN):
 - "The Adventures of ${childName}" - INGLIZCHA! XATO!
 - "${childName}'s Journey" - INGLIZCHA! XATO!
-- "${childName} va Sehrli O'rmon Sarguzashti" - 4+ so'z! XATO!
-- "Sehrli Hikoya" - bola ismi yo'q! XATO!
+- "Magic Forest" - INGLIZCHA! XATO!
 
 JUDA MUHIM - sceneDescription FAQAT INGLIZ TILIDA!
 - "text" maydoni: O'zbek tilida hikoya matni
@@ -469,21 +489,26 @@ IMPORTANT: Respond ONLY with valid JSON. No explanatory text.`;
         throw new Error(`Invalid story: ${story.pages?.length ?? 0} pages (minimum 5 required)`);
       }
 
-      // Validate title format (should be 2 words, include child name)
+      // Validate title format (allow up to 4 words for creative titles)
       const titleWords = story.title.trim().split(/\s+/);
-      if (titleWords.length > 2) {
-        console.warn(`[Story Generator] Title too long: "${story.title}" (${titleWords.length} words), truncating to 2 words...`);
-        // Take first 2 words - preserve the AI's choice
-        story.title = titleWords.slice(0, 2).join(" ");
+      if (titleWords.length > 4) {
+        console.warn(`[Story Generator] Title too long: "${story.title}" (${titleWords.length} words), truncating to 4 words...`);
+        story.title = titleWords.slice(0, 4).join(" ");
         console.log(`[Story Generator] Fixed title: "${story.title}"`);
       }
 
-      // Check for English words in title
-      const englishPattern = /\b(the|of|and|in|on|at|to|for|with|adventure|journey|story|magic|world)\b/i;
+      // Check for English words in title - only replace if clearly English
+      const englishPattern = /\b(the|of|and|in|on|at|to|for|with|adventure|journey|story|magic|world|forest|ocean|space|kingdom)\b/i;
       if (englishPattern.test(story.title)) {
         console.warn(`[Story Generator] English words in title: "${story.title}", fixing...`);
         story.title = `${childName} Sarguzashti`;
         console.log(`[Story Generator] Fixed title: "${story.title}"`);
+      }
+
+      // Only use default if title is empty
+      if (!story.title || story.title.trim().length < 3) {
+        console.warn(`[Story Generator] Title empty or too short, using default`);
+        story.title = `${childName} Sarguzashti`;
       }
 
       // Log page word counts
