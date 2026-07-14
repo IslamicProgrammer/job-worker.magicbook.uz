@@ -793,8 +793,9 @@ The success metric is: "Would the parents instantly recognize their child?"`,
           throw new Error(`Gemini API failed after ${MAX_RETRIES} attempts: ${lastError.message}`);
         }
 
-        // Wait before retrying (exponential backoff)
-        const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
+        // Wait before retrying (exponential backoff, up to 30s to outlast
+        // IMAGE_OTHER server-side bursts)
+        const waitTime = Math.min(1000 * Math.pow(2, attempt), 30000);
         console.log(`[Character Reference] Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
@@ -1709,6 +1710,9 @@ WHAT TO AVOID:
     }
 
     // ALSO add previous page for scene/style continuity (not for character)
+    // Track its index so the retry loop can drop it as a degradation fallback:
+    // heavier multi-image requests are more likely to trip Gemini's IMAGE_OTHER.
+    let prevPageContentIndex: number | null = null;
     if (previousPageUrl) {
       console.log(`[Illustration Generator] Adding previous page (scene continuity): ${previousPageUrl}`);
       const prevPageResponse = await fetchWithRetry(previousPageUrl, "Previous page");
@@ -1718,6 +1722,7 @@ WHAT TO AVOID:
         ? 'image/png'
         : 'image/jpeg';
 
+      prevPageContentIndex = contents.length;
       contents.push({
         inlineData: {
           mimeType: prevPageMimeType,
@@ -1737,17 +1742,31 @@ WHAT TO AVOID:
     // Generate with Gemini (with retry logic + direct API)
     let imageBuffer: Buffer | null = null;
     let lastError: Error | null = null;
-    const MAX_RETRIES = 3;
+    // IMAGE_OTHER comes in server-side bursts that can last minutes, so a few
+    // quick retries aren't enough. 6 attempts with backoff up to 30s (~60s of
+    // total waiting) rides out a typical burst.
+    const MAX_RETRIES = 6;
+    // From this attempt onward, drop the previous-page reference to lighten the
+    // request (character ref remains the consistency anchor).
+    const SIMPLIFY_AFTER_ATTEMPT = 3;
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
         console.log(`[Illustration Generator] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
 
+        let attemptContents = contents;
+        if (attempt >= SIMPLIFY_AFTER_ATTEMPT && prevPageContentIndex !== null) {
+          console.log(
+            `[Illustration Generator] Simplifying request: dropping previous-page reference (attempt ${attempt + 1})`,
+          );
+          attemptContents = contents.filter((_, i) => i !== prevPageContentIndex);
+        }
+
         // Use direct API call with JSON sanitization
         // Request 4:5 portrait aspect ratio for book pages
         const response = await callGeminiDirectly({
           model: "gemini-2.5-flash-image",
-          contents: contents,
+          contents: attemptContents,
           aspectRatio: "4:5", // Portrait book page (supported by Gemini)
         });
 
@@ -1820,8 +1839,9 @@ WHAT TO AVOID:
           throw new Error(`Gemini API failed after ${MAX_RETRIES} attempts: ${lastError.message}`);
         }
 
-        // Wait before retrying (exponential backoff)
-        const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
+        // Wait before retrying (exponential backoff, up to 30s to outlast
+        // IMAGE_OTHER server-side bursts)
+        const waitTime = Math.min(1000 * Math.pow(2, attempt), 30000);
         console.log(`[Illustration Generator] Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
