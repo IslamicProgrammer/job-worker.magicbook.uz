@@ -1,7 +1,7 @@
 # Use Debian Bullseye for sharp compatibility
 FROM node:20-bullseye-slim
 
-# Install system dependencies for sharp
+# System dependencies for sharp.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libvips-dev \
@@ -30,7 +30,8 @@ COPY . .
 RUN npm run build
 
 ENV NODE_ENV=production
-
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+# infisical-bootstrap.mjs injects secrets via the Infisical REST API (Node 20 global fetch,
+# no CLI), then runs the worker. ponytail: no infisical CLI to version-match the server.
+ENTRYPOINT ["node", "/app/infisical-bootstrap.mjs", "node", "dist/index.js"]
