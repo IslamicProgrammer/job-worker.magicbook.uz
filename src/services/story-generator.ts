@@ -29,26 +29,58 @@ export interface StoryGenerationInput {
   illustrationStyle?: string | null;
 }
 
+// Story model is overridable via env so a retired/gated model can be swapped
+// without a code deploy. Google gates older aliases ("no longer available to new
+// users"): gemini-2.0/2.5-flash 404 for newer API keys, so default to the
+// evergreen `gemini-flash-latest` alias which always maps to the current flash.
+const STORY_MODEL = process.env.GEMINI_STORY_MODEL ?? "gemini-flash-latest";
+const STORY_REQUEST_TIMEOUT_MS = 120_000; // fail fast instead of hanging at 5%
+
 /**
  * Call Gemini API directly
  */
 async function callGemini(prompt: string): Promise<string> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${STORY_MODEL}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.9,
-        maxOutputTokens: 30000,
-        responseMimeType: "application/json",
-        // Disable "thinking" so 2.5-flash responds quickly with deterministic JSON
-        thinkingConfig: { thinkingBudget: 0 },
-      },
-    }),
-  });
+  // Minimize "thinking" for fast, deterministic JSON. The control field differs
+  // by model family: Gemini 1.5/2.x use thinkingBudget (int, 0 = off); Gemini 3+
+  // uses thinkingLevel ("minimal" is the lowest — 3 flash can't fully disable it).
+  const thinkingConfig = /gemini-(1\.5|2\.0|2\.5)/.test(STORY_MODEL)
+    ? { thinkingBudget: 0 }
+    : { thinkingLevel: "minimal" };
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    STORY_REQUEST_TIMEOUT_MS,
+  );
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.9,
+          maxOutputTokens: 30000,
+          responseMimeType: "application/json",
+          thinkingConfig,
+        },
+      }),
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(
+        `Gemini request timed out after ${STORY_REQUEST_TIMEOUT_MS / 1000}s (model: ${STORY_MODEL})`,
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
