@@ -60,6 +60,16 @@ const IMAGE_WIDTH = 2400;  // 8 inches × 300 DPI
 const IMAGE_HEIGHT = 3000; // 10 inches × 300 DPI
 // Aspect ratio: 4:5 (0.8:1) - standard portrait book page
 
+// Image models, overridable via env so a gated/degraded model can be swapped
+// without a code deploy. gemini-2.5-flash-image is two generations old and has
+// widespread IMAGE_OTHER failures; gemini-3.1-flash-image (Nano Banana 2) is
+// the current stable. The fallback model is tried on the last retry attempts
+// when the primary keeps failing (e.g. a page whose content trips its filter).
+// Both verified live against ListModels + generateContent for this API key.
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL ?? "gemini-3.1-flash-image";
+const IMAGE_FALLBACK_MODEL =
+  process.env.GEMINI_IMAGE_FALLBACK_MODEL ?? "gemini-3-pro-image";
+
 /**
  * Format cover title to use SHORT, SIMPLE words that AI can spell correctly
  * Avoids long Uzbek words like "Sarguzashtlari" which get misspelled
@@ -731,11 +741,17 @@ This character will appear on EVERY page of the book - accuracy is CRITICAL!`;
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        console.log(`[Character Reference] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
+        // Switch to the fallback model for the last two attempts if the
+        // primary keeps failing (persistent IMAGE_OTHER is often model-specific)
+        const model =
+          attempt >= MAX_RETRIES - 2 ? IMAGE_FALLBACK_MODEL : IMAGE_MODEL;
+        console.log(
+          `[Character Reference] Gemini API attempt ${attempt + 1}/${MAX_RETRIES} (model: ${model})`,
+        );
 
         // Use direct API call with JSON sanitization
         response = await callGeminiDirectly({
-          model: "gemini-2.5-flash-image",
+          model,
           contents: [
             {
               text: `★★★★★ CRITICAL: FACIAL IDENTITY PRESERVATION TASK ★★★★★
@@ -1348,7 +1364,7 @@ The generated image MUST fill the ENTIRE 2400×3000 canvas with NO white space:
 - NO white borders, NO margins, NO empty space ANYWHERE
 - If there is ANY white border visible in your output, START OVER!`;
 
-  console.log(`[Illustration Generator] Generating ${pageType} with Gemini 2.5 Flash Image`);
+  console.log(`[Illustration Generator] Generating ${pageType} with ${IMAGE_MODEL}`);
   console.log(`[Illustration Generator] Prompt: ${enhancedPrompt.substring(0, 200)}...`);
 
   try {
@@ -1752,7 +1768,13 @@ WHAT TO AVOID:
 
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        console.log(`[Illustration Generator] Gemini API attempt ${attempt + 1}/${MAX_RETRIES}`);
+        // Switch to the fallback model for the last two attempts if the
+        // primary keeps failing (persistent IMAGE_OTHER is often model-specific)
+        const model =
+          attempt >= MAX_RETRIES - 2 ? IMAGE_FALLBACK_MODEL : IMAGE_MODEL;
+        console.log(
+          `[Illustration Generator] Gemini API attempt ${attempt + 1}/${MAX_RETRIES} (model: ${model})`,
+        );
 
         let attemptContents = contents;
         if (attempt >= SIMPLIFY_AFTER_ATTEMPT && prevPageContentIndex !== null) {
@@ -1765,7 +1787,7 @@ WHAT TO AVOID:
         // Use direct API call with JSON sanitization
         // Request 4:5 portrait aspect ratio for book pages
         const response = await callGeminiDirectly({
-          model: "gemini-2.5-flash-image",
+          model,
           contents: attemptContents,
           aspectRatio: "4:5", // Portrait book page (supported by Gemini)
         });
